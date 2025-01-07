@@ -3,7 +3,12 @@ export default {
   mode: 'jit',
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {colors:{
+      primary: '#0A100D',
+      secondary: '#7EA8BE',
+      accent: '#61A0AF',
+      neutral: '#C3C3E6'
+      }}
   },
   plugins: [],
 }

@@ -1,6 +1,8 @@
 import React, { useState } from "react" 
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
+import SpotifyAuth from "../services/spotifyAuth"
+import SoundCloudAuth from "../services/soundcloudAuth"
 
 const SignUpCard: React.FC = (): JSX.Element => {
     const [email, setEmail] = useState<string>("");
@@ -64,14 +66,14 @@ const SignUpCard: React.FC = (): JSX.Element => {
                     <hr className="w-1/5"></hr>
                 </div>
                 <div className="flex justify-center items-center w-full gap-5">
-                    <a href="" className="flex justify-center items-center border py-2 w-2/5 shadow gap-2">
+                    <button  onClick={SpotifyAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SpotifyLogo} alt="Spotify Logo" className="w-6 h-6" />
                         <span className="text-sm">Spotify</span>
-                    </a>
-                    <a href="" className="flex justify-center items-center border py-2 w-2/5 shadow gap-2">
+                    </button>
+                    <button onClick={SoundCloudAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SoundCloudLogo} alt="SoundCloud Logo" className="w-6 h-6"/>
                         <span className="text-sm">SoundCloud</span>
-                    </a>
+                    </button>
                 </div>
             </div>
             <span className="text-gray-500 text-sm text-center">Already have an Account? <a href="http://localhost:5173/sign-in" className="underline text-blue-700">Log in Here!</a></span>

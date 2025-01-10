@@ -7,7 +7,7 @@
 
 const Navbar: React.FC = (): JSX.Element => {
     return (
-        <nav className="bg-primary flex justify-between items-center text-white pr-3 pl-8 py-2">
+        <nav className="bg-primary flex justify-between items-center text-white pr-3 pl-8 py-2 h-16">
             <div className="flex gap-20">
                 <div className="font-bold">
                     Logo                                                    

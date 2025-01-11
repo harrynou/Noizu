@@ -14,14 +14,14 @@ const SignUpCard: React.FC = (): JSX.Element => {
     {/* 
         TODO:
             Implement Validation for input
-            Create hrefs for Auth to spotify and soundcloud
             Insert Logo 
         
     */}
 
 
     const validateForm = () : boolean => {
-        return false
+
+        return true
 
         
     }
@@ -35,25 +35,25 @@ const SignUpCard: React.FC = (): JSX.Element => {
     }
 
     return (
-        <div className=" bg-gray-100 flex flex-col flex-grow h-full justify-center items-center gap-5">
-            <div className="flex flex-col justify-center items-center ">
+        <div className=" bg-gray-100 flex flex-col flex-grow h-full justify-center items-center">
+            <div className="flex flex-col justify-center items-center mb-5">
                 <img src="" alt="Place Logo Here" className="w-16 h-16 md:w-20 md:h-20"/>
                 <div className="font-bold text-xl md:text-2xl text-center">Sign Up for an Account</div>
             </div>
             <div className="bg-neutral flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} autoComplete="off">
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col gap-2">
                             <label htmlFor="email" className="text-sm ">Email Address</label>
-                            <input id="email" className="border border-gray-300 rounded p-1 focus:outline-primary"></input>
+                            <input type='text' onChange={setEmail} id="email-input" autoComplete="off" className="border border-gray-300 rounded p-1 focus:outline-primary"></input>
                         </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="password" className="text-sm">Password</label>
-                            <input type="password" id="password" autoComplete="new-password" className="border border-gray-300 rounded p-1"></input>
+                            <input type="text" id="password-input" autoComplete="new-password" className="border border-gray-300 rounded p-1"></input>
                         </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="Confirm-password" className="text-sm">Confirm Password</label>
-                            <input type='password' id="Confirm-password" autoComplete="new-password" className="border border-gray-300 rounded p-1"></input>
+                            <input type='text' id="confirm-password-input" autoComplete="new-password" className="border border-gray-300 rounded p-1"></input>
                         </div>
                         <div className="flex justify-center">
                             <button type="submit" className="border rounded bg-primary text-neutral hover:bg-gray-600 w-full py-2 text-sm">Sign Up</button>
@@ -76,7 +76,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
                     </button>
                 </div>
             </div>
-            <span className="text-gray-500 text-sm text-center">Already have an Account? <a href="http://localhost:5173/sign-in" className="underline text-blue-700">Log in Here!</a></span>
+            <span className="text-gray-500 text-sm text-center mt-2">Already have an Account? <a href="http://localhost:5173/sign-in" className="underline text-blue-700">Sign in Here!</a></span>
         </div>
     )
 }

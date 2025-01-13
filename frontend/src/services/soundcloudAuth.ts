@@ -1,6 +1,6 @@
 const SoundCloudAuth = (): void => {
-    const clientId: string = 'Bnxu6VRAz8WkMbHT4SfIucWCLaE96z9C';
-    const redirectUri: string = 'http://localhost:5173/callback';
+    const clientId: string = import.meta.env.VITE_SOUNDCLOUD_CLIENT_ID;
+    const redirectUri: string = import.meta.env.VITE_REDIRECT_URI;
     const responseType: string = 'code';
     const codeChallenge: string = 'Fx6Oin9wZEi35rdNBFSGW1tDXpFPtJyZVIpQ4wtoZlg';
     const codeChallengeMethod: string = 'S256';

@@ -60,6 +60,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
         }
         try {
             const response = registerUser(email,password)
+            console.log(response)
         } catch (error: any) {
             if (error.response && error.response.status === 409){
                 setErrors({email:'Email is already in use.'})

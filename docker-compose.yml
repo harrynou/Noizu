@@ -13,15 +13,19 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=postgres://user:password@db:5432/musicdb
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db
+    env_file:
+      - .env
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: musicdb
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
+    env_file:
+      - .env

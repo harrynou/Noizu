@@ -1,4 +1,6 @@
 import {Pool} from 'pg';
+require('dotenv').config({ path: '../.env'})
+
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -16,5 +18,14 @@ export const connectDB = async (): Promise<void> => {
         throw new Error(`Database connection failed: ${error}`);
     }
 };
+
+export const insertUser = async (email:string, password_encrypted:string ): Promise<void> => {
+    try {
+        await pool.query("INSERT INTO users (email,password_hash) VALUES ($1, $2)", [email,password_encrypted])
+    } catch(error) {
+        throw error;
+    }
+}
+
 
 export default pool;

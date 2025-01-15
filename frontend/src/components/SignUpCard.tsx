@@ -1,4 +1,5 @@
 import React, { useState } from "react" 
+import { Navigate, useNavigate } from 'react-router-dom';
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
 import SpotifyAuth from "../services/spotifyAuth"
@@ -18,6 +19,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
     const [password, setPassword] = useState<string>("");
     const [confirm, setConfirm] = useState<string>("");
     const [errors, setErrors] = useState<errors>({});
+    const navigate = useNavigate();
 
     {/* 
         TODO:
@@ -53,16 +55,16 @@ const SignUpCard: React.FC = (): JSX.Element => {
         
     }
 
-    const handleSubmit = (e: React.FormEvent) : void => {
+    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault()
         if (!validateForm()) {
-            return
+            return;
         }
         try {
-            const response = registerUser(email,password)
-            console.log(response)
+            const response = await registerUser(email,password)
+            navigate('/home');
         } catch (error: any) {
-            if (error.response && error.response.status === 409){
+            if (error.status === 409){
                 setErrors({email:'Email is already in use.'})
             } else {
                 console.error("Error during registration:", error);

@@ -3,16 +3,18 @@ import axios, { AxiosInstance } from "axios";
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
-        'Content-Type': 'applications/json',
+        'Content-Type': 'application/json',
     },
 });
-
 export const registerUser = async (email:string, password:string): Promise<any> => {
     try {
-        const response = await axiosInstance.post("/api/auth/register", {email,password});
-        return response
+        const response = await axiosInstance.post("/api/auth/registerUser", {email,password});
+        return response.data
     } catch (error:any) {
-        return error
+        if (error.response) {
+            throw error.response;
+        } 
+        throw new Error("An unexpected error occured.");
     }
 }
 
@@ -21,6 +23,9 @@ export const signInUser = async (email:string, password:string): Promise<any> =>
         const response = await axiosInstance.post("/api/auth/signIn", {email,password});
         return response
     } catch (error:any) {
-        return error
+        if (error.response) {
+        return error.response;
+        }
+        throw new Error("An unexpected error occured.");
     }
 }

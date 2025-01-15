@@ -20,8 +20,8 @@ RUN npm run build
 FROM nginx:alpine
 COPY --from=0 /app/dist /usr/share/nginx/html
 
-# Expose port 80 for the server
-EXPOSE 80
+# Expose port 5173 for the server
+EXPOSE 5173
 
 # Start the Nginx server
 CMD ["nginx", "-g", "daemon off;"]

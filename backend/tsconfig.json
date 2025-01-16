@@ -7,7 +7,11 @@
     "strict": true, // Enable strict type checking
     "esModuleInterop": true, // Enable compatibility with CommonJS modules
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true // Skip type checking of declaration files
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+
   },
   "include": ["src"], // Include all .ts files in the src folder
   "exclude": ["node_modules", "dist"] // Exclude these folders from the compiler

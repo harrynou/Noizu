@@ -1,21 +1,32 @@
 CREATE TABLE users (
-	id SERIAL PRIMARY KEY,
-	email VARCHAR(255) UNIQUE NOT NULL,
-	password_hash VARCHAR(255),
-	spotify_connected BOOLEAN DEFAULT FALSE,
-	soundcloud_connected BOOLEAN DEFAULT FALSE,
-	created_at TIMESTAMP DEFAULT NOW(),
-	updated_at TIMESTAMP DEFAULT NOW()
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255),
+    spotify_account_id INTEGER DEFAULT NULL,
+    soundcloud_account_id INTEGER DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE api_tokens (
-	id SERIAL PRIMARY KEY,
-	user_id INTEGER REFERENCES users(id) on DELETE CASCADE,
-	provider VARCHAR(50) NOT NULL,
-	access_token text NOT NULL, 
-	refresh_token text NOT NULL,
-	expires_at TIMESTAMP,
-	created_at TIMESTAMP DEFAULT NOW(),
-	updated_at TIMESTAMP DEFAULT NOW()
+CREATE TABLE linked_accounts (
+    account_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE NOT NULL,
+    provider VARCHAR(50) NOT NULL,
+    provider_email VARCHAR(255) NOT NULL,
+    refresh_token TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (provider, provider_email)
 );
 
+ALTER TABLE users
+    ADD CONSTRAINT fk_spotify_account
+    FOREIGN KEY (spotify_account_id)
+    REFERENCES linked_accounts(account_id)
+    ON DELETE SET NULL;
+
+ALTER TABLE users
+    ADD CONSTRAINT fk_soundcloud_account
+    FOREIGN KEY (soundcloud_account_id)
+    REFERENCES linked_accounts(account_id)
+    ON DELETE SET NULL;

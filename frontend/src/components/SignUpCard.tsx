@@ -1,5 +1,5 @@
 import React, { useState } from "react" 
-import { Navigate, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
 import SpotifyAuth from "../services/spotifyAuth"
@@ -62,6 +62,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
         }
         try {
             const response = await registerUser(email,password)
+            console.log(response)
             navigate('/home');
         } catch (error: any) {
             if (error.status === 409){

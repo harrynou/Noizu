@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020", // Output JavaScript version
+    "typeRoots": ["./node_modules/@types", "./types"],
     "module": "commonjs", // Module system
     "outDir": "./dist", // Output folder for compiled files
     "rootDir": "./src", // Source folder for TypeScript files

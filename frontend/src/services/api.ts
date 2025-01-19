@@ -6,6 +6,15 @@ const axiosInstance: AxiosInstance = axios.create({
         'Content-Type': 'application/json',
     },
 });
+
+export const checkAuth = async (): Promise<any> => {
+    try{
+        const response = await axiosInstance.get('api/auth/checkAuth');
+    }catch(error){
+        throw new Error("An unexpected error occured.");
+    }
+}
+
 export const registerUser = async (email:string, password:string): Promise<any> => {
     try {
         const response = await axiosInstance.post("/api/auth/registerUser", {email,password});

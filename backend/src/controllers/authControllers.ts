@@ -3,6 +3,20 @@ import {insertUser, isProviderConnected, registerByProvider, getUserPassword, ge
 import {hashString as hashPassword, compareHash as verifyPassword} from '../utils/encryption'
 import { verifyToken, generateToken } from '../utils/jwt';
 
+export const checkAuth = async (req:Request, res:Response, next:NextFunction) => {
+    try {
+        const authToken = req.cookies.authToken
+        if (!authToken) {
+            return res.status(401).json({ isAuthenticated: false });
+        }
+        const user = verifyToken(authToken); // Decode and verify the JWT
+        return res.status(200).json({ isAuthenticated: true, user });
+    } catch (error) {
+        return res.status(401).json({ isAuthenticated: false });
+
+    }
+}
+
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {email, password} = req.body
@@ -73,7 +87,6 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     } catch (error){
         next(error)
     }
-
 }
 
 

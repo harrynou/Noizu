@@ -1,6 +1,6 @@
 const SoundCloudAuth = (): void => {
     const clientId: string = import.meta.env.VITE_SOUNDCLOUD_CLIENT_ID;
-    const redirectUri: string = import.meta.env.VITE_REDIRECT_URI;
+    const redirectUri: string = import.meta.env.VITE_REDIRECT_SOUNDCLOUD_URI;
     const responseType: string = 'code';
     const codeChallenge: string = 'Fx6Oin9wZEi35rdNBFSGW1tDXpFPtJyZVIpQ4wtoZlg';
     const codeChallengeMethod: string = 'S256';

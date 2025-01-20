@@ -21,6 +21,13 @@ const Navbar: React.FC = (): JSX.Element => {
                         <li className="hover:text-accent">
                             <a href="/home">Home</a>
                         </li>
+                        {isAuthenticated && 
+                        <div>
+                            <li className="hover:text-accent">
+                                <a href="/favorites">Favorites</a>
+                            </li>
+
+                        </div>}
                         <li className="hover:text-accent">
                             <a href="/terms">Terms</a>
                         </li>

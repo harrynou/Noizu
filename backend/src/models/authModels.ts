@@ -1,4 +1,5 @@
 import pool from '../config/db'
+import { getAccessToken, setAccessToken } from './tokenModels';
 
 
 export const insertUser = async (email:string, password_encrypted?:string): Promise<number> => {
@@ -19,10 +20,11 @@ export const isProviderConnected = async (provider: string, provider_email?: str
     }
 }
 
-export const registerByProvider = async (provider:string, provider_email:string, refresh_token:string): Promise<void> => {
+export const registerByProvider = async (provider:string, provider_email:string, refresh_token:string, access_token: string): Promise<void> => {
     try {
         const user_id = await insertUser(provider_email);
         await connectProvider(user_id, provider, provider_email, refresh_token);
+        await setAccessToken(user_id, provider, access_token, 3600);
     } catch (error) {
         throw error
     }

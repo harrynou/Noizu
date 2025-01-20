@@ -1,11 +1,10 @@
-import React, { ReactNode } from "react";
 import { useAuth } from "../contexts/authContext";
 import { Navigate } from "react-router-dom";
 
 
 interface PublicRouteProp {
     children: JSX.Element;
-    redirectTo?:String;
+    redirectTo?:string;
 }
 
 const PublicRoute: React.FC<PublicRouteProp> = ({children, redirectTo = '/home'}) => {

@@ -6,6 +6,7 @@ import { verifyToken, generateToken } from '../utils/jwt';
 export const checkAuth = async (req:Request, res:Response, next:NextFunction) => {
     try {
         const authToken = req.cookies.authToken
+        console.log(authToken)
         if (!authToken) {
             return res.status(401).json({ isAuthenticated: false });
         }

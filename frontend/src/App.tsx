@@ -6,6 +6,8 @@ import AboutMe from './pages/about-me.tsx'
 import Terms from './pages/terms.tsx'
 import SignIn from './pages/sign-in.tsx';
 import SignUp from './pages/sign-up.tsx';
+import { AuthContextWrapper } from './contexts/authContext.tsx';
+import PublicRoute from './components/PublicRoute.tsx';
 
 const App: React.FC = (): JSX.Element => {
   return (
@@ -13,15 +15,17 @@ const App: React.FC = (): JSX.Element => {
     <Router>
       
       <div className='flex flex-col h-screen'>
-        <Navbar/>
-        <Routes>
-          <Route path='/' element={<Navigate to="/home"/>}></Route>
-          <Route path='/home' element={<Home/>}></Route>
-          <Route path='/sign-up' element={<SignUp/>}></Route>
-          <Route path='/sign-in' element={<SignIn/>}></Route>
-          <Route path='/terms' element={<Terms/>}></Route>
-          <Route path='/about-me' element={<AboutMe/>}></Route>
-        </Routes>
+        <AuthContextWrapper>
+          <Navbar/>
+          <Routes>
+            <Route path='/' element={<Navigate to="/home"/>}></Route>
+            <Route path='/home' element={<Home/>}></Route>
+            <Route path='/sign-up' element={<PublicRoute><SignUp/></PublicRoute>}></Route>
+            <Route path='/sign-in' element={<PublicRoute><SignIn/></PublicRoute>}></Route>
+            <Route path='/terms' element={<Terms/>}></Route>
+            <Route path='/about-me' element={<AboutMe/>}></Route>
+          </Routes>
+          </AuthContextWrapper>
       </div>
     </Router>
   )

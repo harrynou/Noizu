@@ -7,7 +7,7 @@ import {passportConfig} from '../config/passport-config'
 
 const router = Router()
 passportConfig();
-router.post('/checkAuth', authController.checkAuth)
+router.get('/checkAuth', authController.checkAuth)
 router.post("/registerUser", validateRequest(userCredentialsDto), authController.registerUser)
 router.get('/spotify/callback', passport.authenticate('spotify', { session: false }), authController.spotifyRegister)
 router.get('/soundcloud/callback', passport.authenticate('soundcloud', { session: false }), authController.soundcloudRegister)

@@ -1,5 +1,6 @@
 import { setToken, getToken, delToken } from "../utils/redis";
 import pool from '../config/db'
+import {refreshSpotifyToken} from '../services/spotify'
 
 // Functions to set, get, and remove Access Tokens from redis cache 
 
@@ -18,7 +19,7 @@ export const removeAccessToken = async (userId: number, provider:string): Promis
     await delToken(key)
 } 
 
-// Function to retrieve refresh token from db
+// Retrieves refresh token from db
 
 export const getRefreshToken = async (userId: number, provider:string): Promise<string> => {
     try {
@@ -28,5 +29,20 @@ export const getRefreshToken = async (userId: number, provider:string): Promise<
         throw error
     }
 }
+
+// Gets a new access token from spotify
+
+export const getNewAccessToken = async (userId: number, provider:string): Promise<string> => {
+    try{
+        const refresh_token = await getRefreshToken(userId, provider)
+        return await refreshSpotifyToken(refresh_token);
+    }catch (error){
+        throw error
+    }
+}
+
+
+
+
 
 

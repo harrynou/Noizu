@@ -2,16 +2,18 @@ import {Request, Response, NextFunction} from 'express';
 import {insertUser, isProviderConnected, registerByProvider, getUserPassword, getUserId} from '../models/authModels'
 import {hashString, compareHash} from '../utils/encryption'
 import { verifyToken, generateToken } from '../utils/jwt';
+import { getNewAccessToken } from '../models/tokenModels';
+
+// TODO: soundcloudRegister function
 
 export const checkAuth = async (req:Request, res:Response, next:NextFunction) => {
     try {
         const authToken = req.cookies.authToken
-        console.log(authToken)
         if (!authToken) {
             return res.status(401).json({ isAuthenticated: false });
         }
         const user = verifyToken(authToken); // Decode and verify the JWT
-        return res.status(200).json({ isAuthenticated: true, user });
+        return res.status(200).json({ isAuthenticated: true, user});
     } catch (error) {
         return res.status(401).json({ isAuthenticated: false });
 
@@ -29,7 +31,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
             secure: process.env.NODE_ENV === 'production',
             maxAge: 3600000, // 1 hour
         });
-        return res.status(201).json({msg:'Registration Successful', token})
+        return res.status(201).json({msg:'Registration Successful'})
     } catch (error:any) {
         next(error);
     }
@@ -40,27 +42,24 @@ export const spotifyRegister = async (req: Request, res: Response, next: NextFun
         const user: any = req.user;
         const provider = user.provider
         const provider_email = user._json.email
-        const accessToken = (req.authInfo as any).accessToken
-        const refresh_token = await hashString((req.authInfo as any).refreshToken)
+        const {accessToken,refreshToken} = (req.authInfo as any)
         if (await isProviderConnected(provider, provider_email)) { // Check if spotify is already connect, if so log in, else, create account
-            const user_id = await getUserId(provider_email)
-            const token =  generateToken({user_id, provider_email})
-            res.cookie('authToken', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 3600000, // 1 hour
-            });
-            return res.status(200).json({msg:'Logged In', token})
+            const userId = await getUserId(provider_email)
+            const token =  generateToken({userId, provider_email})
+            res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});
+            res.redirect('http://localhost:5173/home')
         } else {
-            await registerByProvider(provider,provider_email,refresh_token, accessToken);
-            res.status(201).json({msg:"Registration with Spotify Successful."})
+            const userId = await registerByProvider(provider,provider_email,refreshToken, accessToken);
+            const token =  generateToken({userId, provider_email})
+            res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});
+            res.redirect('http://localhost:5173/home')
         }
     } catch (error:any) {
         next(error);
     }
 }
 
-export const soundcloudRegister = async (req: Request, res: Response, next: NextFunction) => {
+export const soundcloudRegister = async (req: Request, res: Response, next: NextFunction) => { 
     try {
         const user: any = req.user
         console.log(user)
@@ -82,7 +81,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 3600000, // 1 hour
             });
-            return res.status(200).json({msg:'Logged In', token})
+            return res.status(200).json({msg:'Logged In'})
         } else {
             res.status(401).json("Incorrect Password.")
         }

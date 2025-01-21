@@ -61,8 +61,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
             return;
         }
         try {
-            const response = await registerUser(email,password)
-            console.log(response)
+            await registerUser(email,password)
             navigate('/home');
         } catch (error: any) {
             if (error.status === 409){

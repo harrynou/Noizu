@@ -20,11 +20,12 @@ export const isProviderConnected = async (provider: string, provider_email?: str
     }
 }
 
-export const registerByProvider = async (provider:string, provider_email:string, refresh_token:string, access_token: string): Promise<void> => {
+export const registerByProvider = async (provider:string, provider_email:string, refresh_token:string, access_token: string): Promise<number> => {
     try {
         const user_id = await insertUser(provider_email);
         await connectProvider(user_id, provider, provider_email, refresh_token);
         await setAccessToken(user_id, provider, access_token, 3600);
+        return user_id
     } catch (error) {
         throw error
     }
@@ -58,7 +59,7 @@ export const getUserPassword = async (email:string): Promise<string> => { // Pas
     } 
 }
 
-export const getUserId = async (email:string): Promise<string> => {
+export const getUserId = async (email:string): Promise<number> => {
     try {
         const results = await pool.query("SELECT user_id FROM users WHERE email = $1", [email])
         return results.rows[0].user_id

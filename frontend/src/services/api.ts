@@ -39,8 +39,25 @@ export const registerUser = async (email:string, password:string): Promise<any> 
 export const signInUser = async (email:string, password:string): Promise<any> => {
     try{
         const response = await axiosInstance.post("/api/auth/signIn", {email,password});
-        return response
+        return response.data
     } catch (error:any) {
+        throw error
+    }
+}
+
+export const changePassword = async (password:string): Promise<any> => {
+    try {
+        const response = await axiosInstance.post("/api/auth/changePassword", {password});
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
+export const logoutUser = async (): Promise<void> => {
+    try {
+        await axiosInstance.post("/api/auth/logout");
+    } catch (error) {
         throw error
     }
 }

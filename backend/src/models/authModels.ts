@@ -11,10 +11,13 @@ export const insertUser = async (email:string, password_encrypted?:string): Prom
     }
 }
 
-export const isProviderConnected = async (provider: string, provider_email?: string): Promise<boolean> => {
+export const isProviderConnected = async (provider: string, provider_email: string): Promise<string|null> => {
     try {
-        const results = await pool.query("SELECT user_id FROM linked_accounts WHERE provider = $1 and provider_email = $2", [provider,provider_email])
-        return results.rowCount === 1;
+        const results = await pool.query("SELECT users.email FROM linked_accounts, users WHERE linked_accounts.user_id = users.user_id AND provider = $1 AND provider_email = $2", [provider,provider_email])
+        if (results?.rowCount && results.rowCount > 0) {
+            return results.rows[0].email;
+        }
+        return null; 
     } catch (error) {
         throw error
     }
@@ -44,16 +47,19 @@ export const connectProvider = async (user_id:number, provider:string, provider_
         }
         const results = await pool.query("INSERT INTO linked_accounts (user_id,provider,provider_email,refresh_token) VALUES ($1,$2,$3,$4) RETURNING account_id",[user_id,provider,provider_email,refresh_token])
         const provider_account_id = results.rows[0].account_id
-        const e = await pool.query(`UPDATE users SET ${provider_column} = $1 WHERE user_id = $2`, [provider_account_id, user_id])
+        await pool.query(`UPDATE users SET ${provider_column} = $1 WHERE user_id = $2`, [provider_account_id, user_id])
     } catch(error){
         throw error
     }
 }
 
-export const getUserPassword = async (email:string): Promise<string> => { // Password returned is hashed
+export const getUserPassword = async (email:string): Promise<string|null> => { // Password returned is hashed
     try {
-        const results = await pool.query("SELECT password FROM users WHERE email = $1", [email])
-        return results.rows[0].email
+        const results = await pool.query("SELECT password_hash FROM users WHERE email = $1", [email])
+        if (results && results.rowCount && results.rowCount > 0) {
+            return results.rows[0].password_hash; // Return the hashed password
+        }
+        return null;
     } catch (error){
         throw error
     } 
@@ -66,4 +72,12 @@ export const getUserId = async (email:string): Promise<number> => {
     } catch (error){
         throw error
     } 
+}
+
+export const updatePassword = async (hashed_password:string, userId: number): Promise<void> => {
+    try {
+        await pool.query("UPDATE users SET password_hash = $1 WHERE user_id = $2",[hashed_password,userId])
+    } catch (error) {
+        throw error
+    }
 }

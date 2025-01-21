@@ -1,8 +1,9 @@
+import SignInCard from "../components/SignInCard"
 
 const SignIn: React.FC = (): JSX.Element => {
 
     return (
-        <div className="bg-neutral h-full"></div>
+        <SignInCard></SignInCard>
     )
 }
 

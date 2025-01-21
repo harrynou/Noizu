@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, useEffect} from "react";
-import { checkAuth } from "../services/api";
+import { checkAuth, logoutUser } from "../services/api";
 
 interface userType {
     user_id:number,
@@ -8,23 +8,29 @@ interface userType {
 
 interface authContextType {
     isAuthenticated:boolean;
+    hasPassword:boolean
     user: userType | null;
     loading:boolean;
-    login: (userData:userType) => void
-    logout: () => void  
+    login: (userData:userType) => void;
+    logout: () => void;
+    Password: () => void;
+
 }
 
 const authContext = createContext<authContextType>({
     isAuthenticated: false,
+    hasPassword:false,
     user: null,
     loading: true,
     login: () => {},
-    logout: () => {}
+    logout: () => {},
+    Password: () => {}
 })
 
 export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState<any | null>(null);
+    const [hasPassword, setHasPassword] = useState(false);
+    const [user, setUser] = useState<userType | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,8 +38,10 @@ export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ child
             try{
                 const data = await checkAuth()
                 setIsAuthenticated(data.isAuthenticated);
+                setHasPassword(data.hasPassword);
                 setUser(data.user);
             }catch(error){
+                setHasPassword(false);
                 setIsAuthenticated(false);
                 setUser(null);
             }finally{
@@ -49,10 +57,17 @@ export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ child
     }
     const logout = () => {
         setIsAuthenticated(false);
+        setHasPassword(false);
         setUser(null);
+        logoutUser()
     };
+
+    const Password = () => {
+        setHasPassword(true);
+    }
+
     return (
-        <authContext.Provider value={{ isAuthenticated, user, loading, login, logout }}>
+        <authContext.Provider value={{ isAuthenticated, hasPassword, user, loading, login, logout, Password}}>
             {children}
         </authContext.Provider>
     );

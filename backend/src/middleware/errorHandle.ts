@@ -6,7 +6,7 @@ const errorHandle = (error: any, req: Request, res: Response, next: NextFunction
     if (error.code === '23505') {
         return res.status(409).json({error: "Email Already in Use."});
     } else {
-        return res.status(500).json({error: 'Internal server error.'});
+        return res.status(500).json({ error: error.message || "An unexpected error occurred." });
     }
 }
 

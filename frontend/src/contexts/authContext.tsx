@@ -2,7 +2,7 @@ import {createContext, useContext, useState, useEffect} from "react";
 import { checkAuth, logoutUser } from "../services/api";
 
 interface userType {
-    user_id:number,
+    userId:number,
     email:string,
 }
 
@@ -11,9 +11,10 @@ interface authContextType {
     hasPassword:boolean
     user: userType | null;
     loading:boolean;
-    login: (userData:userType) => void;
+    login: (userData:userType, userHasPassword:boolean) => void;
     logout: () => void;
     Password: () => void;
+    getAuth: () => void;
 
 }
 
@@ -24,7 +25,8 @@ const authContext = createContext<authContextType>({
     loading: true,
     login: () => {},
     logout: () => {},
-    Password: () => {}
+    Password: () => {},
+    getAuth: () => {}
 })
 
 export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ children }) => {
@@ -33,27 +35,29 @@ export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ child
     const [user, setUser] = useState<userType | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const getAuth = async () => {
+        try{
+            const data = await checkAuth()
+            setIsAuthenticated(data.isAuthenticated);
+            setHasPassword(data.userHasPassword);
+            setUser(data.user);
+        }catch(error){
+            setHasPassword(false);
+            setIsAuthenticated(false);
+            setUser(null);
+        }finally{
+            setLoading(false)
+        }
+    };
+
     useEffect(() => {
-        const getAuth = async () => {
-            try{
-                const data = await checkAuth()
-                setIsAuthenticated(data.isAuthenticated);
-                setHasPassword(data.hasPassword);
-                setUser(data.user);
-            }catch(error){
-                setHasPassword(false);
-                setIsAuthenticated(false);
-                setUser(null);
-            }finally{
-                setLoading(false)
-            }
-        };
         getAuth();
     },[]);
 
-    const login = (userData: any) => {
+    const login = (userData: any, userHasPassword: boolean) => {
         setIsAuthenticated(true);
-        setUser(userData);
+        setHasPassword(userHasPassword)
+        setUser(userData);  
     }
     const logout = () => {
         setIsAuthenticated(false);
@@ -65,9 +69,10 @@ export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ child
     const Password = () => {
         setHasPassword(true);
     }
+    
 
     return (
-        <authContext.Provider value={{ isAuthenticated, hasPassword, user, loading, login, logout, Password}}>
+        <authContext.Provider value={{ isAuthenticated, hasPassword, user, loading, login, logout, Password, getAuth}}>
             {children}
         </authContext.Provider>
     );

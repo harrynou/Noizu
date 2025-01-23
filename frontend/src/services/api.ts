@@ -53,7 +53,7 @@ export const changePassword = async (password:string): Promise<any> => {
         throw error
     }
 }
-
+    
 export const logoutUser = async (): Promise<void> => {
     try {
         await axiosInstance.post("/api/auth/logout");

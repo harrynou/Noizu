@@ -1,10 +1,10 @@
 
 
 
-const AboutMe: React.FC = () : JSX.Element => {
+const AboutMePage: React.FC = () : JSX.Element => {
     return (
         <div className="bg-neutral h-full"></div>
     )
 }
 
-export default AboutMe
+export default AboutMePage

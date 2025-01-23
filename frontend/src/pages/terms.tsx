@@ -1,8 +1,8 @@
 
-const Terms: React.FC = () : JSX.Element => {
+const TermsPage: React.FC = () : JSX.Element => {
     return (
         <div className="bg-neutral h-full"></div>
     )
 }
 
-export default Terms
+export default TermsPage

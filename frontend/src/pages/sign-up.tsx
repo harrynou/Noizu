@@ -1,6 +1,6 @@
 import SignUpCard from '../components/SignUpCard.tsx'
 
-const SignUp: React.FC = (): JSX.Element => {
+const SignUpPage: React.FC = (): JSX.Element => {
 
     return (
         <div className="flex h-full justify-center items-center">
@@ -9,4 +9,4 @@ const SignUp: React.FC = (): JSX.Element => {
     )
 }
 
-export default SignUp
+export default SignUpPage

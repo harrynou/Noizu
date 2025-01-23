@@ -2,9 +2,11 @@ import React, { useState } from "react"
 import {useNavigate } from 'react-router-dom';
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
-import SpotifyAuth from "../services/spotifyAuth"
+import spotifyAuth from "../services/spotifyAuth"
 import SoundCloudAuth from "../services/soundcloudAuth"
 import { signInUser } from "../services/api"
+import { useAuth } from "../contexts/authContext";
+
 
 
 const SignInCard: React.FC = (): JSX.Element => {
@@ -18,6 +20,7 @@ const SignInCard: React.FC = (): JSX.Element => {
     const [password, setPassword] = useState<string>("");
     const [errors, setErrors] = useState<errors>({});
     const navigate = useNavigate();
+    const {login} = useAuth()
 
     {/* 
         TODO:
@@ -49,16 +52,33 @@ const SignInCard: React.FC = (): JSX.Element => {
             return;
         }
         try {
-            await signInUser(email,password)
-            navigate('/home');
+            const response = await signInUser(email,password)
+            login(response.userData, response.userHasPassword)
         } catch (error: any) {
-            if (error.status === 401){
-                setErrors({password:'Email or password is incorrect'})
+            console.log(error)
+            if (error.error === "Email does not exist or password may not be set for a Spotify/SoundCloud Account."){
+                setErrors({email: error.error})
+            } else if (error.error === "Incorrect password."){
+                setErrors({password: error.error})
             } else {
                 console.error("Error during sign-in:", error);
             }
         }
     }
+
+    const handleSpotifyAuth = async () => {
+        try {
+            const { userData, userHasPassword } = await spotifyAuth();
+            login(userData,userHasPassword); // Update context with user data
+            if (!userHasPassword) {
+                navigate("/setup-password");
+            } else {
+                navigate("/home");
+            }
+        } catch (error: any) {
+            console.error("Error during Spotify authentication:", error);
+        }
+    };
 
     return (
         <div className=" bg-gray-100 flex flex-col flex-grow h-full justify-center items-center">
@@ -91,7 +111,7 @@ const SignInCard: React.FC = (): JSX.Element => {
                     <hr className="w-1/5"></hr>
                 </div>
                 <div className="flex justify-center items-center w-full gap-5">
-                    <button  onClick={SpotifyAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
+                    <button  onClick={handleSpotifyAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SpotifyLogo} alt="Spotify Logo" className="w-6 h-6" />
                         <span className="text-sm">Spotify</span>
                     </button>

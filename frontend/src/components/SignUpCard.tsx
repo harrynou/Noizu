@@ -2,9 +2,10 @@ import React, { useState } from "react"
 import {useNavigate } from 'react-router-dom';
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
-import SpotifyAuth from "../services/spotifyAuth"
+import spotifyAuth from "../services/spotifyAuth"
 import SoundCloudAuth from "../services/soundcloudAuth"
 import { registerUser } from "../services/api"
+import { useAuth } from "../contexts/authContext";
 
 
 const SignUpCard: React.FC = (): JSX.Element => {
@@ -20,6 +21,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
     const [confirm, setConfirm] = useState<string>("");
     const [errors, setErrors] = useState<errors>({});
     const navigate = useNavigate();
+    const {login} = useAuth()
 
     {/* 
         TODO:
@@ -61,10 +63,11 @@ const SignUpCard: React.FC = (): JSX.Element => {
             return;
         }
         try {
-            await registerUser(email,password)
+            const {userData, userHasPassword} = await registerUser(email,password)
+            login(userData, userHasPassword)
             navigate('/home');
         } catch (error: any) {
-            if (error.status === 409){
+            if (error.error === "Email Already in Use."){
                 setErrors({email:'Email is already in use.'})
             } else {
                 console.error("Error during registration:", error);
@@ -107,7 +110,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
                     <hr className="w-1/5"></hr>
                 </div>
                 <div className="flex justify-center items-center w-full gap-5">
-                    <button  onClick={SpotifyAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
+                    <button  onClick={spotifyAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SpotifyLogo} alt="Spotify Logo" className="w-6 h-6" />
                         <span className="text-sm">Spotify</span>
                     </button>

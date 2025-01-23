@@ -1,11 +1,13 @@
 import React, {useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate} from 'react-router-dom';
 import Navbar from './components/Navbar.tsx';
-import Home from './pages/home.tsx';
-import AboutMe from './pages/about-me.tsx'
-import Terms from './pages/terms.tsx'
-import SignIn from './pages/sign-in.tsx';
-import SignUp from './pages/sign-up.tsx';
+import HomePage from './pages/home.tsx';
+import AboutMePage from './pages/about-me.tsx'
+import TermsPage from './pages/terms.tsx'
+import SignInPage from './pages/sign-in.tsx';
+import SignUpPage from './pages/sign-up.tsx';
+import FavoritesPage from './pages/favorites.tsx'
+import PlaylistsPage from ''
 import { AuthContextWrapper, useAuth} from './contexts/authContext.tsx';
 import PublicRoute from './components/PublicRoute.tsx';
 import SetUpPassword from './pages/set-up-password.tsx';
@@ -24,11 +26,12 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path='/' element={<Navigate to="/home"/>}></Route>
-      <Route path='/home' element={<Home/>}></Route>
-      <Route path='/sign-up' element={<PublicRoute><SignUp/></PublicRoute>}></Route>
-      <Route path='/sign-in' element={<PublicRoute><SignIn/></PublicRoute>}></Route>
-      <Route path='/terms' element={<Terms/>}></Route>
-      <Route path='/about-me' element={<AboutMe/>}></Route>
+      <Route path='/home' element={<HomePage/>}></Route>
+      <Route path='/sign-up' element={<PublicRoute><SignUpPage/></PublicRoute>}></Route>
+      <Route path='/sign-in' element={<PublicRoute><SignInPage/></PublicRoute>}></Route>
+      <Route path='/terms' element={<TermsPage/>}></Route>
+      <Route path='/about-me' element={<AboutMePage/>}></Route>
+      <Route path='/favorites' element={<FavoritesPage/>}></Route>
       <Route path='/setup-password' element={<NoPasswordRoute><SetUpPassword/></NoPasswordRoute>}></Route>
     </Routes>
   )

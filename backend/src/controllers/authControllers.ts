@@ -13,8 +13,7 @@ export const checkAuth = async (req:Request, res:Response, next:NextFunction) =>
         }
         const user = verifyToken(authToken); // Decode and verify the JWT
         const userHasPassword = (await getUserPassword(user.email) !== null)
-        const userId = await getUserId(user.email)
-        return res.status(200).json({ isAuthenticated: true, userHasPassword, userData: { userId, email:user.email }});
+        return res.status(200).json({ isAuthenticated: true, userHasPassword, userData: { userId: user.userId, email:user.email }});
     } catch (error) {
         return res.status(401).json({ isAuthenticated: false, userHasPassword: false});
     }

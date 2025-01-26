@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import authRoutes from './routes/authRoutes'
+import searchRoutes from './routes/searchRoutes'
 import errorHandle from './middleware/errorHandle'
 import passport from 'passport'
 import { passportConfig } from './config/passport-config';
@@ -38,6 +39,7 @@ app.use(express.json())
 app.use(passport.initialize());
 
 app.use('/api/auth', authRoutes)
+app.use('/api/search', searchRoutes)
 app.use(errorHandle)
 
 

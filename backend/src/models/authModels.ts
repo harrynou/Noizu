@@ -1,5 +1,5 @@
 import pool from '../config/db'
-import { getAccessToken, setAccessToken } from './tokenModels';
+import { setAccessToken } from './tokenModels';
 
 
 export const insertUser = async (email:string, password_encrypted?:string): Promise<number> => {

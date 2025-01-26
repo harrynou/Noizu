@@ -1,4 +1,4 @@
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../../contexts/authContext";
 import NavDropdown from "./NavDropdown";
 {/*
     TODO: Add Logo Brand left of navbar

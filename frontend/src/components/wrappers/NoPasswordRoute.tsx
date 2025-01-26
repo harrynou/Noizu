@@ -1,4 +1,4 @@
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../../contexts/authContext";
 import { Navigate } from "react-router-dom";
 
 
@@ -6,7 +6,7 @@ interface NoPasswordRouteProp {
     children: JSX.Element;
     redirectTo?:string;
 }
-
+// Redirects users if they have not setup a password for their account
 const NoPasswordRoute: React.FC<NoPasswordRouteProp> = ({children, redirectTo = '/home'}) => {
     const {isAuthenticated, loading, hasPassword} = useAuth()
     if (loading){

@@ -18,6 +18,8 @@ axiosInstance.interceptors.response.use(
     }
 );
 
+// APIs dealing with authentification 
+
 export const checkAuth = async (): Promise<any> => {
     try{
         const response = await axiosInstance.get('/api/auth/checkAuth');
@@ -61,3 +63,17 @@ export const logoutUser = async (): Promise<void> => {
         throw error
     }
 }
+
+
+// APIs dealing with Spotify 
+export const searchQuery = async (query:string): Promise<any> => {
+    try {
+        const response = await axiosInstance.get(`/api/search/${query}`);
+        return response.data;
+    } catch (error) {
+        throw error
+    }
+}
+
+
+// APIs dealing with SoundCloud

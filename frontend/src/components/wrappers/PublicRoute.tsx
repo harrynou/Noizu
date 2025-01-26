@@ -1,4 +1,4 @@
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../../contexts/authContext";
 import { Navigate } from "react-router-dom";
 
 
@@ -7,6 +7,7 @@ interface PublicRouteProp {
     redirectTo?:string;
 }
 
+// Redirects users if they are accessing a page meant for non-Authenticated Users
 const PublicRoute: React.FC<PublicRouteProp> = ({children, redirectTo = '/home'}) => {
     const {isAuthenticated, loading} = useAuth()
     if (loading){

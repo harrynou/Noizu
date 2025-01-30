@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 export const generateToken = (payload: object): string => {
     return jwt.sign(payload, process.env.JWT_SECRET!, {
-        expiresIn: process.env.JWT_EXPIRATION || '1h', // Default to 1 hour if not specified
+        expiresIn: process.env.JWT_EXPIRATION || '1h',
     });
 };
 

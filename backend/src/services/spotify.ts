@@ -59,17 +59,3 @@ export const spotifyQuery = async (query:string, accessToken: string):Promise<an
         throw error
     }
 }
-
-export const spotifyFullResults = async (href: string, accessToken: string): Promise<any> => {
-    try {
-        const response = await axios.get(href, {
-            headers: {
-                Authorization: 'Bearer ' + accessToken,
-            }
-        })
-        console.log(response.data.tracks.items)
-        return response.data
-    } catch (error) {
-        throw error
-    }
-}

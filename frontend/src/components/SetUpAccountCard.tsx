@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { changePassword } from "../services/api";
+import { changePassword } from "../services/api.ts";
 import { useNavigate } from "react-router-dom";
-import {useAuth} from '../contexts/authContext.tsx';
+import { useAuth } from '../contexts/authContext.tsx';
 
 
 interface errors{
     password?:string,
     confirmPassword?:string}
 
-const SetUpPasswordCard:React.FC = (): JSX.Element => {
+const SetUpAccountCard:React.FC = (): JSX.Element => {
     const [password, setPassword]  = useState<string>('')
     const [confirmPassword, setConfirmPassword]  = useState<string>('')
     const [errors,setErrors] = useState<errors>({});
@@ -83,4 +83,4 @@ const SetUpPasswordCard:React.FC = (): JSX.Element => {
 }
 
 
-export default SetUpPasswordCard;
+export default SetUpAccountCard;

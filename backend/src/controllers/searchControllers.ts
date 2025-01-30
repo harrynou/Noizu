@@ -1,8 +1,9 @@
 import {Request, Response, NextFunction} from 'express'
 import { soundcloudQuery } from '../services/soundcloud'
-import { spotifyFullResults, spotifyQuery } from '../services/spotify';
+import { spotifyQuery } from '../services/spotify';
 import { getOldOrNewClientCredentials } from '../models/tokenModels';
 import { verifyToken } from '../utils/jwt';
+import { normalizeSearchData } from '../services/normalizeData';
 
 
 
@@ -17,8 +18,7 @@ export const searchQuery = async (req:Request, res: Response, next: NextFunction
         }
         const spotifyAccessToken = await getOldOrNewClientCredentials('spotify');
         const spotifyData = await spotifyQuery(query, spotifyAccessToken);
-        const href = spotifyData.tracks.href
-        const spotifyTracks = spotifyFullResults(href, spotifyAccessToken)
+        const normalizedData = await normalizeSearchData('spotify', spotifyData);
         /* TODO: Implement soundcloud logic
 
         const [spotifyAccessToken, soundcloudAccessToken] = await Promise.all([
@@ -29,7 +29,7 @@ export const searchQuery = async (req:Request, res: Response, next: NextFunction
             spotifyQuery(query, spotifyAccessToken),
             soundcloudQuery(query, soundcloudAccessToken) 
         ])*/
-        return res.status(200).json({ spotifyTracks });
+        return res.status(200).json({ normalizedData });
         //console.log(spotifyData)
         // console.log(soundcloudData)
     } catch (error) {

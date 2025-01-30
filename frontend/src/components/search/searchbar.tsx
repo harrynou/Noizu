@@ -19,16 +19,12 @@ const SearchBar: React.FC = (): JSX.Element => {
         }
 
     }
-    
-
-
     return (
-        <form onSubmit={handleSubmit} className=" flex px-2 py-2 gap-2 border border-primary rounded-full text-lg">
+        <form onSubmit={handleSubmit} className=" flex px-2 py-2 gap-2 sm:w-1/2 md:w-4/6 lg:w-1/2 border border-primary rounded-full text-lg">
             <label htmlFor="query" className="sr-only">Search for a song</label>
             <img src={magnifyingGlass} alt="SVG Icon" width="24" height="24" />
-            <input name="query" type='search' className="outline-none" placeholder="Search for a song" onChange={(e) => {setQuery(e.target.value)}}/>
+            <input name="query" type='search' className="flex-1 outline-none" placeholder="Search for a song" onChange={(e) => {setQuery(e.target.value)}}/>
         </form>
     )   
 }
-
 export default SearchBar;

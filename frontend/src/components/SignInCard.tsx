@@ -3,9 +3,9 @@ import {useNavigate } from 'react-router-dom';
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
 import spotifyAuth from "../services/spotifyAuth"
-import SoundCloudAuth from "../services/soundcloudAuth"
 import { signInUser } from "../services/api"
 import { useAuth } from "../contexts/authContext";
+import soundcloudAuth from "../services/soundcloudAuth";
 
 
 
@@ -66,9 +66,15 @@ const SignInCard: React.FC = (): JSX.Element => {
         }
     }
 
-    const handleSpotifyAuth = async () => {
+    const handleAuth = async (provider: string) => {
+        let userData:any;
+        let userHasPassword:boolean;
         try {
-            const { userData, userHasPassword } = await spotifyAuth();
+            if (provider === 'spotify'){
+                ({ userData, userHasPassword } = await spotifyAuth());
+            } else {
+                ({ userData, userHasPassword } = await soundcloudAuth());
+            }
             login(userData,userHasPassword); // Update context with user data
             if (!userHasPassword) {
                 navigate("/setup-password");
@@ -111,11 +117,11 @@ const SignInCard: React.FC = (): JSX.Element => {
                     <hr className="w-1/5"></hr>
                 </div>
                 <div className="flex justify-center items-center w-full gap-5">
-                    <button  onClick={handleSpotifyAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
+                    <button aria-label="Authenticate with Spotify" onClick={() => handleAuth('spotify')} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SpotifyLogo} alt="Spotify Logo" className="w-6 h-6" />
                         <span className="text-sm">Spotify</span>
                     </button>
-                    <button onClick={SoundCloudAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
+                    <button aria-label="Authenticate with Soundcloud" onClick={() => handleAuth('soundcloud')} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SoundCloudLogo} alt="SoundCloud Logo" className="w-6 h-6"/>
                         <span className="text-sm">SoundCloud</span>
                     </button>

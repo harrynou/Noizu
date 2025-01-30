@@ -12,6 +12,7 @@ router.get('/spotify/callback', passport.authenticate('spotify', { session: fals
 router.get('/soundcloud', authController.soundcloudRedirect)
 router.get('/soundcloud/callback', authController.soundcloudAuth)
 router.post('/signIn', validateRequest(userCredentialsDto, 'body'), authController.signInUser)
+router.post('/setupAccount', validateRequest(userCredentialsDto, 'body'), authController.setupAccount)
 router.post('/changePassword', validateRequest(userPasswordChangeDto, 'params'), authController.changePassword)
 router.post('/logout', authController.logout)
 export default router;

@@ -12,9 +12,7 @@ const SearchBar: React.FC = (): JSX.Element => {
         }
         try {
             const response = await searchQuery(query)
-            console.log(response)
         } catch (error) {
-            console.log(error)
             console.error("Error occured trying to query.")
         }
 

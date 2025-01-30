@@ -55,7 +55,6 @@ const SignInCard: React.FC = (): JSX.Element => {
             const response = await signInUser(email,password)
             login(response.userData, response.userHasPassword)
         } catch (error: any) {
-            console.log(error)
             if (error.error === "Email does not exist or password may not be set for a Spotify/SoundCloud Account."){
                 setErrors({email: error.error})
             } else if (error.error === "Incorrect password."){

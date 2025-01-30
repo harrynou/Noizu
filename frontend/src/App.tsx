@@ -21,7 +21,7 @@ const AppRoutes = () => {
   useEffect(() => {
     if (!loading) {
         if (isAuthenticated && !hasPassword) {
-            navigate('/setup-password');
+            navigate('/setup-account');
         }
     }
   }, [isAuthenticated, hasPassword, loading, navigate]);
@@ -35,7 +35,7 @@ const AppRoutes = () => {
       <Route path='/about-me' element={<AboutMePage/>}></Route>
       <Route path='/favorites' element={<ProtectedRoute><FavoritesPage/></ProtectedRoute>}></Route>
       <Route path='/playlists' element={<ProtectedRoute><PlaylistsPage/></ProtectedRoute>}></Route>
-      <Route path='/setup-password' element={<NoPasswordRoute><SetUpAccount/></NoPasswordRoute>}></Route>
+      <Route path='/setup-account' element={<NoPasswordRoute><SetUpAccount/></NoPasswordRoute>}></Route>
       <Route path='/account-settings' element={<AccountSettingsPage/>}></Route>
     </Routes>
   )

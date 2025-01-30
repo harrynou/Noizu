@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express';
-import {insertUser, isProviderConnected, registerByProvider, getUserPassword, getUserId, updatePassword} from '../models/authModels'
+import {insertUser, isProviderConnected, registerByProvider, getUserPassword, getUserId, updatePassword, updateEmailandPassword} from '../models/authModels'
 import {hashString, compareHash, generateCodeVerifier, generateCodeChallenge} from '../utils/encryption'
 import { verifyToken, generateToken } from '../utils/jwt';
 import crypto from 'crypto'
@@ -123,14 +123,27 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
+export const setupAccount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {email,password} = req.body;
+        const token = req.cookies.authToken;
+        const userId = verifyToken(token).userId;
+        const hashed_password = await hashString(password);
+        await updateEmailandPassword(userId,email,hashed_password);
+        res.status(200).json({msg:'Account Successfully Updated.'});
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const password = req.body.password;
-        const token = req.cookies.authToken
+        const token = req.cookies.authToken;
         const userId = verifyToken(token).userId;
         const hashed_password = await hashString(password);
-        await updatePassword(hashed_password,userId);
-        res.status(200).json({msg:'Password Change Successful.'})
+        await updatePassword(userId, hashed_password);
+        res.status(200).json({msg:'Password Change Successful.'});
     } catch (error) {
         next(error)
     }

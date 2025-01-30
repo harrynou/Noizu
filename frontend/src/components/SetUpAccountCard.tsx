@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { changePassword } from "../services/api.ts";
+import { setUpAccount } from "../services/api.ts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/authContext.tsx';
 
 
 interface errors{
+    email?:string,
     password?:string,
     confirmPassword?:string}
 
 const SetUpAccountCard:React.FC = (): JSX.Element => {
-    const [password, setPassword]  = useState<string>('')
-    const [confirmPassword, setConfirmPassword]  = useState<string>('')
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword]  = useState<string>('');
     const [errors,setErrors] = useState<errors>({});
     const navigate = useNavigate();
     const {Password} = useAuth();
@@ -19,7 +21,14 @@ const SetUpAccountCard:React.FC = (): JSX.Element => {
 
     const validateForm = () => {
         const newErrors: errors = {};
+        const emailRegex: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,32}$/;
+
+        if (!email){
+            newErrors.email = "An email is required.";
+        } else if (!emailRegex.test(email)){
+            newErrors.email = "Invalid email address.";
+        }
 
         if (!password){
             newErrors.password = "A password is required."
@@ -40,11 +49,15 @@ const SetUpAccountCard:React.FC = (): JSX.Element => {
             return;
         }
         try {
-            await changePassword(password);
+            await setUpAccount(email, password);
             Password()
             navigate('/home');
-        }catch (error) {
+        }catch (error:any) {
+            if (error.error === "Email Already in Use."){
+                setErrors({email:'Email is already in use.'})
+            } else {
             console.error("Error during password setup:", error);
+            }
         }
     }
 
@@ -54,8 +67,15 @@ const SetUpAccountCard:React.FC = (): JSX.Element => {
             <div className="bg-neutral flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
                 <form onSubmit={handleSubmit} autoComplete="off">
                     <div className="flex flex-col gap-6">
-                        <span className="text-lg">You must setup a password before moving forward.</span>
-
+                        <span className="text-lg">You must setup an email and password for your account before continuing.</span>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="email" className="text-sm">
+                                Email
+                            </label>
+                            <input type='email' onChange={(e) => setEmail(e.target.value)} id="email-input" autoComplete="new-email" className="border border-gray-300 rounded p-1">
+                            </input>
+                            {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
+                        </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="password" className="text-sm">
                                 Password

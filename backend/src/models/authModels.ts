@@ -74,7 +74,16 @@ export const getUserId = async (email:string): Promise<number> => {
     } 
 }
 
-export const updatePassword = async (hashed_password:string, userId: number): Promise<void> => {
+export const updateEmailandPassword = async (userId: number, email:string, hashed_password:string): Promise<void> => {
+    try {
+        await pool.query("UPDATE users SET email = $1, password_hash = $2 WHERE user_id = $3", [email,hashed_password,userId]);
+    } catch (error) {
+        throw error
+    }
+}
+
+
+export const updatePassword = async (userId: number, hashed_password:string): Promise<void> => {
     try {
         await pool.query("UPDATE users SET password_hash = $1 WHERE user_id = $2",[hashed_password,userId])
     } catch (error) {

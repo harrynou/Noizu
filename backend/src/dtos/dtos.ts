@@ -1,5 +1,6 @@
 import { IsEmail, IsString, IsStrongPassword, Length, IsOptional } from "class-validator"
 import { Transform } from 'class-transformer';
+import { Providers } from "../types";
 
 export class userCredentialsDto {
     @Transform(({value}) => value.toLowerCase())
@@ -20,6 +21,9 @@ export class searchQueryDto {
     @Length(1)
     @IsString()
     query:string;
+
+    @IsString()
+    provider: string
 }
 
 

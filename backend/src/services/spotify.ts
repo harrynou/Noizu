@@ -53,7 +53,7 @@ export const spotifyQuery = async (query:string, accessToken: string):Promise<an
                 Authorization: 'Bearer ' + accessToken,
 
             },
-            params: {q:query, type:'track', market:'US'}})
+            params: {q:query, limit: 10, type:'track', market:'US'}})
         return response.data
     } catch (error) {
         throw error

@@ -53,9 +53,15 @@ export const connectProvider = async (user_id:number, provider:string, providerU
     }
 }
 
-export const getUserPassword = async (userId:string): Promise<string|null> => { // Password returned is hashed
+export const getUserPassword = async (userKey:string | number): Promise<string|null> => { // Password returned is hashed
     try {
-        const results = await pool.query("SELECT password_hash FROM users WHERE user_id = $1", [userId])
+        let column: string;
+        if (typeof userKey === 'string' ) {
+            column = 'email';
+        } else {
+            column = 'user_id';
+        }
+        const results = await pool.query(`SELECT password_hash FROM users WHERE ${column} = $1`, [userKey])
         if (results && results.rowCount && results.rowCount > 0) {
             return results.rows[0].password_hash; // Return the hashed password
         }

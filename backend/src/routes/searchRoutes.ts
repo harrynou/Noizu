@@ -5,7 +5,7 @@ import { searchQueryDto } from '../dtos/dtos'
 
 const router = Router()
 
-router.get('/:query', validateRequest(searchQueryDto, 'params'), searchController.searchQuery)
+router.get('/:query/:provider', validateRequest(searchQueryDto, 'params'), searchController.searchQuery)
 
 
 

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { Provider } from "react";
 
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -75,9 +76,9 @@ export const logoutUser = async (): Promise<void> => {
 
 
 // APIs dealing with Spotify 
-export const searchQuery = async (query:string): Promise<any> => {
+export const searchQuery = async (query:string, provider: string): Promise<any> => {
     try {
-        const response = await axiosInstance.get(`/api/search/${query}`);
+        const response = await axiosInstance.get(`/api/search/${query}/${provider}`);
         return response.data;
     } catch (error) {
         throw error

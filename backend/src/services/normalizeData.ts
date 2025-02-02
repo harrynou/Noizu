@@ -1,4 +1,3 @@
-type Providers = 'spotify' | 'soundcloud'
 
 interface SearchItem {
     id: string;
@@ -15,23 +14,37 @@ interface Track extends SearchItem {
 
 
 
-export const normalizeSearchData = async (provider:Providers, searchData: any): Promise<SearchItem[]> => {
+export const normalizeSearchData = async (provider:string, searchData: any): Promise<SearchItem[]> => {
     if (provider === 'spotify'){
         const metadata = searchData.tracks;
         const tracks = metadata.items;
         return tracks.map((track:any) => ({
             id: track.id,
-            name: track.name,
+            title: track.name,
+            artistInfo: track.artists.map((artist:any) => { 
+                return {
+                name: artist.name,
+                profileUrl: artist.external_urls.spotify, 
+                id: artist.id,
+                }
+            }),
             imageUrl: track.album.images[0].url,
+            trackUrl: track.external_urls.spotify,
             albumType: track.album.album_type,
             duration: track.duration_ms
         })
     )} else { // provider is soundcloud
         const tracks = searchData;
         return tracks.map((track:any) => ({
-            id: tracks.id,
-            name: track.title,
-            imageUrl: track.artwork_url,
+            id: track.id,
+            title: track.title,
+            artistInfo: [{
+                name: track.user.username,
+                id: track.user.id,
+                profileUrl: track.user.permalink_url
+            }],
+            imageUrl: track.artwork_url || track.user.avatar_url,
+            trackUrl: track.permalink_url,
             albumType: null,
             duration: track.duration
         }))

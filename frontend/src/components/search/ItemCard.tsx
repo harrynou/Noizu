@@ -1,15 +1,45 @@
+import React from 'react';
 import externalLink from '../../assets/external-link.svg'
 import FullSpotifyLogoGreen from '../../assets/spotify/Full-Logo-Green.svg'
 import FullSoundcloudLogo from '../../assets/soundcloud/Full-Logo.svg'
+import { useMusicPlayer } from '../../contexts/musicPlayerContext';
+
+interface Track {
+    id: string;
+    uri: string; 
+    title: string;
+    artist: string;
+    imageUrl?: string;
+    provider: string;
+}
+
 interface ItemCardProps {
     item: any,
     provider: string,
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
+    const { addToQueue } = useMusicPlayer();
     const artistNames = item.artistInfo.map((artist:any) => artist.name).join(', ');
+    const handleAddToQueue = () => {
+        const track:Track = {
+            id: item.id,
+            title: item.title,
+            artist: artistNames,
+            imageUrl: item.imageUrl,
+            provider: provider,
+            uri: item.uri || item.trackUrl, 
+        };
+        addToQueue(track);
+    };
+
+
+
+
+
     return (
     <div className="flex text-base justify-between bg-primary text-neutral p-2">
+        {/* left side */}
         <div className='flex items-center gap-4'>
             <div>
                 <img src={item.imageUrl} className="w-16 h-16 object-cover rounded-sm"/>
@@ -19,6 +49,7 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
                 <a href={item.artistInfo[0].profileUrl} target="_blank" rel="noopener noreferrer" className="inline-block whitespace-nowrap text-xs hover:underline hover:text-accent">{artistNames}</a>
             </div>
         </div>
+        {/* Right Side */}
         <div>
             <div className='flex items-start'>
                 <div className='flex gap-2'>
@@ -30,7 +61,9 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
             </div>
             <div>
                 <div>
-                    <a></a>    
+                <button onClick={handleAddToQueue} className="px-2 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Add to Queue
+                </button>
                 </div>
             </div>
         </div>

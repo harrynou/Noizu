@@ -6,6 +6,7 @@ import passport from 'passport'
 
 const router = Router()
 router.get('/checkAuth', authController.checkAuth)
+router.post('/token', authController.token)
 router.post("/registerUser", validateRequest(userCredentialsDto, 'body'), authController.registerUser)
 router.get('/spotify', passport.authenticate('spotify', { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login`}));
 router.get('/spotify/callback', passport.authenticate('spotify', { session: false }), authController.spotifyAuth)

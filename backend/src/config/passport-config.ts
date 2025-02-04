@@ -9,7 +9,7 @@ export const passportConfig = ():void => {
           clientID: process.env.SPOTIFY_CLIENT_ID || '',
           clientSecret: process.env.SPOTIFY_CLIENT_SECRET || '',
           callbackURL: process.env.SPOTIFY_REDIRECT_URI || '',
-          scope: ["user-read-private", "user-read-email"]
+          scope: ["user-read-private", "user-read-email", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing", "streaming"]
         },
       async (accessToken: string, refreshToken: string, expires_in: number, profile: Profile, done: VerifyCallback) => {
         try {

@@ -19,6 +19,14 @@ CREATE TABLE linked_accounts (
     UNIQUE (provider, provider_user_id)
 );
 
+CREATE TABLE favorites (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) on DELETE CASCADE NOT NULL,
+    provider VARCHAR(50) NOT NULL,
+    item_id VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 ALTER TABLE users
     ADD CONSTRAINT fk_spotify_account
     FOREIGN KEY (spotify_account_id)

@@ -20,7 +20,6 @@ const SignInCard: React.FC = (): JSX.Element => {
     const [password, setPassword] = useState<string>("");
     const [errors, setErrors] = useState<errors>({});
     const navigate = useNavigate();
-    const {login} = useAuth()
 
     {/* 
         TODO:
@@ -53,7 +52,6 @@ const SignInCard: React.FC = (): JSX.Element => {
         }
         try {
             const response = await signInUser(email,password)
-            login(response.userData, response.userHasPassword)
         } catch (error: any) {
             if (error.error === "Email does not exist or password may not be set for a Spotify/SoundCloud Account."){
                 setErrors({email: error.error})
@@ -66,19 +64,11 @@ const SignInCard: React.FC = (): JSX.Element => {
     }
 
     const handleAuth = async (provider: string) => {
-        let userData:any;
-        let userHasPassword:boolean;
         try {
             if (provider === 'spotify'){
-                ({ userData, userHasPassword } = await spotifyAuth());
+            await spotifyAuth();
             } else {
-                ({ userData, userHasPassword } = await soundcloudAuth());
-            }
-            login(userData,userHasPassword); // Update context with user data
-            if (!userHasPassword) {
-                navigate("/setup-password");
-            } else {
-                navigate("/home");
+            await soundcloudAuth();
             }
         } catch (error: any) {
             console.error("Error during Spotify authentication:", error);

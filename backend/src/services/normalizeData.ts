@@ -5,11 +5,6 @@ interface SearchItem {
     imageUrl: string | null;  
 }
 
-interface Track extends SearchItem {
-    albumType: string | null,
-    duration: number,
-}
-
 
 
 
@@ -30,8 +25,10 @@ export const normalizeSearchData = async (provider:string, searchData: any): Pro
             }),
             imageUrl: track.album.images[0].url,
             trackUrl: track.external_urls.spotify,
+            previewUrl: track.preview_url,
             albumType: track.album.album_type,
-            duration: track.duration_ms
+            duration: track.duration_ms,
+            uri: track.uri
         })
     )} else { // provider is soundcloud
         const tracks = searchData;
@@ -45,8 +42,10 @@ export const normalizeSearchData = async (provider:string, searchData: any): Pro
             }],
             imageUrl: track.artwork_url || track.user.avatar_url,
             trackUrl: track.permalink_url,
+            previewUrl: track.stream_url,
             albumType: null,
-            duration: track.duration
+            duration: track.duration,
+            uri: track.uri
         }))
     }
 }

@@ -14,6 +14,9 @@ import SetUpAccount from './pages/set-up-account.tsx';
 import NoPasswordRoute from './components/wrappers/NoPasswordRoute.tsx';
 import AccountSettingsPage from './pages/account-settings.tsx';
 import ProtectedRoute from './components/wrappers/ProtectedRoute.tsx';
+import { MusicPlayerProvider } from './contexts/musicPlayerContext.tsx';
+import PlaybackControls from './components/playback/PlaybackControls.tsx';
+import QueueManager from './components/playback/QueueManager.tsx';
 
 const AppRoutes = () => {
   const { isAuthenticated, hasPassword, loading } = useAuth();
@@ -47,9 +50,13 @@ const App: React.FC = (): JSX.Element => {
     <Router>
       <div className='flex flex-col h-screen'>
         <AuthContextWrapper>
-          <Navbar/>
-          <AppRoutes/>
-          </AuthContextWrapper>
+          <MusicPlayerProvider>
+            <Navbar/>
+            <PlaybackControls/>
+            <QueueManager/>
+            <AppRoutes/>
+          </MusicPlayerProvider>
+        </AuthContextWrapper>
       </div>
     </Router>
   )

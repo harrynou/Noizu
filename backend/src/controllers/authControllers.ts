@@ -5,6 +5,7 @@ import { verifyToken, generateToken } from '../utils/jwt';
 import crypto from 'crypto'
 import { getToken, setToken } from '../utils/redis';
 import { AuthSoundcloudToken, getSoundcloudUserInfo } from '../services/soundcloud';
+import { getAccessToken } from '../models/tokenModels';
 
 export const checkAuth = async (req:Request, res:Response, next:NextFunction) => {
     try {
@@ -17,6 +18,21 @@ export const checkAuth = async (req:Request, res:Response, next:NextFunction) =>
         return res.status(200).json({ isAuthenticated: true, userHasPassword, userData: { userId: user.userId}});
     } catch (error) {
         return res.status(401).json({ isAuthenticated: false, userHasPassword: false});
+    }
+}
+
+export const token = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const authToken = req.cookies.authToken
+        if (!authToken) {
+            return res.status(401).json({ isAuthenticated: false, userHasPassword: false });
+        }
+        const user = verifyToken(authToken);
+        const {provider} = req.body
+        const token =  await getAccessToken(user.userId,provider);
+        return res.status(200).json({token})
+    } catch (error) {
+        
     }
 }
 
@@ -148,6 +164,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
         next(error)
     }
 }
+
 
 
 

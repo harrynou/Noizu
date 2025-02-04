@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^17.0.0",
     "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.7.9",
     "react": "^18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1"
@@ -20,7 +22,9 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/react": "^18.3.18",
+    "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^18.3.5",
+    "@types/spotify-web-playback-sdk": "^0.1.19",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
     "connect-history-api-fallback": "^2.0.0",

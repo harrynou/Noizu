@@ -14,7 +14,7 @@
     "strictPropertyInitialization": false,
 
   },
-  "include": ["src"], // Include all .ts files in the src folder
+  "include": ["src", "../frontend/src/global.d.ts"], // Include all .ts files in the src folder
   "exclude": ["node_modules", "dist"] // Exclude these folders from the compiler
   }
   

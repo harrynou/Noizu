@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express';
-import {insertUser, isProviderConnected, registerByProvider, getUserPassword, getUserId, updatePassword, updateEmailandPassword} from '../models/authModels'
+import {insertUser, isProviderConnected, registerByProvider, getUserPassword, getUserId, updatePassword, updateEmailandPassword, hasSpotifyPremium} from '../models/authModels'
 import {hashString, compareHash, generateCodeVerifier, generateCodeChallenge} from '../utils/encryption'
 import { verifyToken, generateToken } from '../utils/jwt';
 import crypto from 'crypto'
@@ -11,13 +11,14 @@ export const checkAuth = async (req:Request, res:Response, next:NextFunction) =>
     try {
         const authToken = req.cookies.authToken
         if (!authToken) {
-            return res.status(401).json({ isAuthenticated: false, userHasPassword: false });
+            return res.status(401).json({ isAuthenticated: false, userHasPassword: false, userHasSpotifyPremium:false});
         }
         const user = verifyToken(authToken); // Decode and verify the JWT
         const userHasPassword = (await getUserPassword(user.userId) !== null)
-        return res.status(200).json({ isAuthenticated: true, userHasPassword, userData: { userId: user.userId}});
+        const userHasSpotifyPremium = (await hasSpotifyPremium(user.userId));
+        return res.status(200).json({ isAuthenticated: true, userHasPassword, userHasSpotifyPremium, userData: { userId: user.userId}});
     } catch (error) {
-        return res.status(401).json({ isAuthenticated: false, userHasPassword: false});
+        return res.status(401).json({ isAuthenticated: false, userHasSpotifyPremium:false, userHasPassword: false});
     }
 }
 
@@ -52,12 +53,13 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 export const spotifyAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user: any = req.user;
-        const provider = user.provider
-        const providerUserId = user.id
-        const {accessToken,refreshToken} = (req.authInfo as any)
-        let userId = await isProviderConnected(provider, providerUserId)
+        const provider = user.provider;
+        const providerUserId = user.id;
+        const premium = (user.product === 'premium');
+        const {accessToken,refreshToken} = (req.authInfo as any);
+        let userId = await isProviderConnected(provider, providerUserId, premium);
         if (userId === null) { // Create an account if account does not exist
-            userId = await registerByProvider(provider, providerUserId, refreshToken, accessToken);
+            userId = await registerByProvider(provider, providerUserId, refreshToken, accessToken, premium);
         } 
         const token = generateToken({userId})
         res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});
@@ -94,9 +96,10 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
         const userInfo = await getSoundcloudUserInfo(access_token);
         const provider = 'soundcloud'
         const providerUserId = userInfo.id
-        let userId = await isProviderConnected(provider, providerUserId)
+        console.log(access_token)
+        let userId = await isProviderConnected(provider, providerUserId, false)
         if (userId === null) { // Create an account if account does not exist
-            userId = await registerByProvider(provider, providerUserId, refresh_token, access_token);
+            userId = await registerByProvider(provider, providerUserId, refresh_token, access_token, false); // Defaults as false premium acct, may change later
         } 
         const token = generateToken({userId})
         res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});

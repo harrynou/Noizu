@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { getAccessToken, transferSpotifyPlayback, startSpotifyPlayback} from '../services/api';
-
+import {startSpotifyPlayback} from '../services/api';
+import { useAuth } from './authContext';
 interface Track {
     id: string;
     uri: string; 
     title: string;
-    artist: string;
+    artists: any;
     imageUrl?: string;
     provider: string;
 }
@@ -24,12 +24,8 @@ interface MusicPlayerContextProps {
     togglePlayPause: () => void;
 }
 
-interface TransferPlaybackOptions {
-    token: string | null;
-    device_id: string;
-}
 interface startPlaybackOptions {
-    token: string | null;
+    token: string,
     device_id: string;
     uris: string[];
 }
@@ -50,9 +46,11 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const spotifyPlayerRef = useRef<Spotify.Player | null>(null);
-    const soundCloudPlayerRef = useRef<any | null>(null);
-    const [token, setToken] = useState<string | null>(null);
+    const soundCloudPlayerRef = useRef<SoundCloudWidget | null>(null);
     const [deviceId, setDeviceId] = useState<string>('');
+    const {getSpotifyToken} = useAuth()
+    const [currentProgress, setCurrentProgress] = useState<number>(0);
+    const [duration, setDuration] = useState<number>(0);
 
 
     useEffect(() => {
@@ -60,6 +58,12 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         loadSpotifySDK();
         loadSoundCloudSDK();
     }, []);
+
+    useEffect(() => {
+        if (currentTrackIndex !== null) {
+            playCurrentTrack(currentTrackIndex);
+        }
+    }, [currentTrackIndex]);
 
     const loadSpotifySDK = () => {
         if (document.getElementById('spotify-web-sdk-script')) {
@@ -80,20 +84,13 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         document.body.appendChild(script);
     };
 
-    let spotifyPlayerInitialized = false;
     const initializeSpotifyPlayer = async () => {    
-        if (spotifyPlayerInitialized) {
-            console.log('Spotify player already initialized');
-            return;
-        }
-        spotifyPlayerInitialized = true;
         const spotifyPlayer = new Spotify.Player({
             name: 'My Music App',
             getOAuthToken: async (cb) => {
                 try {
-                    const newToken = await getAccessToken('spotify');
-                    setToken(newToken);
-                    cb(newToken);
+                    const token = await getSpotifyToken()
+                    cb(token);
                 } catch (error) {
                     console.error("Error fetching access token:", error);
                 }
@@ -115,6 +112,9 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                     console.error('User is not playing music through the Web Playback SDK');
                     return;
                 }
+                const { position, duration } = state;
+                setCurrentProgress(position);
+                setDuration(duration);
                 setIsPlaying(!state.paused);
                 if (state.paused && state.position === 0) {
                     playNextTrack();
@@ -134,31 +134,62 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     
 
     const loadSoundCloudSDK = () => {
-        const script = document.createElement('script');
-        script.src = 'https://w.soundcloud.com/player/api.js';
-        script.async = true;
+        if (!document.getElementById('soundcloud-widget-script')) {
+            const script = document.createElement('script');
+            script.id = 'soundcloud-widget-script';
+            script.src = 'https://w.soundcloud.com/player/api.js';
+            script.async = true;
+    
+            // Ensure initialization happens only after the script loads
+            script.onload = () => {
+                console.log('SoundCloud Widget script loaded');
+                initializeSoundcloudWidget();
+            };
+    
+            document.body.appendChild(script);
+        }
+    };
 
-        script.onload = () => {
-            const iframe = document.createElement('iframe');
-            iframe.src = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/977120290&auto_play=false';
+    const initializeSoundcloudWidget = () => {
+        let iframe = document.getElementById('soundcloud-player') as HTMLIFrameElement;
+        if (!iframe) {
+            iframe = document.createElement('iframe');
+            iframe.id = 'soundcloud-player';
+            iframe.allow = 'autoplay';
             iframe.style.display = 'none';
+            iframe.src = 'https://w.soundcloud.com/player/?url=';
+    
             document.body.appendChild(iframe);
-
-            const soundCloudPlayer = window.SC.Widget(iframe);
-            soundCloudPlayer.bind(window.SC.Events.READY, () => {
-                console.log('SoundCloud Player is ready');
-            });
-            soundCloudPlayerRef.current = soundCloudPlayer;
         };
 
-        document.body.appendChild(script);
+            const widget = window.SC.Widget(iframe);
+            widget.bind('ready', () => {
+            console.log('SoundCloud Player is ready');
+        });
+    
+        widget.bind("play", () => {
+            console.log('SoundCloud track started playing');
+        });
+    
+        widget.bind('pause', () => {
+            console.log('SoundCloud track paused');
+        });
+
+        widget.bind('playProgress', (progress:any) => {
+            const position = progress.currentPosition;  // Position in milliseconds
+            const duration = progress.duration;         // Track duration in milliseconds
+            console.log(`Current Position: ${position} ms / Duration: ${duration} ms`);
+        
+            // Update progress in the UI
+            setCurrentProgress(position);
+            setDuration(duration);
+        });
+        soundCloudPlayerRef.current = widget;
     };
 
     const playTrack = (track: Track) => {
         setQueue([track]);  // Replace the queue with the single track
         setCurrentTrackIndex(0);
-
-        playCurrentTrack();
     };
 
     const playCurrentTrack = async (index: number | null = currentTrackIndex, currentQueue: Track[] = queue) => {
@@ -166,11 +197,12 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             console.warn('Invalid current track index');
             return;
         }
-    
         const currentTrack = currentQueue[index];
         if (currentTrack.provider === 'spotify' && spotifyPlayerRef.current) {
             await spotifyPlayerRef.current.activateElement();
-            await startSpotifyPlayback({token, device_id:deviceId, uris:[currentTrack.uri]});
+            const token = await getSpotifyToken()
+            let options: startPlaybackOptions = {token, device_id:deviceId, uris:[currentTrack.uri]}
+            await startSpotifyPlayback(options);
         } else if (currentTrack.provider === 'soundcloud' && soundCloudPlayerRef.current) {
             soundCloudPlayerRef.current.load(currentTrack.uri, { auto_play: true });
         }
@@ -180,14 +212,12 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const playNextTrack = () => {
         if (currentTrackIndex !== null && currentTrackIndex < queue.length - 1) {
             setCurrentTrackIndex(currentTrackIndex + 1);
-            playCurrentTrack();
         }
     };
 
     const playPreviousTrack = () => {
         if (currentTrackIndex !== null && currentTrackIndex > 0) {
             setCurrentTrackIndex(currentTrackIndex - 1);
-            playCurrentTrack();
         }
     };
     
@@ -206,7 +236,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 spotifyPlayerRef.current.resume();
             }
         } else if (currentTrack.provider === 'soundcloud' && soundCloudPlayerRef.current) {
-            soundCloudPlayerRef.current.toggle();  // Use SoundCloud's toggle method
+            soundCloudPlayerRef.current.toggle(); 
         }
     
         setIsPlaying(!isPlaying);
@@ -219,7 +249,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             // Start playback if no track is currently playing
             if (currentTrackIndex === null) {
                 setCurrentTrackIndex(0);
-                playCurrentTrack(0, updatedQueue);  // Pass the updated state to playCurrentTrack
             }
     
             return updatedQueue;
@@ -261,7 +290,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const selectTrackToPlay = (trackIndex: number) => {
         if (trackIndex >= 0 && trackIndex < queue.length) {
             setCurrentTrackIndex(trackIndex);
-            playCurrentTrack();
         }
     };
 

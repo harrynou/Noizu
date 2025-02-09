@@ -85,11 +85,10 @@ export const getSoundcloudUserInfo = async (accessToken: string): Promise<any>=>
 
 export const soundcloudQuery = async (query:string, accessToken:string):Promise<any> => {
     try {
-        const response = await axios.get('https://api.soundcloud.com/tracks?', {
-        params: {q:query, limit:10},
+        const response = await axios.get('https://api-v2.soundcloud.com/search/tracks?', {
+        params: {q:query, limit:10, client_id: `${process.env.SOUNDCLOUD_CLIENT_ID_V2}`},
         headers: {
             "accept": "application/json; charset=utf-8",
-            "Authorization": `OAuth ${accessToken}`
         }})
         return response.data
     } catch (error) {

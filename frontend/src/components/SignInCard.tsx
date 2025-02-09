@@ -1,10 +1,8 @@
 import React, { useState } from "react" 
-import {useNavigate } from 'react-router-dom';
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
 import spotifyAuth from "../services/spotifyAuth"
 import { signInUser } from "../services/api"
-import { useAuth } from "../contexts/authContext";
 import soundcloudAuth from "../services/soundcloudAuth";
 
 
@@ -19,7 +17,6 @@ const SignInCard: React.FC = (): JSX.Element => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [errors, setErrors] = useState<errors>({});
-    const navigate = useNavigate();
 
     {/* 
         TODO:
@@ -51,7 +48,7 @@ const SignInCard: React.FC = (): JSX.Element => {
             return;
         }
         try {
-            const response = await signInUser(email,password)
+            await signInUser(email,password)
         } catch (error: any) {
             if (error.error === "Email does not exist or password may not be set for a Spotify/SoundCloud Account."){
                 setErrors({email: error.error})

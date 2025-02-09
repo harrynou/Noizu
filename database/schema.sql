@@ -11,6 +11,7 @@ CREATE TABLE users (
 CREATE TABLE linked_accounts (
     account_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE NOT NULL,
+    premium BOOLEAN DEFAULT FALSE,
     provider VARCHAR(50) NOT NULL,
     provider_user_id VARCHAR(50) NOT NULL,
     refresh_token TEXT NOT NULL,

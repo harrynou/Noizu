@@ -10,6 +10,7 @@ interface SearchItem {
 
 
 export const normalizeSearchData = async (provider:string, searchData: any): Promise<SearchItem[]> => {
+    try {
     if (provider === 'spotify'){
         const metadata = searchData.tracks;
         const tracks = metadata.items;
@@ -30,8 +31,8 @@ export const normalizeSearchData = async (provider:string, searchData: any): Pro
             duration: track.duration_ms,
             uri: track.uri
         })
-    )} else { // provider is soundcloud
-        const tracks = searchData;
+    )} else if (provider === 'soundcloud'){ // provider is soundcloud
+        const tracks = searchData.collection;
         return tracks.map((track:any) => ({
             id: track.id,
             title: track.title,
@@ -47,5 +48,10 @@ export const normalizeSearchData = async (provider:string, searchData: any): Pro
             duration: track.duration,
             uri: track.uri
         }))
+    } else {
+        throw Error("Unknown Provider");
+    }
+    } catch (error){
+        throw error
     }
 }

@@ -4,23 +4,25 @@ declare global {
     interface Window {
         SC: {
             Widget: (iframeElement: HTMLIFrameElement) => SoundCloudWidget;
-            Events: SoundCloudWidgetEvents;
         };
     }
-}
 
-interface SoundCloudWidget {
-    load: (url: string, options?: { auto_play?: boolean }) => void;
-    bind: (event: SoundCloudEvent, callback: () => void) => void;
-    play: () => void;
-    pause: () => void;
-}
+    interface SoundCloudWidget {
+        Events: SoundCloudWidgetEvents;  // Define Events here
+        load: (url: string, options?: { auto_play?: boolean }) => void;
+        bind: (event: SoundCloudEvent, callback: (data?: any) => void) => void;
+        play: () => void;
+        pause: () => void;
+        toggle: () => void;
+    }
 
-type SoundCloudEvent = 'ready' | 'finish' | 'play' | 'pause';
+    type SoundCloudEvent = 'ready' | 'finish' | 'play' | 'pause' | 'playProgress';
 
-interface SoundCloudWidgetEvents {
-    READY: 'ready';
-    FINISH: 'finish';
-    PLAY: 'play';
-    PAUSE: 'pause';
+    interface SoundCloudWidgetEvents {
+        READY: 'ready';
+        FINISH: 'finish';
+        PLAY: 'play';
+        PAUSE: 'pause';
+        PLAY_PROGRESS: 'playProgress';
+    }
 }

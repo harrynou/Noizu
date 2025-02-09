@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
@@ -116,43 +115,22 @@ export const transferSpotifyPlayback = async ({ token, device_id}: TransferPlayb
             }
         );
     } catch (error: any) {
-        if (error.response?.status === 401) {
-            console.warn('Spotify access token expired. Refreshing token...');
-            try {
-                const newToken = await getAccessToken('spotify');
-                await axios.put(
-                    'https://api.spotify.com/v1/me/player',
-                    requestBody,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${newToken}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-                console.log('Playback successfully started after token refresh.');
-            } catch (retryError) {
-                console.error('Failed to retry playback transfer:', retryError);
-                throw retryError;
-            }
-        } else {
             console.error('Error transferring playback:', error);
             throw error;
         }
-    }
 };
 
 interface startPlaybackOptions {
-    token: string | null;
+    token: string,
     device_id: string;
     uris: string[];
 }
 
 export const startSpotifyPlayback = async ({token, device_id, uris}:startPlaybackOptions): Promise<void> => {
+    const requestBody = {uris, position_ms: 0}
     try {
-        const requestBody = {uris, position_ms: 0}
         await axios.put(
-            `https://api.spotify.com/v1/me/player/play/${device_id}`,
+            `https://api.spotify.com/v1/me/player/play/?device_id=${device_id}`,
             requestBody,
             {
                 headers: {
@@ -161,7 +139,7 @@ export const startSpotifyPlayback = async ({token, device_id, uris}:startPlaybac
                 },
             }
         )
-    } catch (error) {
+    } catch (error:any) {
         console.error('Error in starting playback:', error)
     }
 }

@@ -3,12 +3,13 @@ import externalLink from '../../assets/external-link.svg'
 import FullSpotifyLogoGreen from '../../assets/spotify/Full-Logo-Green.svg'
 import FullSoundcloudLogo from '../../assets/soundcloud/Full-Logo.svg'
 import { useMusicPlayer } from '../../contexts/musicPlayerContext';
+import { useAuth } from '../../contexts/authContext';
 
 interface Track {
     id: string;
     uri: string; 
     title: string;
-    artist: string;
+    artists: any;
     imageUrl?: string;
     provider: string;
 }
@@ -19,13 +20,13 @@ interface ItemCardProps {
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
+    const { hasSpotifyPremium } = useAuth();
     const { addToQueue } = useMusicPlayer();
-    const artistNames = item.artistInfo.map((artist:any) => artist.name).join(', ');
     const handleAddToQueue = () => {
         const track:Track = {
             id: item.id,
             title: item.title,
-            artist: artistNames,
+            artists: item.artistInfo,
             imageUrl: item.imageUrl,
             provider: provider,
             uri: item.uri || item.trackUrl, 
@@ -46,7 +47,11 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
             </div>
             <div className="flex flex-col items-start">
                 <p>{item.title}</p>
-                <a href={item.artistInfo[0].profileUrl} target="_blank" rel="noopener noreferrer" className="inline-block whitespace-nowrap text-xs hover:underline hover:text-accent">{artistNames}</a>
+                <div className="flex flex-wrap text-xs">
+                {item.artistInfo.map((artist:any) => (
+                    <a key={artist.name} href={artist.profileUrl} target="_blank" rel="noopener noreferrer" className="inline-block whitespace-nowrap hover:underline hover:text-accent">{artist.name}</a> 
+                )).reduce((prev:any, curr:any, index:number) => [prev, <span key={`comma-${index}`}>, </span>, curr])}
+                </div>
             </div>
         </div>
         {/* Right Side */}
@@ -61,9 +66,9 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
             </div>
             <div>
                 <div>
-                <button onClick={handleAddToQueue} className="px-2 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                {(hasSpotifyPremium || provider === 'soundcloud') ? (<button onClick={handleAddToQueue} className="px-2 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
                     Add to Queue
-                </button>
+                </button>) : (<button>Must have a spotify premium account</button>)}
                 </div>
             </div>
         </div>

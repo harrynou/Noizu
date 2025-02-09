@@ -10,7 +10,6 @@ const QueueManager: React.FC = () => {
 
         reorderQueue(result.source.index, result.destination.index);
     };
-
     return (
         <div className="p-4">
             <h2 className="text-lg font-bold">Queue</h2>
@@ -20,7 +19,7 @@ const QueueManager: React.FC = () => {
                     {(provided) => (
                         <ul {...provided.droppableProps} ref={provided.innerRef} className="mt-2 space-y-2">
                             {queue.map((track, index) => (
-                                <Draggable key={track.id} draggableId={track.id} index={index}>
+                                <Draggable key={track.id} draggableId={String(track.id)} index={index}>
                                     {(provided) => (
                                         <li
                                             ref={provided.innerRef}

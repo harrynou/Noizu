@@ -38,7 +38,7 @@ const QueueManager: React.FC = () => {
                                                 />
                                                 <div>
                                                     <p className="font-medium">{track.title}</p>
-                                                    <p className="text-sm text-gray-600">{track.artist}</p>
+                                                    <p className="text-sm text-gray-600">{track.artists}</p>
                                                 </div>
                                             </div>
                                         </li>

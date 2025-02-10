@@ -3,12 +3,16 @@ import { useMusicPlayer } from '../../contexts/musicPlayerContext.tsx';
 import pauseButton from '../../assets/pause-button.svg'
 import playButton from '../../assets/play-button.svg'
 import previousButton from '../../assets/previous-button.svg' 
+import nextButton from '../../assets/next-button.svg'
+import ProgressBar from './ProgressBar.tsx';
 
 const PlaybackControls: React.FC = () => {
-    const { currentTrack, isPlaying, togglePlayPause, playNextTrack, playPreviousTrack } = useMusicPlayer();
+    const { currentTrack, currentPosition, isPlaying, togglePlayPause, playNextTrack, playPreviousTrack } = useMusicPlayer();
+    const duration = currentTrack ? currentTrack.duration : null;
+    
     return (
         
-        <div className="relative flex items-center bg-primary h-16 p-12 my-4 text-neutral">
+        <div className="fixed bottom-0 left-0 right-0 w-full flex items-center bg-primary p-10 text-neutral">
             {/* Left Side Track Info */}
             <div className='absolute left-2'>
             {currentTrack ? (
@@ -32,20 +36,18 @@ const PlaybackControls: React.FC = () => {
             <div className='absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2'>
                 {/* Playback Controls */}
                 <div className="flex items-center gap-5">
-                    <a onClick={playPreviousTrack} className="w-6">
+                    <a onClick={playPreviousTrack} className="w-7 hover:w-8 hover:opacity-75 transition-all duration-200  cursor-pointer">
                         <img src={previousButton} />
                     </a>
                     <a onClick={togglePlayPause} className="">
-                        <img src={isPlaying ? pauseButton : playButton} className='w-8'/>
+                        <img src={isPlaying ? pauseButton : playButton} className='w-9 hover:w-10 hover:opacity-75 transition-all duration-200 cursor-pointer'/>
                     </a>
-                    <a onClick={playNextTrack} className="w-6">
-                        <img src='nextButton' />
+                    <a onClick={playNextTrack} className="w-7 hover:w-8 hover:opacity-75 transition-all duration-200 cursor-pointer">
+                        <img src={nextButton} />
                     </a>
                 </div>
                 {/* Track Progress */}
-                <div>
-                    Track Progress
-                </div>
+                <ProgressBar duration={duration} position={currentPosition}/>
             </div>
             {/* Right Side Options */}
             <div className='absolute right-2'>

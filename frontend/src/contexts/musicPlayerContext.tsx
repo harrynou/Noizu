@@ -8,10 +8,12 @@ interface Track {
     artists: any;
     imageUrl?: string;
     provider: string;
+    duration: number;
 }
 
 interface MusicPlayerContextProps {
     currentTrack: Track | null;
+    currentPosition: number;
     isPlaying: boolean;
     queue: Track[];
     playTrack: (track: Track) => void;
@@ -49,8 +51,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const soundCloudPlayerRef = useRef<SoundCloudWidget | null>(null);
     const [deviceId, setDeviceId] = useState<string>('');
     const {getSpotifyToken} = useAuth()
-    const [currentProgress, setCurrentProgress] = useState<number>(0);
-    const [duration, setDuration] = useState<number>(0);
+    const [currentPosition, setCurrentPosition] = useState<number>(0);
+    const positionIntervalRef = useRef<number | null>(null);
 
 
     useEffect(() => {
@@ -61,9 +63,34 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     useEffect(() => {
         if (currentTrackIndex !== null) {
+            if (queue[currentTrackIndex].provider === 'spotify') {
+                soundCloudPlayerRef.current?.pause();
+            } else if (queue[currentTrackIndex].provider === 'soundcloud'){
+                spotifyPlayerRef.current?.pause();
+            }
             playCurrentTrack(currentTrackIndex);
         }
     }, [currentTrackIndex]);
+
+    useEffect(() => {
+
+        if (isPlaying && currentTrackIndex!==null) {
+            if (queue[currentTrackIndex].provider === 'spotify'){
+                positionIntervalRef.current = setInterval(async () => {
+                    const state = await spotifyPlayerRef.current?.getCurrentState();
+                    if (state) {
+                        setCurrentPosition(state.position);  // Update position
+                    }
+                }, 500);  // Update every second
+            }
+        }
+        return () => {
+            if (positionIntervalRef.current) {
+                clearInterval(positionIntervalRef.current);
+                positionIntervalRef.current = null;
+            }
+        };
+    }, [isPlaying]);
 
     const loadSpotifySDK = () => {
         if (document.getElementById('spotify-web-sdk-script')) {
@@ -109,12 +136,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     
             spotifyPlayer.addListener('player_state_changed', (state) => {
                 if (!state){
-                    console.error('User is not playing music through the Web Playback SDK');
                     return;
                 }
-                const { position, duration } = state;
-                setCurrentProgress(position);
-                setDuration(duration);
                 setIsPlaying(!state.paused);
                 if (state.paused && state.position === 0) {
                     playNextTrack();
@@ -177,12 +200,9 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
         widget.bind('playProgress', (progress:any) => {
             const position = progress.currentPosition;  // Position in milliseconds
-            const duration = progress.duration;         // Track duration in milliseconds
-            console.log(`Current Position: ${position} ms / Duration: ${duration} ms`);
         
             // Update progress in the UI
-            setCurrentProgress(position);
-            setDuration(duration);
+            setCurrentPosition(position);
         });
         soundCloudPlayerRef.current = widget;
     };
@@ -299,6 +319,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 currentTrack: currentTrackIndex !== null ? queue[currentTrackIndex] : null,
                 isPlaying,
                 queue,
+                currentPosition,
                 playTrack,
                 addToQueue,
                 removeFromQueue,

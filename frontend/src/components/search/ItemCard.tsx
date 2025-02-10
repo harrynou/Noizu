@@ -12,6 +12,7 @@ interface Track {
     artists: any;
     imageUrl?: string;
     provider: string;
+    duration: number;
 }
 
 interface ItemCardProps {
@@ -30,6 +31,7 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
             imageUrl: item.imageUrl,
             provider: provider,
             uri: item.uri || item.trackUrl, 
+            duration: item.duration
         };
         addToQueue(track);
     };

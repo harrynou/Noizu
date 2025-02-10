@@ -52,9 +52,9 @@ const App: React.FC = (): JSX.Element => {
         <AuthContextWrapper>
           <MusicPlayerProvider>
             <Navbar/>
-            <PlaybackControls/>
             <QueueManager/>
             <AppRoutes/>
+            <PlaybackControls/>
           </MusicPlayerProvider>
         </AuthContextWrapper>
       </div>

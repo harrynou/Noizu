@@ -41,7 +41,7 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
 
 
     return (
-    <div className="flex text-base justify-between bg-primary text-neutral p-2">
+    <div className="flex text-base justify-between bg-primary text-white p-2">
         {/* left side */}
         <div className='flex items-center gap-4'>
             <div>
@@ -68,7 +68,7 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
             </div>
             <div>
                 <div>
-                {(hasSpotifyPremium || provider === 'soundcloud') ? (<button onClick={handleAddToQueue} className="px-2 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                {(hasSpotifyPremium || provider === 'soundcloud') ? (<button onClick={handleAddToQueue} className="px-2 py-1 text-sm  text-textPrimary rounded hover:bg-secondary hover:text-textSecondary">
                     Add to Queue
                 </button>) : (<button>Must have a spotify premium account</button>)}
                 </div>

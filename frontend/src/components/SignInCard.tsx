@@ -73,12 +73,12 @@ const SignInCard: React.FC = (): JSX.Element => {
     };
 
     return (
-        <div className=" bg-gray-100 flex flex-col flex-grow h-full justify-center items-center">
+        <div className="flex flex-col flex-grow justify-center items-center">
             <div className="flex flex-col justify-center items-center mb-5">
                 <img src="" alt="Place Logo Here" className="w-16 h-16 md:w-20 md:h-20"/>
                 <div className="font-bold text-xl md:text-2xl text-center">Sign In Your Account</div>
             </div>
-            <div className="bg-neutral flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
+            <div className="bg-secondary text-textSecondary flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
                 <form onSubmit={handleSubmit} autoComplete="off">
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col gap-2">
@@ -93,7 +93,7 @@ const SignInCard: React.FC = (): JSX.Element => {
                         </div>
                         
                         <div className="flex justify-center">
-                            <button type="submit" className="border rounded bg-primary text-neutral hover:bg-gray-600 w-full py-2 text-sm">Sign In</button>
+                            <button type="submit" className="border rounded bg-primary text-textPrimary hover:bg-gray-600 w-full py-2 text-sm">Sign In</button>
                         </div>
                     </div>    
                     </form>

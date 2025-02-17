@@ -14,6 +14,8 @@ declare global {
         play: () => void;
         pause: () => void;
         toggle: () => void;
+        seekTo: (milliseconds: number) => void;
+        setVolume: (volume: number) => void;
     }
 
     type SoundCloudEvent = 'ready' | 'finish' | 'play' | 'pause' | 'playProgress';

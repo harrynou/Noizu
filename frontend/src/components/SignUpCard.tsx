@@ -63,8 +63,8 @@ const SignUpCard: React.FC = (): JSX.Element => {
             return;
         }
         try {
-            const {userData, userHasPassword} = await registerUser(email,password)
-            login(userData, userHasPassword)
+            const {userInfo, userHasPassword} = await registerUser(email,password)
+            login(userInfo, userHasPassword)
             navigate('/home');
         } catch (error: any) {
             if (error.error === "Email Already in Use."){
@@ -76,12 +76,12 @@ const SignUpCard: React.FC = (): JSX.Element => {
     }
 
     return (
-        <div className=" bg-gray-100 flex flex-col flex-grow h-full justify-center items-center">
+        <div className="flex flex-col flex-grow justify-center items-center">
             <div className="flex flex-col justify-center items-center mb-5">
                 <img src="" alt="Place Logo Here" className="w-16 h-16 md:w-20 md:h-20"/>
                 <div className="font-bold text-xl md:text-2xl text-center">Sign Up for an Account</div>
             </div>
-            <div className="bg-neutral flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
+            <div className="bg-secondary text-textSecondary flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
                 <form onSubmit={handleSubmit} autoComplete="off">
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col gap-2">
@@ -100,7 +100,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
                             {errors.confirm && <p className="text-red-500 text-xs">{errors.confirm}</p>}
                         </div>
                         <div className="flex justify-center">
-                            <button type="submit" className="border rounded bg-primary text-neutral hover:bg-gray-600 w-full py-2 text-sm">Sign Up</button>
+                            <button type="submit" className="border rounded bg-primary text-textPrimary hover:bg-gray-600 w-full py-2 text-sm">Sign Up</button>
                         </div>
                     </div>    
                     </form>

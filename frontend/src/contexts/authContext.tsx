@@ -2,7 +2,8 @@ import {createContext, useContext, useState, useEffect} from "react";
 import { checkAuth, logoutUser, getAccessToken } from "../services/api";
 
 interface userType {
-    userId:number,
+    volume:number,
+
 }
 
 interface authContextType {
@@ -48,7 +49,7 @@ export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ child
             setIsAuthenticated(data.isAuthenticated);
             setHasPassword(data.userHasPassword);
             setHasSpotifyPremium(data.userHasSpotifyPremium);
-            setUser(data.user);
+            setUser(data.userInfo);
         }catch(error){
             setHasPassword(false);
             setIsAuthenticated(false);

@@ -14,6 +14,8 @@ interface Track {
 interface MusicPlayerContextProps {
     currentTrack: Track | null;
     currentPosition: number;
+    currentProvider: string | null;
+    currentVolume: number | null;
     isPlaying: boolean;
     queue: Track[];
     playTrack: (track: Track) => void;
@@ -24,6 +26,8 @@ interface MusicPlayerContextProps {
     playNextTrack: () => void;
     playPreviousTrack: () => void;
     togglePlayPause: () => void;
+    seek: (position: number) => void;
+    setNewVolume: (volume: number) => void;
 }
 
 interface startPlaybackOptions {
@@ -50,10 +54,10 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const spotifyPlayerRef = useRef<Spotify.Player | null>(null);
     const soundCloudPlayerRef = useRef<SoundCloudWidget | null>(null);
     const [deviceId, setDeviceId] = useState<string>('');
-    const {getSpotifyToken} = useAuth()
+    const {getSpotifyToken, user} = useAuth()
     const [currentPosition, setCurrentPosition] = useState<number>(0);
-    const positionIntervalRef = useRef<number | null>(null);
-
+    const currentProviderRef = useRef<string | null>(null);
+    const [currentVolume, setCurrentVolume] = useState<number | null>(user ? user?.volume : null);
 
     useEffect(() => {
         // Load and initialize both players when the app starts
@@ -61,11 +65,19 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         loadSoundCloudSDK();
     }, []);
 
+
+    useEffect(() => {
+        setCurrentVolume(user ? user?.volume : null)
+    }, [user])
+
     useEffect(() => {
         if (currentTrackIndex !== null) {
-            if (queue[currentTrackIndex].provider === 'spotify') {
+            const currentTrack = queue[currentTrackIndex];
+            if (currentTrack.provider === 'spotify') {
+                currentProviderRef.current = 'spotify';
                 soundCloudPlayerRef.current?.pause();
-            } else if (queue[currentTrackIndex].provider === 'soundcloud'){
+            } else if (currentTrack.provider === 'soundcloud'){
+                currentProviderRef.current = 'soundcloud';
                 spotifyPlayerRef.current?.pause();
             }
             playCurrentTrack(currentTrackIndex);
@@ -73,24 +85,27 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }, [currentTrackIndex]);
 
     useEffect(() => {
-
-        if (isPlaying && currentTrackIndex!==null) {
-            if (queue[currentTrackIndex].provider === 'spotify'){
-                positionIntervalRef.current = setInterval(async () => {
-                    const state = await spotifyPlayerRef.current?.getCurrentState();
-                    if (state) {
-                        setCurrentPosition(state.position);  // Update position
-                    }
-                }, 500);  // Update every second
+        if (!isPlaying || currentTrackIndex === null) return;
+    
+        let animationFrameId: number;
+        const updatePosition = async () => {
+            if (!spotifyPlayerRef.current || currentProviderRef.current !== 'spotify') {
+                cancelAnimationFrame(animationFrameId); // Stop the loop if it's not Spotify
+                return;
             }
-        }
-        return () => {
-            if (positionIntervalRef.current) {
-                clearInterval(positionIntervalRef.current);
-                positionIntervalRef.current = null;
+    
+            const state = await spotifyPlayerRef.current.getCurrentState();
+            if (state) {
+                setCurrentPosition(state.position);
             }
+            animationFrameId = requestAnimationFrame(updatePosition);
         };
-    }, [isPlaying]);
+        if (currentProviderRef.current === 'spotify') {
+            animationFrameId = requestAnimationFrame(updatePosition);
+        }
+    
+        return () => cancelAnimationFrame(animationFrameId);
+    }, [isPlaying, currentTrackIndex, currentProviderRef.current]);
 
     const loadSpotifySDK = () => {
         if (document.getElementById('spotify-web-sdk-script')) {
@@ -99,7 +114,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
 
         window.onSpotifyWebPlaybackSDKReady = () => {
-            console.log('Spotify Web Playback SDK is ready.');
             initializeSpotifyPlayer(); 
         };
     
@@ -107,7 +121,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         script.id = 'spotify-web-sdk-script';
         script.src = 'https://sdk.scdn.co/spotify-player.js';
         script.async = true;
-    
         document.body.appendChild(script);
     };
 
@@ -122,25 +135,14 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                     console.error("Error fetching access token:", error);
                 }
             },
-            volume: 0.5,
+            volume: currentVolume ? currentVolume : 0.5,
         });
-    
-            spotifyPlayer.addListener('ready',async ({ device_id }) => {
-                setDeviceId(device_id)
-                console.log('Spotify Player is ready with Device ID:', device_id);
-            });
-
-            spotifyPlayer.addListener('not_ready', ({ device_id }) => {
-                console.log('Device ID has gone offline', device_id);
-            });    
-    
+        
+            spotifyPlayer.addListener('ready',async ({ device_id }) => {setDeviceId(device_id)});    
             spotifyPlayer.addListener('player_state_changed', (state) => {
-                if (!state){
-                    return;
-                }
-                setIsPlaying(!state.paused);
-                if (state.paused && state.position === 0) {
-                    playNextTrack();
+                if (state){
+                    setIsPlaying(!state.paused);
+                    setCurrentPosition(state.position)
                 }
             });
             spotifyPlayer.addListener('autoplay_failed', () => {
@@ -201,7 +203,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         widget.bind('playProgress', (progress:any) => {
             const position = progress.currentPosition;  // Position in milliseconds
         
-            // Update progress in the UI
             setCurrentPosition(position);
         });
         soundCloudPlayerRef.current = widget;
@@ -218,15 +219,17 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             return;
         }
         const currentTrack = currentQueue[index];
+        setCurrentPosition(0);
         if (currentTrack.provider === 'spotify' && spotifyPlayerRef.current) {
+            currentProviderRef.current = 'spotify';
             await spotifyPlayerRef.current.activateElement();
             const token = await getSpotifyToken()
             let options: startPlaybackOptions = {token, device_id:deviceId, uris:[currentTrack.uri]}
             await startSpotifyPlayback(options);
         } else if (currentTrack.provider === 'soundcloud' && soundCloudPlayerRef.current) {
+            currentProviderRef.current = 'soundcloud';
             soundCloudPlayerRef.current.load(currentTrack.uri, { auto_play: true });
         }
-    
         setIsPlaying(true);
     };
     const playNextTrack = () => {
@@ -313,6 +316,26 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
     };
 
+    const seek = (position: number) => {
+        if (currentProviderRef.current === 'spotify' && spotifyPlayerRef.current){
+            spotifyPlayerRef.current.seek(position);
+        } else if (currentProviderRef.current === 'soundcloud' && soundCloudPlayerRef.current){
+            soundCloudPlayerRef.current.seekTo(position);
+        }
+    };
+
+    const setNewVolume = (volume: number) => { // Volume expected to be from 0.0 to 1.0
+        if (spotifyPlayerRef.current){
+            spotifyPlayerRef.current.setVolume(volume); // spotify expects range from 0.0 to 1.0
+            console.log("setting sound for spotify");
+        }
+        if (soundCloudPlayerRef.current){
+            soundCloudPlayerRef.current.setVolume(volume * 100);  // soundcloud expects range 0 to 100
+            console.log("setting sound for soundcloud");
+        }
+        setCurrentVolume(volume);
+    }
+
     return (
         <MusicPlayerContext.Provider
             value={{
@@ -320,6 +343,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 isPlaying,
                 queue,
                 currentPosition,
+                currentProvider: currentProviderRef.current ? currentProviderRef.current : null,
+                currentVolume,
                 playTrack,
                 addToQueue,
                 removeFromQueue,
@@ -328,6 +353,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 playNextTrack,
                 playPreviousTrack,
                 togglePlayPause,
+                seek,
+                setNewVolume,
             }}
         >
             {children}

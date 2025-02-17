@@ -1,9 +1,10 @@
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE,
-    password_hash VARCHAR(255),
+    hashed_password VARCHAR(255),
     spotify_account_id INTEGER DEFAULT NULL,
     soundcloud_account_id INTEGER DEFAULT NULL,
+    volume FLOAT DEFAULT 0.5,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );

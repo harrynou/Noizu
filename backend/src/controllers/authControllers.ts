@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express';
-import {insertUser, isProviderConnected, registerByProvider, getUserPassword, getUserId, updatePassword, updateEmailandPassword, hasSpotifyPremium} from '../models/authModels'
+import {insertUser, isProviderConnected, registerByProvider, getUserInfo, updatePassword, updateEmailandPassword, hasSpotifyPremium} from '../models/authModels'
 import {hashString, compareHash, generateCodeVerifier, generateCodeChallenge} from '../utils/encryption'
 import { verifyToken, generateToken } from '../utils/jwt';
 import crypto from 'crypto'
@@ -14,11 +14,12 @@ export const checkAuth = async (req:Request, res:Response, next:NextFunction) =>
             return res.status(401).json({ isAuthenticated: false, userHasPassword: false, userHasSpotifyPremium:false});
         }
         const user = verifyToken(authToken); // Decode and verify the JWT
-        const userHasPassword = (await getUserPassword(user.userId) !== null)
-        const userHasSpotifyPremium = (await hasSpotifyPremium(user.userId));
-        return res.status(200).json({ isAuthenticated: true, userHasPassword, userHasSpotifyPremium, userData: { userId: user.userId}});
+        const userInfo = await getUserInfo(user.userId);
+        const userHasPassword = userInfo.hashed_password !== null;
+        const userHasSpotifyPremium = (await hasSpotifyPremium(user.userId)); // TODO: Test this usign non-premium account
+        return res.status(200).json({ isAuthenticated: true, userHasPassword, userHasSpotifyPremium, userInfo: {volume: userInfo.volume}});
     } catch (error) {
-        return res.status(401).json({ isAuthenticated: false, userHasSpotifyPremium:false, userHasPassword: false});
+        return res.status(401).json({ isAuthenticated: false, userHasSpotifyPremium:false, userHasPassword: false, userInfo: null});
     }
 }
 
@@ -44,7 +45,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
         const userId = await insertUser(email, hashed_password);
         const token = generateToken({userId});
         res.cookie('authToken', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 3600000,});
-        return res.status(201).json({msg:'Registration Successful', userData:{userId}, userHasPassword: true})
+        return res.status(201).json({msg:'Registration Successful', userInfo:{volume:0.5}, userHasPassword: true})
     } catch (error:any) {
         next(error);
     }
@@ -96,7 +97,6 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
         const userInfo = await getSoundcloudUserInfo(access_token);
         const provider = 'soundcloud'
         const providerUserId = userInfo.id
-        console.log(access_token)
         let userId = await isProviderConnected(provider, providerUserId, false)
         if (userId === null) { // Create an account if account does not exist
             userId = await registerByProvider(provider, providerUserId, refresh_token, access_token, false); // Defaults as false premium acct, may change later
@@ -112,15 +112,16 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
 export const signInUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {email, password} = req.body
-        const hashed_password = await getUserPassword(email)
-        if (!hashed_password) {
-            return res.status(401).json({ error: "Email does not exist or password may not be set for a Spotify/SoundCloud Account." });
+        const userInfo = await getUserInfo(email);
+        if (!userInfo || !userInfo.hashed_password) {
+            return res.status(401).json({ error: "Email does not exist or account may not be properly setup with Spotify/SoundCloud account." });
         }
+        const hashed_password = userInfo.hashed_password;
         if (await compareHash(password, hashed_password)) { // Create JWT, log-in user
-            const userId = await getUserId(email)
+            const userId = userInfo.user_id;
             const token =  generateToken({userId})
             res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});
-            res.status(200).json({msg:'Sign-In Successful.', userData:{userId}, userHasPassword: true})
+            res.status(200).json({msg:'Sign-In Successful.', userHasPassword: true,})
         } else {
             res.status(401).json({error:"Incorrect password."})
         }

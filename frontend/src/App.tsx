@@ -48,7 +48,7 @@ const AppRoutes = () => {
 const App: React.FC = (): JSX.Element => {
   return (
     <Router>
-      <div className='flex flex-col h-screen'>
+      <div className='flex flex-col min-h-screen bg-custom-gradient text-white'>
         <AuthContextWrapper>
           <MusicPlayerProvider>
             <Navbar/>

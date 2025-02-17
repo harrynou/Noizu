@@ -63,8 +63,8 @@ const SetUpAccountCard:React.FC = (): JSX.Element => {
 
 
     return (
-        <div className=" bg-gray-100 flex flex-col flex-grow h-full justify-center items-center">
-            <div className="bg-neutral flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
+        <div className="flex flex-col flex-grow h-full justify-center items-center">
+            <div className="bg-secondary text-textSecondary flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
                 <form onSubmit={handleSubmit} autoComplete="off">
                     <div className="flex flex-col gap-6">
                         <span className="text-lg">You must setup an email and password for your account before continuing.</span>
@@ -93,7 +93,7 @@ const SetUpAccountCard:React.FC = (): JSX.Element => {
                             {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword}</p>}
                         </div>
                         <div className="flex flex-col gap-2">
-                            <button type="submit" className="border rounded bg-primary text-neutral hover:bg-gray-600 w-full py-2 text-sm">Set Password</button>
+                            <button type="submit" className="border rounded bg-primary text-textPrimary hover:bg-gray-600 w-full py-2 text-sm">Set Password</button>
                         </div>
                     </div>
                 </form>

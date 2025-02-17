@@ -1,10 +1,11 @@
+import { userInfo } from 'os';
 import pool from '../config/db'
 import { setAccessToken } from './tokenModels';
 
 
 export const insertUser = async (email?:string, password_encrypted?:string): Promise<number> => {
     try {
-        const results = await pool.query("INSERT INTO users (email,password_hash) VALUES ($1, $2) RETURNING user_id", [email || null,password_encrypted || null])
+        const results = await pool.query("INSERT INTO users (email,hashed_password) VALUES ($1, $2) RETURNING user_id", [email || null,password_encrypted || null])
         return results.rows[0].user_id;
     } catch(error) {
         throw error;
@@ -57,17 +58,18 @@ export const connectProvider = async (user_id:number, provider:string, providerU
     }
 }
 
-export const getUserPassword = async (userKey:string | number): Promise<string|null> => { // Password returned is hashed
+export const getUserInfo = async (userKey:string | number): Promise<any|null> => { // Password returned is hashed
     try {
         let column: string;
+        // Search by email or ID key
         if (typeof userKey === 'string' ) {
             column = 'email';
         } else {
             column = 'user_id';
         }
-        const results = await pool.query(`SELECT password_hash FROM users WHERE ${column} = $1`, [userKey])
+        const results = await pool.query(`SELECT user_id, email, hashed_password, volume FROM users WHERE ${column} = $1`, [userKey])
         if (results && results.rowCount && results.rowCount > 0) {
-            return results.rows[0].password_hash; // Return the hashed password
+            return results.rows[0]; // object with userInfo
         }
         return null;
     } catch (error){
@@ -75,18 +77,9 @@ export const getUserPassword = async (userKey:string | number): Promise<string|n
     } 
 }
 
-export const getUserId = async (email:string): Promise<number> => {
-    try {
-        const results = await pool.query("SELECT user_id FROM users WHERE email = $1", [email])
-        return results.rows[0].user_id
-    } catch (error){
-        throw error
-    } 
-}
-
 export const updateEmailandPassword = async (userId: number, email:string, hashed_password:string): Promise<void> => {
     try {
-        await pool.query("UPDATE users SET email = $1, password_hash = $2 WHERE user_id = $3", [email,hashed_password,userId]);
+        await pool.query("UPDATE users SET email = $1, hashed_password = $2 WHERE user_id = $3", [email,hashed_password,userId]);
     } catch (error) {
         throw error
     }
@@ -95,7 +88,7 @@ export const updateEmailandPassword = async (userId: number, email:string, hashe
 
 export const updatePassword = async (userId: number, hashed_password:string): Promise<void> => {
     try {
-        await pool.query("UPDATE users SET password_hash = $1 WHERE user_id = $2",[hashed_password,userId])
+        await pool.query("UPDATE users SET hashed_password = $1 WHERE user_id = $2",[hashed_password,userId])
     } catch (error) {
         throw error
     }

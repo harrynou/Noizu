@@ -26,7 +26,7 @@ const QueueManager: React.FC = () => {
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
                                             className={`flex items-center justify-between gap-4 p-2 rounded ${
-                                                currentTrack?.id === track.id ? 'bg-blue-100' : 'bg-gray-100'
+                                                currentTrack?.id === track.id ? 'bg-secondary text-textSecondary' : 'bg-primary text-textPrimary'
                                             }`}
                                             onClick={() => selectTrackToPlay(index)}
                                         >
@@ -38,7 +38,11 @@ const QueueManager: React.FC = () => {
                                                 />
                                                 <div>
                                                     <p className="font-medium">{track.title}</p>
-                                                    <p className="text-sm text-gray-600">{track.artists}</p>
+                                                    <div className="flex flex-wrap text-xs">
+                                                        {track.artists.map((artist:any) => (
+                                                            <a key={artist.name} href={artist.profileUrl} target="_blank" rel="noopener noreferrer" className="inline-block whitespace-nowrap hover:underline hover:text-accent">{artist.name}</a> 
+                                                            )).reduce((prev:any, curr:any, index:number) => [prev, <span key={`comma-${index}`}>, </span>, curr])}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </li>

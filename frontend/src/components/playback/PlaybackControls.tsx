@@ -5,6 +5,7 @@ import playButton from '../../assets/play-button.svg'
 import previousButton from '../../assets/previous-button.svg' 
 import nextButton from '../../assets/next-button.svg'
 import ProgressBar from './ProgressBar.tsx';
+import VolumeMixer from './VolumeMixer.tsx';
 
 const PlaybackControls: React.FC = () => {
     const { currentTrack, currentPosition, isPlaying, togglePlayPause, playNextTrack, playPreviousTrack } = useMusicPlayer();
@@ -12,7 +13,7 @@ const PlaybackControls: React.FC = () => {
     
     return (
         
-        <div className="fixed bottom-0 left-0 right-0 w-full flex items-center bg-primary p-10 text-neutral">
+        <div className="fixed bottom-0 left-0 right-0 w-full flex items-center bg-primary p-10 text-textPrimary">
             {/* Left Side Track Info */}
             <div className='absolute left-2'>
             {currentTrack ? (
@@ -51,8 +52,8 @@ const PlaybackControls: React.FC = () => {
             </div>
             {/* Right Side Options */}
             <div className='absolute right-2'>
-                <div className='flex'>
-                    
+                <div className=''>
+                    <VolumeMixer></VolumeMixer>
                 </div>
             </div>
         </div>

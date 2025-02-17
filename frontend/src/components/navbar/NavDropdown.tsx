@@ -41,7 +41,7 @@ const NavDropdown: React.FC = ():JSX.Element => {
         <div ref={dropdownRef} className="relative inline-block text-left">
             <button 
                 onClick={toggleDropdown} 
-                className="text-white bg-black font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex items-center" 
+                className="bg-primary text-textPrimary font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex items-center" 
                 type="button" 
                 aria-haspopup="true" 
                 aria-expanded={open}>
@@ -62,7 +62,7 @@ const NavDropdown: React.FC = ():JSX.Element => {
                 </svg>
             </button>
             {open && (
-                <ul className="absolute bg-white rounded shadow mt-1 min-w-full text-sm">
+                <ul className="absolute bg-secondary rounded shadow mt-1 min-w-full text-sm">
                     {options.map((option) => (
                         <li 
                             key={option} 

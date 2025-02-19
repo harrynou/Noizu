@@ -1,4 +1,4 @@
-import {createContext, useContext, useState, useEffect} from "react";
+import {createContext, useContext, useState, useEffect, useMemo} from "react";
 import { checkAuth, logoutUser, getAccessToken } from "../services/api";
 
 interface userType {
@@ -94,14 +94,25 @@ export const AuthContextWrapper: React.FC<{children:React.ReactNode}> = ({ child
         setTokenExpirationTime(currentTime + 3600);  // Set expiration time
         return token;
     };
-
+    const authContextValue = useMemo(
+        () => ({
+            isAuthenticated,
+            hasPassword,
+            hasSpotifyPremium,
+            user,
+            spotifyToken,
+            loading,
+            login,
+            logout,
+            Password,
+            getAuth,
+            getSpotifyToken,
+        }),
+        [isAuthenticated, hasPassword, hasSpotifyPremium, user, spotifyToken, loading]
+    );
     
 
-    return (
-        <authContext.Provider value={{ isAuthenticated, hasPassword, hasSpotifyPremium, user, spotifyToken, loading, login, logout, Password, getAuth, getSpotifyToken}}>
-            {children}
-        </authContext.Provider>
-    );
+    return <authContext.Provider value={authContextValue}>{children}</authContext.Provider>;
 };
 
 export const useAuth = () => useContext(authContext);

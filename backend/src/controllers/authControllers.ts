@@ -6,31 +6,24 @@ import crypto from 'crypto'
 import { getToken, setToken } from '../utils/redis';
 import { AuthSoundcloudToken, getSoundcloudUserInfo } from '../services/soundcloud';
 import { getAccessToken } from '../models/tokenModels';
+import { User } from '../utils/types';
 
 export const checkAuth = async (req:Request, res:Response, next:NextFunction) => {
     try {
-        const authToken = req.cookies.authToken
-        if (!authToken) {
-            return res.status(401).json({ isAuthenticated: false, userHasPassword: false, userHasSpotifyPremium:false});
-        }
-        const user = verifyToken(authToken); // Decode and verify the JWT
+        const user = req.user as User;
         const userInfo = await getUserInfo(user.userId);
         const userHasPassword = userInfo.hashed_password !== null;
-        const userHasSpotifyPremium = (await hasSpotifyPremium(user.userId)); // TODO: Test this usign non-premium account
+        const userHasSpotifyPremium = (await hasSpotifyPremium(user.userId)); // TODO: Test this using non-premium account
         return res.status(200).json({ isAuthenticated: true, userHasPassword, userHasSpotifyPremium, userInfo: {volume: userInfo.volume}});
     } catch (error) {
-        return res.status(401).json({ isAuthenticated: false, userHasSpotifyPremium:false, userHasPassword: false, userInfo: null});
+        next(error);
     }
 }
 
 export const token = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const authToken = req.cookies.authToken
-        if (!authToken) {
-            return res.status(401).json({ isAuthenticated: false, userHasPassword: false });
-        }
-        const user = verifyToken(authToken);
-        const {provider} = req.body
+        const user = req.user as User;
+        const {provider} = req.body;
         const token =  await getAccessToken(user.userId,provider);
         return res.status(200).json({token})
     } catch (error) {
@@ -145,9 +138,9 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 
 export const setupAccount = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const user = req.user as User;
         const {email,password} = req.body;
-        const token = req.cookies.authToken;
-        const userId = verifyToken(token).userId;
+        const userId = user.userId;
         const hashed_password = await hashString(password);
         await updateEmailandPassword(userId,email,hashed_password);
         res.status(200).json({msg:'Account Successfully Updated.'});
@@ -158,9 +151,9 @@ export const setupAccount = async (req: Request, res: Response, next: NextFuncti
 
 export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const user = req.user as User;
+        const userId = user.userId;
         const password = req.body.password;
-        const token = req.cookies.authToken;
-        const userId = verifyToken(token).userId;
         const hashed_password = await hashString(password);
         await updatePassword(userId, hashed_password);
         res.status(200).json({msg:'Password Change Successful.'});

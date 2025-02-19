@@ -1,5 +1,7 @@
 import { useState, useRef, ReactEventHandler, useEffect } from "react";
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
+import { setUserVolume } from "../../services/api";
+import {useAuth} from '../../contexts/authContext'
 
 const VolumeMixer: React.FC = (): JSX.Element => {
     const {setNewVolume, currentVolume} = useMusicPlayer();
@@ -7,11 +9,13 @@ const VolumeMixer: React.FC = (): JSX.Element => {
     const rectRef = useRef<DOMRect | null>(null);
     const animationFrameRef = useRef<number | null>(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [dragPosition, setDragPosition] = useState<number>(currentVolume ? currentVolume : 50);
-
+    const [dragPosition, setDragPosition] = useState<number>(50);
     const volumePercentage = Math.max(0, Math.min(100, dragPosition));
+    const {isAuthenticated} = useAuth();
+    
+
     useEffect(() => {
-        if (currentVolume){
+        if (currentVolume !== null){
             setDragPosition(currentVolume * 100); // Convert to percentage
         }
     }, [currentVolume]);
@@ -27,12 +31,15 @@ const VolumeMixer: React.FC = (): JSX.Element => {
     }
 
     const updateDragPosition = (clientX: number) => {
-        if (!rectRef.current || !isDragging) return;
 
+        if (!rectRef.current) return;
         const newProgress = Math.max(0, Math.min(1, (clientX - rectRef.current.left) / rectRef.current.width));
         const newVolume = newProgress * 100;
-        setDragPosition(newVolume);
-        setNewVolume(newVolume / 100)
+
+        setDragPosition((prevDragPosition) => {
+            setNewVolume(newVolume / 100);  // Update player volume
+            return newVolume;  // Ensure state updates correctly
+        });
     };
 
 
@@ -45,6 +52,10 @@ const VolumeMixer: React.FC = (): JSX.Element => {
         setIsDragging(false);
         document.removeEventListener("pointermove", handlePointerMove);
         document.removeEventListener("pointerup", handlePointerUp);
+        setDragPosition((latestDragPosition) => {
+            if (isAuthenticated) setUserVolume(latestDragPosition / 100);
+            return latestDragPosition;  // Preserve state
+        });
     };
 
     return (

@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import authRoutes from './routes/authRoutes'
 import searchRoutes from './routes/searchRoutes'
+import playbackRoutes from './routes/playbackRoutes'
 import errorHandle from './middleware/errorHandle'
 import passport from 'passport'
 import { passportConfig } from './config/passport-config';
@@ -28,7 +29,7 @@ app.use(cors(
             callback(new Error("Not allowed by CORS"));
         }
     },
-        methods: ['GET', 'POST', 'OPTIONS'],
+        methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
         allowedHeaders: ['Content-Type', 'Authorization',],
         credentials: true
     }
@@ -40,6 +41,7 @@ app.use(passport.initialize());
 
 app.use('/api/auth', authRoutes)
 app.use('/api/search', searchRoutes)
+app.use('/api/playback', playbackRoutes)
 app.use(errorHandle)
 
 

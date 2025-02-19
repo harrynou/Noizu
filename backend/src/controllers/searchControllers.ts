@@ -4,7 +4,7 @@ import { spotifyQuery } from '../services/spotify';
 import { getOldOrNewClientCredentials } from '../models/tokenModels';
 import { verifyToken } from '../utils/jwt';
 import { normalizeSearchData } from '../services/normalizeData';
-import { Providers } from '../types';
+import { Providers } from '../utils/types';
 
 
 

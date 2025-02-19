@@ -91,6 +91,14 @@ export const getAccessToken = async (provider: string): Promise<string> => {
     }
 }
 
+export const setUserVolume = async (newVolume: number): Promise<void> => {
+    try {
+        await axiosInstance.put('/api/playback/volume', {newVolume});
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 
 // APIs dealing with Spotify 

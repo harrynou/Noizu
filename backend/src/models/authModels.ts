@@ -1,4 +1,3 @@
-import { userInfo } from 'os';
 import pool from '../config/db'
 import { setAccessToken } from './tokenModels';
 

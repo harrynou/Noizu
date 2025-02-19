@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useMemo, useCallback} from 'react';
 import {startSpotifyPlayback} from '../services/api';
 import { useAuth } from './authContext';
+import { resolve } from 'path';
 interface Track {
     id: string;
     uri: string; 
@@ -56,34 +57,67 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [deviceId, setDeviceId] = useState<string>('');
     const {getSpotifyToken, user} = useAuth()
     const [currentPosition, setCurrentPosition] = useState<number>(0);
+    const [loadingSessionState, setLoadingSessionState] = useState<boolean>(true);
+    const[loadingMusicPlayer, setLoadingMusicPlayer] = useState<boolean>(true);
     const currentProviderRef = useRef<string | null>(null);
-    const [currentVolume, setCurrentVolume] = useState<number | null>(user ? user?.volume : null);
+    const currentVolumeRef = useRef<number>(user?.volume || 0.5); 
+    const [hiddenAutoPlay, setHiddenAutoPlay] = useState<boolean>(false);
 
+    // Load previous states from session storage
     useEffect(() => {
-        // Load and initialize both players when the app starts
-        loadSpotifySDK();
-        loadSoundCloudSDK();
+        const savedState = sessionStorage.getItem("musicPlayerState");
+        console.log(savedState);
+        if (savedState) {
+            try {
+                const { queue, currentTrackIndex, isPlaying, currentPosition } = JSON.parse(savedState);
+                setQueue(queue || []);
+                setCurrentTrackIndex(currentTrackIndex ?? null);
+                setIsPlaying(isPlaying ?? false);
+                setCurrentPosition(currentPosition ?? 0);
+            } catch (error) {
+                console.error("Error parsing music player state:", error);
+            }
+        }
+        setLoadingSessionState(false);
     }, []);
 
 
+    // Load and initialize both players when the app starts
     useEffect(() => {
-        setCurrentVolume(user ? user?.volume : null)
+        Promise.all([loadSoundCloudSDK(), loadSpotifySDK()])
+        .then(() => {
+            setLoadingMusicPlayer(false);
+        })
+        .catch((error) => {
+            console.error("Error loading SDKs:", error);
+            setLoadingMusicPlayer(false);
+        });
+        return () => {
+            spotifyPlayerRef.current?.disconnect();
+
+        };
+    }, []);
+
+    
+
+    useEffect(() => {
+        if (!loadingSessionState){
+            sessionStorage.setItem("musicPlayerState", JSON.stringify({
+                queue,
+                currentTrackIndex,
+                isPlaying,
+                currentPosition
+            }));
+        }
+    }, [queue, currentTrackIndex, isPlaying, currentPosition]);
+
+    useEffect(() => {
+        if (user){
+            setNewVolume(user.volume)
+        }
     }, [user])
 
-    useEffect(() => {
-        if (currentTrackIndex !== null) {
-            const currentTrack = queue[currentTrackIndex];
-            if (currentTrack.provider === 'spotify') {
-                currentProviderRef.current = 'spotify';
-                soundCloudPlayerRef.current?.pause();
-            } else if (currentTrack.provider === 'soundcloud'){
-                currentProviderRef.current = 'soundcloud';
-                spotifyPlayerRef.current?.pause();
-            }
-            playCurrentTrack(currentTrackIndex);
-        }
-    }, [currentTrackIndex]);
-
+    
     useEffect(() => {
         if (!isPlaying || currentTrackIndex === null) return;
     
@@ -100,118 +134,145 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             }
             animationFrameId = requestAnimationFrame(updatePosition);
         };
-        if (currentProviderRef.current === 'spotify') {
-            animationFrameId = requestAnimationFrame(updatePosition);
-        }
-    
+        animationFrameId = requestAnimationFrame(updatePosition);
         return () => cancelAnimationFrame(animationFrameId);
-    }, [isPlaying, currentTrackIndex, currentProviderRef.current]);
+    }, [isPlaying, currentTrackIndex]);
 
-    const loadSpotifySDK = () => {
-        if (document.getElementById('spotify-web-sdk-script')) {
-            console.log('Spotify SDK script already loaded');
+    const loadSpotifySDK = useCallback(() => {
+        return new Promise<void>((resolve) => {
+        if (document.getElementById('spotify-web-sdk-script')){ 
+            resolve();
             return;
         }
 
         window.onSpotifyWebPlaybackSDKReady = () => {
             initializeSpotifyPlayer(); 
+            resolve();
         };
-    
         const script = document.createElement('script');
         script.id = 'spotify-web-sdk-script';
         script.src = 'https://sdk.scdn.co/spotify-player.js';
         script.async = true;
         document.body.appendChild(script);
-    };
+        });
+    }, []);
 
     const initializeSpotifyPlayer = async () => {    
-        const spotifyPlayer = new Spotify.Player({
-            name: 'My Music App',
-            getOAuthToken: async (cb) => {
-                try {
-                    const token = await getSpotifyToken()
-                    cb(token);
-                } catch (error) {
-                    console.error("Error fetching access token:", error);
-                }
-            },
-            volume: currentVolume ? currentVolume : 0.5,
-        });
-        
-            spotifyPlayer.addListener('ready',async ({ device_id }) => {setDeviceId(device_id)});    
-            spotifyPlayer.addListener('player_state_changed', (state) => {
-                if (state){
-                    setIsPlaying(!state.paused);
-                    setCurrentPosition(state.position)
-                }
+        return new Promise<void>((resolve) => {
+            const spotifyPlayer = new Spotify.Player({
+                name: 'My Music App',
+                getOAuthToken: async (cb) => {
+                    try {
+                        const token = await getSpotifyToken()
+                        cb(token);
+                    } catch (error) {
+                        console.error("Error fetching access token:", error);
+                    }
+                },
+                volume: currentVolumeRef.current !== null ? currentVolumeRef.current : 0.5,
             });
-            spotifyPlayer.addListener('autoplay_failed', () => {
-                console.log('Autoplay is not allowed by the browser autoplay rules');
-            });
-            spotifyPlayer.on('initialization_error', e => console.error(e));
-            spotifyPlayer.on('authentication_error', e => console.error(e));
-            spotifyPlayer.on('account_error', e => console.error(e));
-            spotifyPlayer.on('playback_error', e => console.error(e));
-
-            spotifyPlayer.connect();
-            spotifyPlayerRef.current = spotifyPlayer;
+            
+                spotifyPlayer.addListener('ready',async ({ device_id }) => {setDeviceId(device_id)});    
+                spotifyPlayer.addListener('player_state_changed', (state) => {
+                    if (state){
+                        console.log(state)
+                        setIsPlaying(!state.paused);
+                        setCurrentPosition(state.position)
+                    }
+                });
+                spotifyPlayer.addListener('autoplay_failed', () => {
+                    console.log('Autoplay is not allowed by the browser autoplay rules');
+                });
+                spotifyPlayer.on('initialization_error', e => console.error(e));
+                spotifyPlayer.on('authentication_error', e => console.error(e));
+                spotifyPlayer.on('account_error', e => console.error(e));
+                spotifyPlayer.on('playback_error', e => console.error(e));
+    
+                spotifyPlayer.connect();
+                spotifyPlayerRef.current = spotifyPlayer;
+                resolve();
+        })
     };
+        
     
 
-    const loadSoundCloudSDK = () => {
-        if (!document.getElementById('soundcloud-widget-script')) {
+    const loadSoundCloudSDK = useCallback(() => {
+        return new Promise<void>((resolve) => {
+            if (document.getElementById('soundcloud-widget-script')) {
+                console.log("SoundCloud SDK already loaded");
+                resolve();
+            }
+
             const script = document.createElement('script');
             script.id = 'soundcloud-widget-script';
             script.src = 'https://w.soundcloud.com/player/api.js';
             script.async = true;
-    
-            // Ensure initialization happens only after the script loads
             script.onload = () => {
-                console.log('SoundCloud Widget script loaded');
-                initializeSoundcloudWidget();
+                initializeSoundCloudWidget();
+                resolve();
+            };
+            document.body.appendChild(script);
+        });
+    }, []);
+
+    const initializeSoundCloudWidget = () => {
+        return new Promise<void>((resolve) => {
+            let iframe = document.getElementById('soundcloud-player') as HTMLIFrameElement;
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'soundcloud-player';
+                iframe.allow = 'autoplay';
+                iframe.style.display = 'none';
+                iframe.src = 'https://w.soundcloud.com/player/?url=';
+                document.body.appendChild(iframe);
             };
     
-            document.body.appendChild(script);
-        }
-    };
-
-    const initializeSoundcloudWidget = () => {
-        let iframe = document.getElementById('soundcloud-player') as HTMLIFrameElement;
-        if (!iframe) {
-            iframe = document.createElement('iframe');
-            iframe.id = 'soundcloud-player';
-            iframe.allow = 'autoplay';
-            iframe.style.display = 'none';
-            iframe.src = 'https://w.soundcloud.com/player/?url=';
-    
-            document.body.appendChild(iframe);
-        };
-
             const widget = window.SC.Widget(iframe);
-            widget.bind('ready', () => {
-            console.log('SoundCloud Player is ready');
-        });
-    
-        widget.bind("play", () => {
-            console.log('SoundCloud track started playing');
-        });
-    
-        widget.bind('pause', () => {
-            console.log('SoundCloud track paused');
-        });
-
-        widget.bind('playProgress', (progress:any) => {
-            const position = progress.currentPosition;  // Position in milliseconds
+            widget.bind('ready', () => console.log('SoundCloud Player is ready'));
+            widget.bind("play", () => console.log('SoundCloud track started playing'));
+            widget.bind('pause', () => console.log('SoundCloud track paused'));
+            widget.bind('finish', () => playNextTrack());
+            widget.bind('playProgress', (progress:any) => setCurrentPosition(progress.currentPosition)); // Position in milliseconds
+            soundCloudPlayerRef.current = widget;
+            resolve();
+        })
         
-            setCurrentPosition(position);
-        });
-        soundCloudPlayerRef.current = widget;
     };
 
-    const playTrack = (track: Track) => {
-        setQueue([track]);  // Replace the queue with the single track
+    const playTrack = useCallback((track: Track) => {
+        setQueue([track]);
         setCurrentTrackIndex(0);
-    };
+    }, []);
+
+    useEffect(() => {
+        if (loadingSessionState || loadingMusicPlayer) return;
+    
+        if (currentTrackIndex !== null) {
+            const currentTrack = queue[currentTrackIndex];
+            if (currentTrack.provider === 'spotify' && !spotifyPlayerRef.current) return;
+            if (currentTrack.provider === 'soundcloud' && !soundCloudPlayerRef.current) return;
+            if (currentTrack.provider === 'spotify') {
+                currentProviderRef.current = 'spotify';
+                soundCloudPlayerRef.current?.pause();
+            } else if (currentTrack.provider === 'soundcloud'){
+                currentProviderRef.current = 'soundcloud';
+                spotifyPlayerRef.current?.pause();
+            }
+            console.log(currentProviderRef.current)
+            console.log(queue[currentTrackIndex]);
+            console.log(currentPosition);
+            setHiddenAutoPlay(true);
+            playCurrentTrack(currentTrackIndex);
+        }
+    }, [currentTrackIndex, loadingSessionState, loadingMusicPlayer, spotifyPlayerRef.current, soundCloudPlayerRef.current]);
+
+    useEffect(() => {
+        if (hiddenAutoPlay) {
+            document.getElementById('hiddenAutoPlayButton')?.click();
+        }
+    }, [hiddenAutoPlay])
+
+    
 
     const playCurrentTrack = async (index: number | null = currentTrackIndex, currentQueue: Track[] = queue) => {
         if (index === null || index < 0 || index >= currentQueue.length) {
@@ -219,7 +280,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             return;
         }
         const currentTrack = currentQueue[index];
-        setCurrentPosition(0);
         if (currentTrack.provider === 'spotify' && spotifyPlayerRef.current) {
             currentProviderRef.current = 'spotify';
             await spotifyPlayerRef.current.activateElement();
@@ -245,25 +305,16 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
     
 
-    const togglePlayPause = () => {
-        if (currentTrackIndex === null || currentTrackIndex < 0 || currentTrackIndex >= queue.length) {
-            console.warn('No track is currently selected for playback');
-            return;
-        }
-    
+    const togglePlayPause = useCallback(() => {
+        if (currentTrackIndex === null) return;
         const currentTrack = queue[currentTrackIndex];
         if (currentTrack.provider === 'spotify' && spotifyPlayerRef.current) {
-            if (isPlaying) {
-                spotifyPlayerRef.current.pause();
-            } else {
-                spotifyPlayerRef.current.resume();
-            }
+            isPlaying ? spotifyPlayerRef.current.pause() : spotifyPlayerRef.current.resume();
         } else if (currentTrack.provider === 'soundcloud' && soundCloudPlayerRef.current) {
-            soundCloudPlayerRef.current.toggle(); 
+            soundCloudPlayerRef.current.toggle();
         }
-    
         setIsPlaying(!isPlaying);
-    };
+    }, [isPlaying, currentTrackIndex, queue]);
 
     const addToQueue = (track: Track) => {
         setQueue((prevQueue) => {
@@ -293,13 +344,15 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                     // If there's a next track, play it
                     return prevIndex >= updatedQueue.length ? 0 : prevIndex;
                 });
-    
                 playNextTrack();
             }
-    
             return updatedQueue;
         });
     };
+    
+    const clearQueue = () => {
+        setQueue([]);
+    }
 
     const reorderQueue = (startIndex: number, endIndex: number) => {
         setQueue((prevQueue) => {
@@ -324,41 +377,42 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
     };
 
-    const setNewVolume = (volume: number) => { // Volume expected to be from 0.0 to 1.0
-        if (spotifyPlayerRef.current){
-            spotifyPlayerRef.current.setVolume(volume); // spotify expects range from 0.0 to 1.0
-            console.log("setting sound for spotify");
-        }
-        if (soundCloudPlayerRef.current){
-            soundCloudPlayerRef.current.setVolume(volume * 100);  // soundcloud expects range 0 to 100
-            console.log("setting sound for soundcloud");
-        }
-        setCurrentVolume(volume);
-    }
-
-    return (
-        <MusicPlayerContext.Provider
-            value={{
-                currentTrack: currentTrackIndex !== null ? queue[currentTrackIndex] : null,
-                isPlaying,
-                queue,
-                currentPosition,
-                currentProvider: currentProviderRef.current ? currentProviderRef.current : null,
-                currentVolume,
-                playTrack,
-                addToQueue,
-                removeFromQueue,
-                reorderQueue,
-                selectTrackToPlay,
-                playNextTrack,
-                playPreviousTrack,
-                togglePlayPause,
-                seek,
-                setNewVolume,
-            }}
-        >
-            {children}
-        </MusicPlayerContext.Provider>
+    const setNewVolume = useCallback((volume: number) => { // Volume input from 0 to 1.0
+        if (spotifyPlayerRef.current) spotifyPlayerRef.current.setVolume(volume);
+        if (soundCloudPlayerRef.current) soundCloudPlayerRef.current.setVolume(volume * 100);
+        currentVolumeRef.current = volume;
+    }, []);
+    const contextValue = useMemo(
+        () => ({
+            currentTrack: currentTrackIndex !== null ? queue[currentTrackIndex] : null,
+            isPlaying,
+            queue,
+            currentPosition,
+            currentProvider: currentProviderRef.current ?? null,
+            currentVolume: currentVolumeRef.current ?? 0.5,
+            playTrack,
+            togglePlayPause,
+            setNewVolume,
+            addToQueue,
+            removeFromQueue,
+            clearQueue,
+            reorderQueue,
+            selectTrackToPlay,
+            playNextTrack,
+            playPreviousTrack,
+            seek,
+        }),
+        [queue, currentTrackIndex, isPlaying, currentPosition]
     );
+    
+    return <MusicPlayerContext.Provider value={contextValue}>{children}
+    {/* Hidden button for autoplay */}
+    <button
+            id="hiddenAutoPlayButton"
+            onClick={() => {
+                console.log("🎵 User interacted - attempting autoplay...");
+                setHiddenAutoPlay(true);}
+            }
+            style={{ position: 'absolute', left: '-9999px', opacity: 0 }}>Autoplay</button></MusicPlayerContext.Provider>;
 };
 

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-
+import { UnauthorizedError } from './errors'; 
 export const generateToken = (payload: object): string => {
     if (!process.env.JWT_SECRET) {
         throw new Error("JWT_SECRET is not defined. Please set it in your environment variables.");
@@ -13,6 +13,6 @@ export const verifyToken = (token: string): any => {
     try {
         return jwt.verify(token, process.env.JWT_SECRET!);
     } catch (error) {
-        throw new Error('Invalid or expired token');
+        throw new UnauthorizedError("Invalid or Expired token");
     }
 };

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate} from 'react-router-dom';
+import {Routes, Route, Navigate, useNavigate} from 'react-router-dom';
 import Navbar from './components/navbar/Navbar.tsx';
 import HomePage from './pages/home.tsx';
 import AboutMePage from './pages/about-me.tsx'
@@ -47,18 +47,16 @@ const AppRoutes = () => {
 
 const App: React.FC = (): JSX.Element => {
   return (
-    <Router>
-      <div className='flex flex-col min-h-screen bg-custom-gradient text-white'>
-        <AuthContextWrapper>
-          <MusicPlayerProvider>
-            <Navbar/>
-            <QueueManager/>
-            <AppRoutes/>
-            <PlaybackControls/>
-          </MusicPlayerProvider>
-        </AuthContextWrapper>
-      </div>
-    </Router>
+    <AuthContextWrapper>
+      <MusicPlayerProvider>
+        <div className='flex flex-col min-h-screen bg-custom-gradient text-white'>
+          <Navbar/>
+          <QueueManager/>
+          <PlaybackControls/>
+        </div>
+        <AppRoutes/>
+      </MusicPlayerProvider>
+    </AuthContextWrapper>
   )
 }
 

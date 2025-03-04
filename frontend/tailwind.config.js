@@ -12,7 +12,7 @@ export default {
         textSecondary: '#121212',
       },
     backgroundImage:{
-      'custom-gradient': "linear-gradient(to top, #000000, #410069)"
+      'custom-gradient': "linear-gradient(.25turn, #cf414b, #852170)"
     }
   }
   },

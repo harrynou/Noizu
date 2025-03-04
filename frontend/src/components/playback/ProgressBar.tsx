@@ -1,4 +1,4 @@
-import React, { ReactEventHandler, useRef, useState } from "react";
+import React, { ReactEventHandler, useEffect, useRef, useState} from "react";
 import msToMinutesSeconds from '../../utils/msToMinutesSeconds';
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 
@@ -12,11 +12,15 @@ const ProgressBar: React.FC<ProgressBarProps> = ({duration, position}): JSX.Elem
     const progressBarRef = useRef<HTMLDivElement | null>(null);
     const dragPositionRef = useRef<number | null>(null);
     const rectRef = useRef<DOMRect | null>(null);
-    const { seek } = useMusicPlayer()
+    const { seek, currentPosition } = useMusicPlayer()
 
     const durationFormatted = msToMinutesSeconds(duration); 
-    const positionFormatted = isDragging ? msToMinutesSeconds(dragPositionRef.current) : msToMinutesSeconds(position);
-    const progressPercentage = duration ? ((dragPositionRef.current ?? position) / duration) * 100 : 0;
+    let positionFormatted = isDragging ? msToMinutesSeconds(dragPositionRef.current) : msToMinutesSeconds(currentPosition);
+    const progressPercentage = duration ? ((dragPositionRef.current ?? currentPosition) / duration) * 100 : 0;
+
+    useEffect(() => {
+        positionFormatted = isDragging ? msToMinutesSeconds(dragPositionRef.current) : msToMinutesSeconds(currentPosition);
+    }, [currentPosition]);
 
     const handlePointerDown: ReactEventHandler = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!duration || !progressBarRef.current) return;
@@ -53,7 +57,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({duration, position}): JSX.Elem
 
     return (
     <div className='flex items-center space-x-4 text-sm'>
-        <div className="w-[40px] text-right">{positionFormatted}</div>
+        <div className="w-[40px]">{positionFormatted}</div>
         <div ref={progressBarRef} className="relative w-full h-[6px] cursor-pointer" onPointerDown={handlePointerDown}>
             <svg className=" w-full h-full text-gray-700" fill="none" viewBox="18 0 800 12"><path stroke="currentColor" strokeLinecap="round" strokeWidth="6" d="M6 6h824"/></svg>
             <div 

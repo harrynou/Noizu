@@ -11,6 +11,7 @@ declare global {
         Events: SoundCloudWidgetEvents;  // Define Events here
         load: (url: string, options?: { auto_play?: boolean }) => void;
         bind: (event: SoundCloudEvent, callback: (data?: any) => void) => void;
+        unbind: (event: SoundCloudEvent) => void;
         play: () => void;
         pause: () => void;
         toggle: () => void;

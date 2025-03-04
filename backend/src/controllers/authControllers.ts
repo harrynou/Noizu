@@ -8,6 +8,8 @@ import { AuthSoundcloudToken, getSoundcloudUserInfo } from '../services/soundclo
 import { getAccessToken } from '../models/tokenModels';
 import { User } from '../utils/types';
 
+const cookieExpiration = parseInt(process.env.COOKIE_EXPIRATION_MS ?? '86400000');
+
 export const checkAuth = async (req:Request, res:Response, next:NextFunction) => {
     try {
         const user = req.user as User;
@@ -37,7 +39,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
         const hashed_password = await hashString(password)
         const userId = await insertUser(email, hashed_password);
         const token = generateToken({userId});
-        res.cookie('authToken', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 3600000,});
+        res.cookie('authToken', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: cookieExpiration,});
         return res.status(201).json({msg:'Registration Successful', userInfo:{volume:0.5}, userHasPassword: true})
     } catch (error:any) {
         next(error);
@@ -56,7 +58,7 @@ export const spotifyAuth = async (req: Request, res: Response, next: NextFunctio
             userId = await registerByProvider(provider, providerUserId, refreshToken, accessToken, premium);
         } 
         const token = generateToken({userId})
-        res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});
+        res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});
         return res.redirect(`${process.env.FRONTEND_BASE_URL}/home`);
     } catch (error:any) {
         next(error);
@@ -95,7 +97,7 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
             userId = await registerByProvider(provider, providerUserId, refresh_token, access_token, false); // Defaults as false premium acct, may change later
         } 
         const token = generateToken({userId})
-        res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});
+        res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});
         return res.redirect(`${process.env.FRONTEND_BASE_URL}/home`)
     } catch (error) {
         next(error)
@@ -113,7 +115,7 @@ export const signInUser = async (req: Request, res: Response, next: NextFunction
         if (await compareHash(password, hashed_password)) { // Create JWT, log-in user
             const userId = userInfo.user_id;
             const token =  generateToken({userId})
-            res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: 3600000,});
+            res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});
             res.status(200).json({msg:'Sign-In Successful.', userHasPassword: true,})
         } else {
             res.status(401).json({error:"Incorrect password."})

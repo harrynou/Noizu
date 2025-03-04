@@ -132,10 +132,11 @@ interface startPlaybackOptions {
     token: string,
     device_id: string;
     uris: string[];
+    position: number;
 }
 
-export const startSpotifyPlayback = async ({token, device_id, uris}:startPlaybackOptions): Promise<void> => {
-    const requestBody = {uris, position_ms: 0}
+export const startSpotifyPlayback = async ({token, device_id, uris, position}:startPlaybackOptions): Promise<void> => {
+    const requestBody = {uris, position_ms: position}
     try {
         await axios.put(
             `https://api.spotify.com/v1/me/player/play/?device_id=${device_id}`,

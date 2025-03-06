@@ -6,6 +6,7 @@ import previousButton from '../../assets/previous-button.svg'
 import nextButton from '../../assets/next-button.svg'
 import ProgressBar from './ProgressBar.tsx';
 import VolumeMixer from './VolumeMixer.tsx';
+import queueSvg from '../../assets/queue-icon.svg'
 
 const PlaybackControls: React.FC = () => {
     const { currentTrack, currentPosition, isPlaying, togglePlayPause, playNextTrack, playPreviousTrack } = useMusicPlayer();
@@ -40,8 +41,8 @@ const PlaybackControls: React.FC = () => {
                     <a onClick={playPreviousTrack} className="w-7 hover:w-8 hover:opacity-75 transition-all duration-200  cursor-pointer">
                         <img src={previousButton} />
                     </a>
-                    <a onClick={togglePlayPause} className="">
-                        <img src={isPlaying ? pauseButton : playButton} className='w-9 hover:w-10 hover:opacity-75 transition-all duration-200 cursor-pointer'/>
+                    <a onClick={togglePlayPause} className='w-9 hover:w-10 hover:opacity-75 transition-all duration-200 cursor-pointer'>
+                        <img src={isPlaying ? pauseButton : playButton}/>
                     </a>
                     <a onClick={playNextTrack} className="w-7 hover:w-8 hover:opacity-75 transition-all duration-200 cursor-pointer">
                         <img src={nextButton} />
@@ -51,7 +52,10 @@ const PlaybackControls: React.FC = () => {
                 <ProgressBar duration={duration} position={currentPosition}/>
             </div>
             {/* Right Side Options */}
-            <div className='absolute right-2'>
+            <div className='absolute right-2 flex gap-2'>
+                <div className='flex'>
+                    <img src={queueSvg} className='w-8' />
+                </div>
                 <div className=''>
                     <VolumeMixer></VolumeMixer>
                 </div>

@@ -120,7 +120,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
                     </button>
                 </div>
             </div>
-            <span className="text-gray-500 text-sm text-center mt-2">Already have an Account? <a href={`${import.meta.env.VITE_BASE_URL}/sign-in`} className="underline text-blue-700">Sign in Here!</a></span>
+            <span className=" text-sm text-center mt-2">Already have an Account? <a href={`${import.meta.env.VITE_BASE_URL}/sign-in`} className="underline text-blue-700">Sign in Here!</a></span>
         </div>
     )
 }

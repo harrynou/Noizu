@@ -51,7 +51,6 @@ const App: React.FC = (): JSX.Element => {
       <MusicPlayerProvider>
         <div className='flex flex-col min-h-screen bg-custom-gradient text-white'>
           <Navbar/>
-          <QueueManager/>
           <AppRoutes/>
           <PlaybackControls/>
         </div>

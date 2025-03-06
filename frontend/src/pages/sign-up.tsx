@@ -3,7 +3,7 @@ import SignUpCard from '../components/SignUpCard.tsx'
 const SignUpPage: React.FC = (): JSX.Element => {
 
     return (
-        <div className="flex h-full justify-center items-center">
+        <div className="overflow-y-auto mb-24">
             <SignUpCard/>
         </div>
     )

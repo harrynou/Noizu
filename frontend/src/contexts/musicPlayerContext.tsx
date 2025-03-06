@@ -15,7 +15,7 @@ interface MusicPlayerContextProps {
     currentTrack: Track | null;
     currentPosition: number;
     currentProvider: string | null;
-    currentVolume: number | null;
+    currentVolume: number;
     isPlaying: boolean;
     queue: Track[];
     playTrack: (track: Track) => void;
@@ -61,7 +61,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [loadingMusicPlayer, setLoadingMusicPlayer] = useState<boolean>(true);
     const [currentProvider, setCurrentProvider] = useState<string | null>(null);
     const currentProviderRef = useRef<string | null>(null);
-    const currentVolumeRef = useRef<number>(user?.volume || 0.5); 
+    const [currentVolume, setCurrentVolume] = useState<number>(user?.volume ?? 0.5);
     const [finishedTrack, setFinishedTrack]= useState<boolean>(false);
 
     // Load previous states from session storage
@@ -86,9 +86,9 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     useEffect(() => {
         if (user){
             setNewVolume(user.volume);
-            console.log("Setting Default Volume");
+            console.log("Setting Default Volume, ", user.volume);
         }
-    }, [user])
+    }, [user, loadingMusicPlayer])
 
     // Load and initialize both players when the app starts
     useEffect(() => {
@@ -129,7 +129,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     
         let animationFrameId: number;
         const updatePosition = async () => {
-            console.log(currentProvider);
             if (!spotifyPlayerRef.current || currentProviderRef.current !== 'spotify') {
                 cancelAnimationFrame(animationFrameId); // Stop the loop if it's not Spotify
                 return;
@@ -158,7 +157,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         return new Promise<void>((resolve) => {
         if (document.getElementById('spotify-web-sdk-script')){ 
             console.log('Spotify SDK already loaded')
-            return
+            return;
         }
 
         window.onSpotifyWebPlaybackSDKReady = () => {
@@ -184,10 +183,10 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                         console.error("Error fetching access token:", error);
                     }
                 },
-                volume: currentVolumeRef.current ?? 0.5,
+                volume: currentVolume
             });
             spotifyPlayerRef.current = spotifyPlayer;
-                spotifyPlayer.addListener('ready',async ({ device_id }) => {setDeviceId(device_id)});    
+                spotifyPlayer.addListener('ready',async ({ device_id }) => {setDeviceId(device_id);});    
                 spotifyPlayer.addListener('player_state_changed', (state) => {
                     if (state){
                         setIsPlaying(!state.paused);
@@ -204,8 +203,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 spotifyPlayer.on('initialization_error', e => console.error(e));
                 spotifyPlayer.on('authentication_error', e => console.error(e));
                 spotifyPlayer.on('account_error', e => console.error(e));
-                spotifyPlayer.on('playback_error', e => console.error(e));
-    
+                spotifyPlayer.on('playback_error', e => console.error(e));    
                 spotifyPlayer.connect();
                 resolve();
         })
@@ -237,6 +235,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 iframe = document.createElement('iframe');
                 iframe.id = 'soundcloud-player';
                 iframe.style.display = 'none';
+                iframe.width = "100";
+                iframe.height = "100";
                 iframe.src = 'https://w.soundcloud.com/player/?url=';
                 document.body.appendChild(iframe);
             };
@@ -275,7 +275,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
         playCurrentTrack(currentTrackIndex);
     }, [currentTrackIndex, loadingSessionState, loadingMusicPlayer, deviceId]);
-    
 
     const playCurrentTrack = async (index: number | null = currentTrackIndex, currentQueue: Track[] = queue) => {
         if (index === null || index < 0 || index >= currentQueue.length) {
@@ -403,10 +402,11 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
     };
 
-    const setNewVolume = useCallback((volume: number) => { // Volume input from 0 to 1.0
+    const setNewVolume = useCallback(async (volume: number) => { // Volume input from 0 to 1.0
+        setCurrentVolume(volume);
         if (spotifyPlayerRef.current) spotifyPlayerRef.current.setVolume(volume);
         if (soundCloudPlayerRef.current) soundCloudPlayerRef.current.setVolume(volume * 100);
-        currentVolumeRef.current = volume;
+        console.log(await spotifyPlayerRef.current?.getVolume())
     }, []);
     const contextValue = useMemo(
         () => ({
@@ -415,7 +415,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             queue,
             currentPosition,
             currentProvider: currentProvider,
-            currentVolume: currentVolumeRef.current ?? 0.5,
+            currentVolume,
             playTrack,
             togglePlayPause,
             setNewVolume,
@@ -428,7 +428,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             playPreviousTrack,
             seek,
         }),
-        [queue, currentTrackIndex, isPlaying, currentPosition]
+        [queue, currentTrackIndex, isPlaying, currentPosition, currentVolume, currentProviderRef]
     );
     
     return <MusicPlayerContext.Provider value={contextValue}>{children}</MusicPlayerContext.Provider>;

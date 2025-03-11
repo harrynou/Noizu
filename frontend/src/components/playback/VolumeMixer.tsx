@@ -9,11 +9,18 @@ const VolumeMixer: React.FC = (): JSX.Element => {
     const rectRef = useRef<DOMRect | null>(null);
     const animationFrameRef = useRef<number | null>(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [dragPosition, setDragPosition] = useState<number>(0.1);
+    const [dragPosition, setDragPosition] = useState<number>(50);
     const volumePercentage = Math.max(0, Math.min(100, dragPosition));
     const {isAuthenticated} = useAuth();
     const [isMuted, setIsMuted] = useState<boolean>(false);
+
     
+    useEffect(() => {
+        if (currentVolume !== null){
+            setDragPosition(currentVolume * 100); // Convert to percentage
+        }
+    }, [currentVolume]);
+
     const handlePointerDown: ReactEventHandler = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!volumeMixerRef.current) return;
         setIsDragging(true);
@@ -30,10 +37,8 @@ const VolumeMixer: React.FC = (): JSX.Element => {
         const newProgress = Math.max(0, Math.min(1, (clientX - rectRef.current.left) / rectRef.current.width));
         const newVolume = newProgress * 100;
 
-        setDragPosition(() => {
-            setNewVolume(newVolume / 100);  // Update player volume
-            return newVolume;  // Ensure state updates correctly
-        });
+        setDragPosition(newVolume); 
+        setNewVolume(newVolume / 100);
     };
 
 
@@ -52,27 +57,27 @@ const VolumeMixer: React.FC = (): JSX.Element => {
         });
     };
 
-    const handleMute = () => {
-        // Set volume to back to previous setting
-        console.log(previousVolume)
-        if (isMuted){
-            if (previousVolume) setNewVolume(previousVolume);
-        } else{ // Set volume to mute and save last setting
-            if (currentVolume !== 0) {
-                setPreviousVolume(currentVolume);
-            };
-            setNewVolume(0);
-        }
-        setIsMuted(!isMuted);
+    // const handleMute = () => {
+    //     // Set volume to back to previous setting
+    //     console.log(currentVolume)
+    //     if (isMuted){
+    //         if (currentVolume) setNewVolume(0);
+    //     } else{ // Set volume to mute and save last setting
+    //         if (currentVolume !== 0) {
+    //             setPreviousVolume(currentVolume);
+    //         };
+    //         setNewVolume(0);
+    //     }
+    //     setIsMuted(!isMuted);
 
-    };
+    // };
 
     return (
         
         <div className="flex items-center space-x-2">
             {/* speaker icon */}
             <div className="w-6">
-                <svg onClick={handleMute} className="w-full h-full" viewBox="0 0 24 24" fill="none">
+                <svg className="w-full h-full" viewBox="0 0 24 24" fill="none">
                     <g>
                         <rect width="24" height="24" fill="none" />
                         <path d="M3 16V8H6L11 4V20L6 16H3Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />

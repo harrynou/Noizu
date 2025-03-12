@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from 'express';
 import {insertUser, isProviderConnected, registerByProvider, getUserInfo, updatePassword, updateEmailandPassword, hasSpotifyPremium} from '../models/authModels'
 import {hashString, compareHash, generateCodeVerifier, generateCodeChallenge} from '../utils/encryption'
-import { verifyToken, generateToken } from '../utils/jwt';
+import { generateToken } from '../utils/jwt';
 import crypto from 'crypto'
 import { getToken, setToken } from '../utils/redis';
 import { AuthSoundcloudToken, getSoundcloudUserInfo } from '../services/soundcloud';
@@ -29,7 +29,7 @@ export const token = async (req: Request, res: Response, next: NextFunction) => 
         const token =  await getAccessToken(user.userId,provider);
         return res.status(200).json({token})
     } catch (error) {
-        
+        next(error);
     }
 }
 

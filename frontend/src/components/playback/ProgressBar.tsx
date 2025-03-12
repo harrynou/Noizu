@@ -16,7 +16,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({duration, position}): JSX.Elem
 
     const durationFormatted = msToMinutesSeconds(duration); 
     let positionFormatted = isDragging ? msToMinutesSeconds(dragPositionRef.current) : msToMinutesSeconds(currentPosition);
-    const progressPercentage = duration ? ((dragPositionRef.current ?? currentPosition) / duration) * 100 : 0;
+    const progressPercentage = duration ? Math.min(((dragPositionRef.current ?? currentPosition) / duration) * 100, 100) : 0;
 
     useEffect(() => {
         positionFormatted = isDragging ? msToMinutesSeconds(dragPositionRef.current) : msToMinutesSeconds(currentPosition);
@@ -44,6 +44,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({duration, position}): JSX.Elem
     };
 
     const handlePointerUp = () => {
+
         if (dragPositionRef.current !== null) {
             seek(dragPositionRef.current); 
         }

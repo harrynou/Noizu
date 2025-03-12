@@ -4,6 +4,7 @@ import { AppError } from '../utils/errors';
 const errorHandle = (error: any, req: Request, res: Response, next: NextFunction) => {
     console.error('Error: ', error);
     if (error instanceof AppError) {
+        
         return res.status(error.statusCode).json({ error: error.message });
     }
     if (error?.code === '23505') {

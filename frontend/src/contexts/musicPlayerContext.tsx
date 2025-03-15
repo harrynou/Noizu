@@ -60,11 +60,12 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [currentPosition, setCurrentPosition] = useState<number>(0);
     const [loadingSessionState, setLoadingSessionState] = useState<boolean>(true);
     const [loadingMusicPlayer, setLoadingMusicPlayer] = useState<boolean>(true);
+    const [loadingTrack, setLoadingTrack] = useState<boolean>(false);
     const [currentProvider, setCurrentProvider] = useState<string | null>(null);
     const currentProviderRef = useRef<string | null>(null);
     const [currentVolume, setCurrentVolume] = useState<number>(user?.volume ?? 0.5);
     const currentVolumeRef = useRef<number>(currentVolume);
-    const [finishedTrack, setFinishedTrack]= useState<boolean>(false);
+    const isTrackLoadingRef= useRef<boolean>(false);
     const isSeekingRef = useRef<boolean>(false);
 
     // Load previous states from session storage
@@ -88,7 +89,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     useEffect(() => {
         if (user?.volume && !loadingMusicPlayer){
             setNewVolume(user.volume);
-            console.log("Setting Default Volume, ", user.volume);
         }
     }, [user, loadingMusicPlayer])
 
@@ -126,6 +126,15 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         currentVolumeRef.current = currentVolume
     }, [currentProvider, currentVolume]);
 
+    useEffect(() => {
+        if (loadingTrack){
+            isTrackLoadingRef.current = true;
+            playNextTrack();
+            setLoadingTrack(false);
+            isTrackLoadingRef.current = false;
+        }
+    }, [loadingTrack])
+
     // Used to update spotify's track position
     useEffect(() => {
         if (!isPlaying || currentTrackIndex === null) return;
@@ -145,16 +154,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         animationFrameId = requestAnimationFrame(updatePosition);
         return () => cancelAnimationFrame(animationFrameId);
     }, [isPlaying, currentTrackIndex, loadingMusicPlayer, currentProvider]);
-
-
-    // Signals when track finishes
-    useEffect(() => {
-        if (!finishedTrack) return;
-        if (currentTrackIndex !== null && currentTrackIndex + 1 < queue.length){
-        setCurrentTrackIndex(currentTrackIndex+1);
-    }
-        setFinishedTrack(false);
-    }, [finishedTrack]);
 
     const loadSpotifySDK = useCallback(() => {
         return new Promise<void>((resolve) => {
@@ -198,8 +197,9 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                         setIsPlaying(!state.paused);
                         setCurrentPosition(state.position)
                         if (state.position === 0 && state.track_window.previous_tracks.length > 0) {
-                            console.log("Track ended, playing next track...");
-                            setFinishedTrack(true);
+                            if (!isTrackLoadingRef.current){
+                                setLoadingTrack(true);
+                            }
                         }
                     }
                 });
@@ -236,7 +236,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const initializeSoundCloudWidget = () => {
         return new Promise<void>((resolve) => {
             if (soundCloudPlayerRef.current) {
-                console.log("✅ SoundCloud Player already initialized.");
                 resolve();
                 return;
             }
@@ -270,7 +269,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             widget.bind('finish', () => playNextTrack());
             widget.bind('playProgress', (progress:any) => {
                 if (!isPlayingRef.current) return;
-                console.log(progress.currentPosition)
                 setCurrentPosition(progress.currentPosition)
                 setIsPlaying(true);
             });
@@ -286,8 +284,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     // On reload of a page
     useEffect(() => {
         if (loadingSessionState || loadingMusicPlayer || !deviceId || currentTrackIndex === null) return;
+        togglePause()
         playCurrentTrack(currentTrackIndex);
-        console.log(currentVolume);
     }, [currentTrackIndex, loadingSessionState, loadingMusicPlayer, deviceId]);
 
     const playCurrentTrack = async (index: number | null = currentTrackIndex, currentQueue: Track[] = queue) => {
@@ -296,7 +294,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             return;
         }
         const currentTrack = currentQueue[index];
-        
         if (currentTrack.provider === 'spotify' && spotifyPlayerRef.current) {
             setCurrentProvider('spotify');
             await spotifyPlayerRef.current.activateElement();
@@ -318,6 +315,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         } else {
             console.log("No more tracks in the queue.");
         }
+        isTrackLoadingRef.current = false;
     };
 
     const playPreviousTrack = () => {

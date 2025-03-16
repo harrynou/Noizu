@@ -18,9 +18,10 @@ declare global {
         seekTo: (milliseconds: number) => void;
         setVolume: (volume: number) => void;
         getVolume: (callback: any) => void;
+        isPaused: (callback: any) => void;
     }
 
-    type SoundCloudEvent = 'ready' | 'finish' | 'play' | 'pause' | 'playProgress';
+    type SoundCloudEvent = 'ready' | 'finish' | 'play' | 'pause' | 'playProgress' | 'loadProgress';
 
     interface SoundCloudWidgetEvents {
         READY: 'ready';
@@ -28,5 +29,6 @@ declare global {
         PLAY: 'play';
         PAUSE: 'pause';
         PLAY_PROGRESS: 'playProgress';
+        LOAD_PROGRESS: 'loadProgress';
     }
 }

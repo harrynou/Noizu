@@ -263,6 +263,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 console.log('SoundCloud track started playing')
                 soundCloudPlayerRef.current?.setVolume(currentVolumeRef.current * 100)
                 isPlayingRef.current = true;
+                setIsPlaying(true);
                 if (isSeekingRef.current) seek(currentPosition);
             });
             widget.bind('pause', () => {console.log("Soundcloud Track Paused!")
@@ -356,10 +357,11 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const addToQueue = (track: Track) => {
         setQueue((prevQueue) => {
             const updatedQueue = [...prevQueue, track];
-    
             // Start playback if no track is currently playing
             if (currentTrackIndex === null) {
                 setCurrentTrackIndex(0);
+                setCurrentProvider(updatedQueue[0].provider);
+                
             }
     
             return updatedQueue;
@@ -429,7 +431,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             isPlaying,
             queue,
             currentPosition,
-            currentProvider: currentProvider,
+            currentProvider,
             currentVolume,
             playTrack,
             togglePlayPause,
@@ -443,7 +445,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             playPreviousTrack,
             seek,
         }),
-        [queue, currentTrackIndex, isPlaying, currentPosition, currentVolume, currentProviderRef]
+        [queue, currentTrackIndex, isPlaying, currentPosition, currentVolume, currentProvider]
     );
     
     return <MusicPlayerContext.Provider value={contextValue}>{children}</MusicPlayerContext.Provider>;

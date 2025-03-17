@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, {useEffect } from 'react';
 import { useMusicPlayer } from '../../contexts/musicPlayerContext.tsx';
 import pauseButton from '../../assets/pause-button.svg'
 import playButton from '../../assets/play-button.svg'
@@ -12,24 +12,21 @@ const PlaybackControls: React.FC = () => {
     const { currentTrack, currentPosition, isPlaying, togglePlayPause, playNextTrack, playPreviousTrack } = useMusicPlayer();
     const duration = currentTrack ? currentTrack.duration : null;
     
-    
 
     useEffect(() => {
         window.addEventListener('keydown', handleSpacebar);
         return () => {
             window.removeEventListener('keydown', handleSpacebar)
         }
-    }, [])
+    }, [isPlaying])
 
 
-    const handleSpacebar = useCallback((event: KeyboardEvent) => {
+    const handleSpacebar = (event: KeyboardEvent) => {
         if (event.code === 'Space'){
             event.preventDefault();
-            console.log('Before: ', isPlaying)
             togglePlayPause(); 
-            console.log('After: ', isPlaying)
         }
-    }, [])
+    }
 
     return (
         

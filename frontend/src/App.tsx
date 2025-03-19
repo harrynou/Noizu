@@ -8,7 +8,7 @@ import SignInPage from './pages/sign-in.tsx';
 import SignUpPage from './pages/sign-up.tsx';
 import FavoritesPage from './pages/favorites.tsx'
 import PlaylistsPage from './pages/playlists.tsx'
-import { AuthContextWrapper, useAuth} from './contexts/authContext.tsx';
+import { AuthContextProvider, useAuth} from './contexts/authContext.tsx';
 import PublicRoute from './components/wrappers/PublicRoute.tsx';
 import SetUpAccount from './pages/set-up-account.tsx';
 import NoPasswordRoute from './components/wrappers/NoPasswordRoute.tsx';
@@ -16,7 +16,6 @@ import AccountSettingsPage from './pages/account-settings.tsx';
 import ProtectedRoute from './components/wrappers/ProtectedRoute.tsx';
 import { MusicPlayerProvider } from './contexts/musicPlayerContext.tsx';
 import PlaybackControls from './components/playback/PlaybackControls.tsx';
-import QueueManager from './components/playback/QueueManager.tsx';
 
 const AppRoutes = () => {
   const { isAuthenticated, hasPassword, loading } = useAuth();
@@ -47,15 +46,15 @@ const AppRoutes = () => {
 
 const App: React.FC = (): JSX.Element => {
   return (
-    <AuthContextWrapper>
-      <MusicPlayerProvider>
+    <AuthContextProvider>
+    <MusicPlayerProvider>
         <div className='flex flex-col min-h-screen bg-custom-gradient text-white'>
           <Navbar/>
           <AppRoutes/>
           <PlaybackControls/>
         </div>
-      </MusicPlayerProvider>
-    </AuthContextWrapper>
+    </MusicPlayerProvider>
+    </AuthContextProvider>
   )
 }
 

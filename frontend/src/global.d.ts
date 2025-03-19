@@ -2,9 +2,9 @@ export {};
 
 declare global {
     interface Window {
-        SC: {
-            Widget: (iframeElement: HTMLIFrameElement) => SoundCloudWidget;
-        };
+        soundcloudPlayer : SoundCloudWidget | null;
+        SC : Widget = (iframe:HTMLIFrameElement) => SoundCloudWidget
+        spotifyPlayer : any
     }
 
     interface SoundCloudWidget {

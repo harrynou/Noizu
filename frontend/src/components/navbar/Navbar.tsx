@@ -1,5 +1,6 @@
 import { useAuth } from "../../contexts/authContext";
 import NavDropdown from "./NavDropdown";
+import { Link } from 'react-router-dom';
 {/*
     TODO: Add Logo Brand left of navbar
     TODO: Conditional Rendering of Favorites, Playlists, etc... links oncelogged in
@@ -18,30 +19,30 @@ const Navbar: React.FC = (): JSX.Element => {
                 <div>
                     <ul className="hidden md:flex gap-16 text-base">
                         <li className="hover:text-accent">
-                            <a href="/home">Home</a>
+                            <Link to="/home">Home</Link>
                         </li>
                         {isAuthenticated && 
                         <div className="flex gap-16">
                             <li className="hover:text-accent">
-                                <a href="/favorites">Favorites</a>
+                                <Link to="/favorites">Favorites</Link>
                             </li>
                             <li className="hover:text-accent">
-                                <a href="/playlists">Playlists</a>
+                                <Link to="/playlists">Playlists</Link>
                             </li>
                         </div>}
                         <li className="hover:text-accent">
-                            <a href="/terms">Terms & Conditions</a>
+                            <Link to="/terms">Terms & Conditions</Link>
                         </li>
                         <li className="hover:text-accent">
-                            <a href="/about-me">About Me</a>
+                            <Link to="/about-me">About Me</Link>
                         </li>
                     </ul>
                 </div>
             </div>
             {!isAuthenticated ? (
             <div className="flex gap-4">
-                <a href="/sign-up"><button className="button">Sign Up</button></a>
-                <a href="/sign-in"><button className="button"><a href="/sign-in">Sign In</a></button></a>
+                <Link to="/sign-up"><button className="button">Sign Up</button></Link>
+                <Link to="/sign-in"><button className="button">Sign In</button></Link>
             </div>
             ) : (
                 <NavDropdown/>

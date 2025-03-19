@@ -4,8 +4,7 @@ import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
 import spotifyAuth from "../services/spotifyAuth"
 import { signInUser } from "../services/api"
 import soundcloudAuth from "../services/soundcloudAuth";
-
-
+import { Link } from 'react-router-dom';
 
 const SignInCard: React.FC = (): JSX.Element => {
 
@@ -113,7 +112,7 @@ const SignInCard: React.FC = (): JSX.Element => {
                     </button>
                 </div>
             </div>
-            <span className="text-gray-500 text-sm text-center mt-2">Don't have an Account? <a href={`${import.meta.env.VITE_BASE_URL}/sign-up`} className="underline text-blue-700">Sign Up Here!</a></span>
+            <span className="text-sm text-center mt-2">Don't have an Account? <Link to='/sign-up' className="underline text-blue-400">Sign Up Here!</Link></span>
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react" 
-import {useNavigate } from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
 import SpotifyLogo from "../assets/spotify/Icon.svg"
 import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
 import spotifyAuth from "../services/spotifyAuth"
@@ -120,7 +120,7 @@ const SignUpCard: React.FC = (): JSX.Element => {
                     </button>
                 </div>
             </div>
-            <span className=" text-sm text-center mt-2">Already have an Account? <a href={`${import.meta.env.VITE_BASE_URL}/sign-in`} className="underline text-blue-700">Sign in Here!</a></span>
+            <span className=" text-sm text-center mt-2">Already have an Account? <Link to='/sign-in' className="underline text-blue-400">Sign in Here!</Link></span>
         </div>
     )
 }

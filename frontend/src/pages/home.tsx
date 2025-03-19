@@ -7,7 +7,7 @@ const HomePage: React.FC = (): JSX.Element => {
     const [soundcloudSearchResults, setSoundcloudSearchResults] = useState<any>(null);
 
     return (
-        <div className="flex flex-col p-2 gap-2">
+        <div className="flex flex-col p-2 gap-2 flex-grow">
         <SearchBar setSpotifySearchResults={setSpotifySearchResults} setSoundcloudSearchResults={setSoundcloudSearchResults}/>
         <SearchResults spotifySearchResults={spotifySearchResults} soundcloudSearchResults={soundcloudSearchResults}/>
         </div>

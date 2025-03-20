@@ -99,6 +99,15 @@ export const setUserVolume = async (newVolume: number): Promise<void> => {
     }
 }
 
+export const favoriteTrack = async (trackId: string, provider: string): Promise<boolean> => {
+    try {
+        const response = await axiosInstance.post('/api/track/favorite', {trackId, provider});
+        return (response.status === 200 || response.status === 201 );
+    } catch (error) {
+        throw error
+    }
+}
+
 
 
 // APIs dealing with Spotify 

@@ -29,7 +29,8 @@ export const normalizeSearchData = async (provider:string, searchData: any): Pro
             previewUrl: track.preview_url,
             albumType: track.album.album_type,
             duration: track.duration_ms,
-            uri: track.uri
+            uri: track.uri,
+            isFavorited: false
         })
     )} else if (provider === 'soundcloud'){ // provider is soundcloud
         const tracks = searchData.collection;
@@ -46,7 +47,8 @@ export const normalizeSearchData = async (provider:string, searchData: any): Pro
             previewUrl: track.stream_url,
             albumType: null,
             duration: track.duration,
-            uri: track.uri
+            uri: track.uri,
+            isFavorited: false
         }))
     } else {
         throw Error("Unknown Provider");

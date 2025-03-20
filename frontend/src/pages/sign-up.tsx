@@ -1,4 +1,4 @@
-import SignUpCard from '../components/SignUpCard.tsx'
+import SignUpCard from '../components/auth/SignUpCard.tsx'
 
 const SignUpPage: React.FC = (): JSX.Element => {
 

@@ -2,50 +2,27 @@ import React from 'react';
 import externalLink from '../../assets/external-link.svg'
 import FullSpotifyLogoGreen from '../../assets/spotify/Full-Logo-Green.svg'
 import FullSoundcloudLogo from '../../assets/soundcloud/Full-Logo.svg'
-import { useMusicPlayer } from '../../contexts/musicPlayerContext';
-import { useAuth } from '../../contexts/authContext';
-import AddToQueueSVG from '../../assets/AddToQueue.svg'
-import heartWhiteSVG from '../../assets/heart-white.svg'
-import heartRedSVG from '../../assets/heart-red.svg'
-
-interface Track {
-    id: string;
-    uri: string; 
-    title: string;
-    artists: any;
-    imageUrl?: string;
-    provider: string;
-    duration: number;
-    isLiked: boolean;
-}
+import { Track } from '../../contexts/musicPlayerContext';
+import AddToQueueAction from '../track-actions/AddToQueue';
+import FavoriteAction from '../track-actions/Favorite';
 
 interface ItemCardProps {
     item: any,
     provider: string,
+    toggleFavorite: (trackId: string, provider: string) => void;
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
-    const { hasSpotifyPremium, isAuthenticated } = useAuth();
-    const { addToQueue } = useMusicPlayer();
-    const handleAddToQueue = () => {
-        const track:Track = {
-            id: item.id,
-            title: item.title,
-            artists: item.artistInfo,
-            imageUrl: item.imageUrl,
-            provider: provider,
-            uri: item.uri || item.trackUrl, 
-            duration: item.duration,
-            isLiked: item.liked
-        };
-        addToQueue(track);
+const ItemCard: React.FC<ItemCardProps> = ({item, provider, toggleFavorite}): JSX.Element => {
+    const track:Track = {
+        id: item.id,
+        title: item.title,
+        artists: item.artistInfo,
+        imageUrl: item.imageUrl,
+        provider: provider,
+        uri: item.uri || item.trackUrl, 
+        duration: item.duration,
+        isFavorited: item.isFavorited,
     };
-
-const handleLike = () => {
-
-}
-
-
 
     return (
     <div className="flex text-sm justify-between bg-primary text-white p-2 hover:bg-gray-800">
@@ -55,7 +32,7 @@ const handleLike = () => {
                 <img src={item.imageUrl} className="w-12 h-12 object-cover rounded-sm"/>
             </div>
             <div className="flex flex-col items-start">
-                <p className=''>{item.title}</p>
+                <p className='max-w-[140px] sm:max-w-[180px] md:max-w-[250px] lg:max-w-[350px] truncate whitespace-nowrap overflow-hidden'>{item.title}</p>
                 <div className="flex flex-wrap text-xs">
                 {item.artistInfo.map((artist:any) => (
                     <a key={artist.name} href={artist.profileUrl} target="_blank" rel="noopener noreferrer" className="inline-block whitespace-nowrap hover:underline hover:text-accent opacity-75">{artist.name}</a> 
@@ -64,7 +41,7 @@ const handleLike = () => {
             </div>
         </div>
         {/* Right Side */}
-        <div>
+        <div className='flex flex-col justify-between'>
             <div className='flex items-start'>
                 <div className='flex gap-2'>
                     <img src={provider==='spotify' ? (FullSpotifyLogoGreen) : (FullSoundcloudLogo)} className={`object-contain ${provider === 'spotify' ? 'w-16' : 'w-24'}`}></img>
@@ -74,12 +51,8 @@ const handleLike = () => {
                 </div>
             </div>
             <div className='flex items-center gap-4'>
-                <div>
-                    {isAuthenticated ? <img onClick={handleLike} src={item.isLiked ? heartRedSVG : heartWhiteSVG} className='w-4'/> : null}
-                </div>
-                <div>
-                {(hasSpotifyPremium || provider === 'soundcloud') ? (<img src={AddToQueueSVG} className='w-6 h-6 hover:cursor-pointer hover:opacity-75' onClick={handleAddToQueue}/>) : (<button>Must have a spotify premium account</button>)}
-                </div>
+                <FavoriteAction trackId={track.id} provider={track.provider} isFavorited={track.isFavorited} toggleFavorite={toggleFavorite}/>
+                <AddToQueueAction track={track}/>
             </div>
         </div>
     </div>)

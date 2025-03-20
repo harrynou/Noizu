@@ -1,21 +1,27 @@
 import React, { useState } from "react" 
-import SpotifyLogo from "../assets/spotify/Icon.svg"
-import SoundCloudLogo from "../assets/soundcloud/Icon.svg"
-import spotifyAuth from "../services/spotifyAuth"
-import { signInUser } from "../services/api"
-import soundcloudAuth from "../services/soundcloudAuth";
-import { Link } from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
+import SpotifyLogo from "../../assets/spotify/Icon.svg"
+import SoundCloudLogo from "../../assets/soundcloud/Icon.svg"
+import spotifyAuth from "../../services/spotifyAuth"
+import SoundCloudAuth from "../../services/soundcloudAuth"
+import { registerUser } from "../../services/api"
+import { useAuth } from "../../contexts/authContext";
 
-const SignInCard: React.FC = (): JSX.Element => {
+
+const SignUpCard: React.FC = (): JSX.Element => {
 
     interface errors {
         email?: string, 
         password?: string, 
+        confirm?: string
     }
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [confirm, setConfirm] = useState<string>("");
     const [errors, setErrors] = useState<errors>({});
+    const navigate = useNavigate();
+    const {login} = useAuth()
 
     {/* 
         TODO:
@@ -26,6 +32,7 @@ const SignInCard: React.FC = (): JSX.Element => {
     const validateForm = () : boolean => {
         const newErrors: errors = {};
         const emailRegex: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,32}$/;
 
         if (!email) {
             newErrors.email = "An email is required";
@@ -35,10 +42,19 @@ const SignInCard: React.FC = (): JSX.Element => {
 
         if (!password) {
             newErrors.password = "A password is required.";
+        } else if (!passwordRegex.test(password)){
+            newErrors.password = "Password must be 8-32 characters long, include at least one uppercase letter, one lowercase letter, and one number";
         }
 
+        if (!confirm) {
+            newErrors.confirm = "Please confirm your password.";
+        } else if (password !== confirm ){
+            newErrors.confirm = "Passwords do not match.";
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+
+        
     }
 
     const handleSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -47,35 +63,23 @@ const SignInCard: React.FC = (): JSX.Element => {
             return;
         }
         try {
-            await signInUser(email,password)
+            const {userInfo, userHasPassword} = await registerUser(email,password)
+            login(userInfo, userHasPassword)
+            navigate('/home');
         } catch (error: any) {
-            if (error.error === "Email does not exist or password may not be set for a Spotify/SoundCloud Account."){
-                setErrors({email: error.error})
-            } else if (error.error === "Incorrect password."){
-                setErrors({password: error.error})
+            if (error.error === "Email Already in Use."){
+                setErrors({email:'Email is already in use.'})
             } else {
-                console.error("Error during sign-in:", error);
+                console.error("Error during registration:", error);
             }
         }
     }
-
-    const handleAuth = async (provider: string) => {
-        try {
-            if (provider === 'spotify'){
-            await spotifyAuth();
-            } else {
-            await soundcloudAuth();
-            }
-        } catch (error: any) {
-            console.error("Error during Spotify authentication:", error);
-        }
-    };
 
     return (
         <div className="flex flex-col flex-grow justify-center items-center">
             <div className="flex flex-col justify-center items-center mb-5">
                 <img src="" alt="Place Logo Here" className="w-16 h-16 md:w-20 md:h-20"/>
-                <div className="font-bold text-xl md:text-2xl text-center">Sign In Your Account</div>
+                <div className="font-bold text-xl md:text-2xl text-center">Sign Up for an Account</div>
             </div>
             <div className="bg-secondary text-textSecondary flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
                 <form onSubmit={handleSubmit} autoComplete="off">
@@ -90,9 +94,13 @@ const SignInCard: React.FC = (): JSX.Element => {
                             <input type="password" onChange={(e) => setPassword(e.target.value)} id="password-input" autoComplete="new-password" className="border border-gray-300 rounded p-1"></input>
                             {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
                         </div>
-                        
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="Confirm-password" className="text-sm">Confirm Password</label>
+                            <input type='password' onChange={(e) => {setConfirm(e.target.value)}} id="confirm-password-input" autoComplete="new-password" className="border border-gray-300 rounded p-1"></input>
+                            {errors.confirm && <p className="text-red-500 text-xs">{errors.confirm}</p>}
+                        </div>
                         <div className="flex justify-center">
-                            <button type="submit" className="border rounded bg-primary text-textPrimary hover:bg-gray-600 w-full py-2 text-sm">Sign In</button>
+                            <button type="submit" className="border rounded bg-primary text-textPrimary hover:bg-gray-600 w-full py-2 text-sm">Sign Up</button>
                         </div>
                     </div>    
                     </form>
@@ -102,20 +110,20 @@ const SignInCard: React.FC = (): JSX.Element => {
                     <hr className="w-1/5"></hr>
                 </div>
                 <div className="flex justify-center items-center w-full gap-5">
-                    <button aria-label="Authenticate with Spotify" onClick={() => handleAuth('spotify')} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
+                    <button  onClick={spotifyAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SpotifyLogo} alt="Spotify Logo" className="w-6 h-6" />
                         <span className="text-sm">Spotify</span>
                     </button>
-                    <button aria-label="Authenticate with Soundcloud" onClick={() => handleAuth('soundcloud')} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
+                    <button onClick={SoundCloudAuth} className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
                         <img src={SoundCloudLogo} alt="SoundCloud Logo" className="w-6 h-6"/>
                         <span className="text-sm">SoundCloud</span>
                     </button>
                 </div>
             </div>
-            <span className="text-sm text-center mt-2">Don't have an Account? <Link to='/sign-up' className="underline text-blue-400">Sign Up Here!</Link></span>
+            <span className=" text-sm text-center mt-2">Already have an Account? <Link to='/sign-in' className="underline text-blue-400">Sign in Here!</Link></span>
         </div>
     )
 }
 
-export default SignInCard
+export default SignUpCard
 

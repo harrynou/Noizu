@@ -1,4 +1,4 @@
-import SignInCard from "../components/SignInCard"
+import SignInCard from "../components/auth/SignInCard"
 
 const SignInPage: React.FC = (): JSX.Element => {
 

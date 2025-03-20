@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState, useMemo, useCal
 import {startSpotifyPlayback} from '../services/api';
 import { useAuth } from './authContext';
 
-interface Track {
+export interface Track {
     id: string;
     uri: string; 
     title: string;
@@ -10,6 +10,7 @@ interface Track {
     imageUrl?: string;
     provider: string;
     duration: number;
+    isFavorited: boolean;
 }
 
 interface MusicPlayerContextProps {

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { setUpAccount } from "../services/api.ts";
+import { setUpAccount } from "../../services/api.ts";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../contexts/authContext.tsx';
+import { useAuth } from '../../contexts/authContext.tsx';
 
 
 interface errors{

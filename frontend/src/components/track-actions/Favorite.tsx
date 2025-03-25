@@ -1,25 +1,30 @@
-import { useState } from 'react';
 import RedHeartSVG from '../../assets/heart-red.svg';
 import WhiteHeartSVG from '../../assets/heart-white.svg';
 import { useAuth } from '../../contexts/authContext';
 import { favoriteTrack } from '../../services/api';
+import { useFavoriteContext } from '../../contexts/favoriteContext';
+import { useSearchResult } from '../../contexts/searchResultContext';
 
 interface FavoriteProps {
     trackId: string;
     provider: string;
     isFavorited: boolean;
-    toggleFavorite: (trackId: string, provider: string) => void;
 }
 
-const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider, toggleFavorite}): JSX.Element => {
-    const [isFavorited, setIsFavorited] = useState<boolean>(true);
-    const { isAuthenticated } = useAuth()
-
+const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Element => {
+    const { isAuthenticated } = useAuth();
+    const { addFavorite, removeFavorite, isFavorited} = useFavoriteContext();
+    const { getTrack } = useSearchResult();
 
     const handleClick = async () => {
-        toggleFavorite(trackId, provider);
-        const success = await favoriteTrack(trackId, provider);
-        if (!success){
+        if (isFavorited(trackId,provider)){
+            removeFavorite(trackId,provider);
+        } else {
+            addFavorite();
+        }
+        try {
+            await favoriteTrack(trackId, provider);   
+        } catch (error) {
             toggleFavorite(trackId, provider);
         }
     }

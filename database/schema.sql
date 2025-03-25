@@ -22,11 +22,12 @@ CREATE TABLE linked_accounts (
 );
 
 CREATE TABLE favorites (
-    id SERIAL PRIMARY KEY,
+    favorite_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(user_id) on DELETE CASCADE NOT NULL,
     provider VARCHAR(50) NOT NULL,
-    item_id VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    track_id VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (user_id, provider, track_id)
 );
 
 ALTER TABLE users

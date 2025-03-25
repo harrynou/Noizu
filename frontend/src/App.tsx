@@ -16,6 +16,8 @@ import AccountSettingsPage from './pages/account-settings.tsx';
 import ProtectedRoute from './components/wrappers/ProtectedRoute.tsx';
 import { MusicPlayerProvider } from './contexts/musicPlayerContext.tsx';
 import PlaybackControls from './components/playback/PlaybackControls.tsx';
+import { SearchResultProvider } from './contexts/searchResultContext.tsx';
+import { FavoriteProvider } from './contexts/favoriteContext.tsx';
 
 const AppRoutes = () => {
   const { isAuthenticated, hasPassword, loading } = useAuth();
@@ -47,13 +49,17 @@ const AppRoutes = () => {
 const App: React.FC = (): JSX.Element => {
   return (
     <AuthContextProvider>
-    <MusicPlayerProvider>
+      <MusicPlayerProvider> 
+        <SearchResultProvider>
+          <FavoriteProvider>
         <div className='flex flex-col min-h-screen bg-custom-gradient text-white'>
           <Navbar/>
           <AppRoutes/>
           <PlaybackControls/>
         </div>
-    </MusicPlayerProvider>
+          </FavoriteProvider>
+        </SearchResultProvider>
+      </MusicPlayerProvider>
     </AuthContextProvider>
   )
 }

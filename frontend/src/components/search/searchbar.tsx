@@ -1,15 +1,12 @@
 import { useState } from "react";
 import magnifyingGlass from "../../assets/magnifying-glass.svg";
 import { searchQuery } from "../../services/api";
-
-interface SearchBarProps {
-    setSpotifySearchResults: (data:any) => void;
-    setSoundcloudSearchResults: (data:any) => void;
-}
+import { useSearchResult } from "../../contexts/searchResultContext";
 
 
-const SearchBar: React.FC<SearchBarProps> = ({setSpotifySearchResults, setSoundcloudSearchResults}): JSX.Element => {
+const SearchBar: React.FC = (): JSX.Element => {
     const [query, setQuery] = useState<string>('');
+    const { setTrackResults } = useSearchResult();
 
     const handleSubmit = async (e:React.FormEvent):Promise<void> => {
         e.preventDefault()
@@ -17,8 +14,13 @@ const SearchBar: React.FC<SearchBarProps> = ({setSpotifySearchResults, setSoundc
             return
         }
         try {
-        setSpotifySearchResults(await searchQuery(query, 'spotify'));
-        setSoundcloudSearchResults(await searchQuery(query,'soundcloud'));
+            searchQuery(query, "soundcloud")
+            .then(res => setTrackResults(res.queryData, "soundcloud"))
+            .catch(err => console.error("SoundCloud error:", err));
+
+            searchQuery(query, "spotify")
+            .then(res => setTrackResults(res.queryData, "spotify"))
+            .catch(err => console.error("Spotify error:", err));
         } catch (error) {
             console.error("Error occured trying to query.")
         }

@@ -46,7 +46,7 @@ export const refreshSpotifyClientCredentials = async (): Promise<string> => {
     }
 }
 
-export const spotifyQuery = async (query:string, accessToken: string):Promise<any> => {
+export const spotifySearchQuery = async (query:string, accessToken: string):Promise<any> => {
     try {
         const response = await axios.get('https://api.spotify.com/v1/search', {
             headers: {
@@ -54,8 +54,22 @@ export const spotifyQuery = async (query:string, accessToken: string):Promise<an
 
             },
             params: {q:query, limit: 10, type:'track', market:'US'}})
-        return response.data
+        return response.data;
     } catch (error) {
-        throw error
+        throw error;
+    }
+}
+
+export const getSpotifyTracks = async (trackIds: string[], accessToken: string):Promise<any> => {
+    try {
+        const response = await axios.get('https://api.spotify.com/v1/tracks', {
+            headers: {
+                Authorization: 'Bearer ' + accessToken,
+            },
+            params: {ids: trackIds.toString()}
+        })
+        return response.data;
+    } catch (error) {
+        throw error;
     }
 }

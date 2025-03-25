@@ -30,5 +30,12 @@ export class volumeDto {
     @IsNumber()
     newVolume: number;
 }
+export class favoriteTrackDto {
+    @IsString()
+    trackId: string;
+
+    @IsString()
+    provider: string;
+}
 
 

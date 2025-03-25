@@ -31,4 +31,15 @@ declare global {
         PLAY_PROGRESS: 'playProgress';
         LOAD_PROGRESS: 'loadProgress';
     }
+
+    interface Track {
+        id: string;
+        uri: string; 
+        title: string;
+        artists: any;
+        imageUrl?: string;
+        provider: string;
+        duration: number;
+        isFavorited: boolean;
+    }
 }

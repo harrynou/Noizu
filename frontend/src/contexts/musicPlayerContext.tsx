@@ -2,17 +2,6 @@ import { createContext, useContext, useEffect, useRef, useState, useMemo, useCal
 import {startSpotifyPlayback} from '../services/api';
 import { useAuth } from './authContext';
 
-export interface Track {
-    id: string;
-    uri: string; 
-    title: string;
-    artists: any;
-    imageUrl?: string;
-    provider: string;
-    duration: number;
-    isFavorited: boolean;
-}
-
 interface MusicPlayerContextProps {
     currentTrack: Track | null;
     currentPosition: number;

@@ -8,7 +8,6 @@ const VolumeMixer: React.FC = (): JSX.Element => {
     const volumeMixerRef = useRef<HTMLDivElement | null>(null);
     const rectRef = useRef<DOMRect | null>(null);
     const animationFrameRef = useRef<number | null>(null);
-    const [isDragging, setIsDragging] = useState(false);
     const [dragPosition, setDragPosition] = useState<number>(50);
     const volumePercentage = Math.max(0, Math.min(100, dragPosition));
     const {isAuthenticated} = useAuth();
@@ -31,7 +30,6 @@ const VolumeMixer: React.FC = (): JSX.Element => {
 
     const handlePointerDown: ReactEventHandler = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!volumeMixerRef.current) return;
-        setIsDragging(true);
         rectRef.current = volumeMixerRef.current.getBoundingClientRect();   
         document.addEventListener('pointermove', handlePointerMove);
         document.addEventListener('pointerup', handlePointerUp);
@@ -64,7 +62,6 @@ const VolumeMixer: React.FC = (): JSX.Element => {
     }
 
     const handlePointerUp = () => {
-        setIsDragging(false);
         document.removeEventListener("pointermove", handlePointerMove);
         document.removeEventListener("pointerup", handlePointerUp);
         setDragPosition((latestDragPosition) => {

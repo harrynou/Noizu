@@ -81,8 +81,6 @@ export const getSoundcloudUserInfo = async (accessToken: string): Promise<any>=>
     
 }
 
-
-
 export const soundcloudQuery = async (query:string, accessToken:string):Promise<any> => {
     try {
         const response = await axios.get('https://api-v2.soundcloud.com/search/tracks?', {
@@ -93,5 +91,18 @@ export const soundcloudQuery = async (query:string, accessToken:string):Promise<
         return response.data
     } catch (error) {
         throw error
+    }
+}
+
+export const getSoundcloudTracks = async (trackIds: string[]):Promise<any> => {
+    try {
+        const response = await axios.get('https://api-v2.soundcloud.com/tracks?', {
+            params: {ids: trackIds.toString(), client_id: `${process.env.SOUNDCLOUD_CLIENT_ID_V2}`},
+            headers: {
+                "accept": "application/json; charset=utf-8",
+            }});
+        return response.data;
+    } catch (error) {
+        throw error;
     }
 }

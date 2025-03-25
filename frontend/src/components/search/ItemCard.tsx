@@ -9,10 +9,9 @@ import FavoriteAction from '../track-actions/Favorite';
 interface ItemCardProps {
     item: any,
     provider: string,
-    toggleFavorite: (trackId: string, provider: string) => void;
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({item, provider, toggleFavorite}): JSX.Element => {
+const ItemCard: React.FC<ItemCardProps> = ({item, provider}): JSX.Element => {
     const track:Track = {
         id: item.id,
         title: item.title,
@@ -41,8 +40,9 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider, toggleFavorite}): JS
             </div>
         </div>
         {/* Right Side */}
-        <div className='flex flex-col justify-between'>
-            <div className='flex items-start'>
+        <div className='flex flex-col justify-between items-end'>
+            <div className='flex'>
+                {/* Attribution and External Link */}
                 <div className='flex gap-2'>
                     <img src={provider==='spotify' ? (FullSpotifyLogoGreen) : (FullSoundcloudLogo)} className={`object-contain ${provider === 'spotify' ? 'w-16' : 'w-24'}`}></img>
                     <a href={item.trackUrl} target="_blank" rel="noopener noreferrer">
@@ -50,8 +50,9 @@ const ItemCard: React.FC<ItemCardProps> = ({item, provider, toggleFavorite}): JS
                     </a>
                 </div>
             </div>
+            {/* Track Actions */}
             <div className='flex items-center gap-4'>
-                <FavoriteAction trackId={track.id} provider={track.provider} isFavorited={track.isFavorited} toggleFavorite={toggleFavorite}/>
+                <FavoriteAction trackId={track.id} provider={track.provider} isFavorited={track.isFavorited}/>
                 <AddToQueueAction track={track}/>
             </div>
         </div>

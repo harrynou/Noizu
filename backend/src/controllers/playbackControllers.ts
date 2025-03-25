@@ -12,6 +12,6 @@ export const updateVolume = async (req:Request, res: Response, next:NextFunction
         await updateUserVolume(userId, newVolume);
         return res.status(200).json("Volume Updated.");
     } catch (error) {
-        next();
+        next(error);
     }
 }

@@ -4,10 +4,9 @@ import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 
 interface ProgressBarProps {
     duration: number | null;
-    position: number;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({duration, position}): JSX.Element => {
+const ProgressBar: React.FC<ProgressBarProps> = ({duration}): JSX.Element => {
     const [isDragging, setIsDragging] = useState(false);
     const progressBarRef = useRef<HTMLDivElement | null>(null);
     const dragPositionRef = useRef<number | null>(null);

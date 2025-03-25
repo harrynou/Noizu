@@ -9,7 +9,7 @@ import VolumeMixer from './VolumeMixer.tsx';
 import queueSvg from '../../assets/queue-icon.svg'
 
 const PlaybackControls: React.FC = () => {
-    const { currentTrack, currentPosition, isPlaying, togglePlayPause, playNextTrack, playPreviousTrack } = useMusicPlayer();
+    const { currentTrack, isPlaying, togglePlayPause, playNextTrack, playPreviousTrack } = useMusicPlayer();
     const duration = currentTrack ? currentTrack.duration : null;
     
 
@@ -65,7 +65,7 @@ const PlaybackControls: React.FC = () => {
                     </a>
                 </div>
                 {/* Track Progress */}
-                <ProgressBar duration={duration} position={currentPosition}/>
+                <ProgressBar duration={duration}/>
             </div>
             {/* Right Side Options */}
             <div className='absolute right-2 flex gap-2'>

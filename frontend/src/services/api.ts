@@ -108,6 +108,15 @@ export const favoriteTrack = async (trackId: string, provider: string): Promise<
     }
 }
 
+export const getFavoriteTracks = async (): Promise<any> => {
+    try {
+        const response = await axiosInstance.get('/api/track/favorite');
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 
 
 // APIs dealing with Spotify 

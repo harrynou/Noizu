@@ -1,39 +1,228 @@
-import { useState } from "react";
-import magnifyingGlass from "../../assets/magnifying-glass.svg";
+import React, { useState, useRef, useEffect } from "react";
 import { searchQuery } from "../../services/api";
 import { useSearchResult } from "../../contexts/searchResultContext";
 
+interface SearchBarProps {
+    onSearch?: () => void;  // Optional callback for when search is performed
+}
 
-const SearchBar: React.FC = (): JSX.Element => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }): JSX.Element => {
     const [query, setQuery] = useState<string>('');
+    const [isSearching, setIsSearching] = useState<boolean>(false);
+    const [recentSearches, setRecentSearches] = useState<string[]>([]);
+    const [showRecent, setShowRecent] = useState<boolean>(false);
+    const searchInputRef = useRef<HTMLInputElement>(null);
+    const searchContainerRef = useRef<HTMLDivElement>(null);
     const { setTrackResults } = useSearchResult();
 
-    const handleSubmit = async (e:React.FormEvent):Promise<void> => {
-        e.preventDefault()
-        if (!query.trim()){
-            return
+    // Load recent searches from localStorage on component mount
+    useEffect(() => {
+        const saved = localStorage.getItem('recentSearches');
+        if (saved) {
+            try {
+                setRecentSearches(JSON.parse(saved).slice(0, 5));
+            } catch (e) {
+                console.error("Error loading recent searches:", e);
+            }
         }
+    }, []);
+
+    // Save recent searches to localStorage when updated
+    useEffect(() => {
+        if (recentSearches.length > 0) {
+            localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+        }
+    }, [recentSearches]);
+
+    // Close the dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+                setShowRecent(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const performSearch = async (searchTerm: string) => {
+        if (!searchTerm.trim()) return;
+        
+        setIsSearching(true);
+        setShowRecent(false);
+        
         try {
-            searchQuery(query, "soundcloud")
-            .then(res => setTrackResults(res.queryData, "soundcloud"))
-            .catch(err => console.error("SoundCloud error:", err));
+            // Add to recent searches (avoid duplicates)
+            setRecentSearches(prev => {
+                const filtered = prev.filter(item => item.toLowerCase() !== searchTerm.toLowerCase());
+                return [searchTerm, ...filtered].slice(0, 5);
+            });
 
-            searchQuery(query, "spotify")
-            .then(res => setTrackResults(res.queryData, "spotify"))
-            .catch(err => console.error("Spotify error:", err));
+            // Call the API for both providers
+            const [soundcloudResponse, spotifyResponse] = await Promise.allSettled([
+                searchQuery(searchTerm, "soundcloud"),
+                searchQuery(searchTerm, "spotify")
+            ]);
+
+            // Process SoundCloud results
+            if (soundcloudResponse.status === 'fulfilled') {
+                setTrackResults(soundcloudResponse.value.queryData, "soundcloud");
+            } else {
+                console.error("SoundCloud search error:", soundcloudResponse.reason);
+                setTrackResults([], "soundcloud");
+            }
+
+            // Process Spotify results
+            if (spotifyResponse.status === 'fulfilled') {
+                setTrackResults(spotifyResponse.value.queryData, "spotify");
+            } else {
+                console.error("Spotify search error:", spotifyResponse.reason);
+                setTrackResults([], "spotify");
+            }
+
+            // Notify parent component if callback provided
+            if (onSearch) onSearch();
+            
         } catch (error) {
-            console.error("Error occured trying to query.")
+            console.error("Error occurred during search:", error);
+        } finally {
+            setIsSearching(false);
         }
+    };
 
-    }
+    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+        e.preventDefault();
+        performSearch(query);
+    };
+
+    const handleRecentSearchClick = (term: string) => {
+        setQuery(term);
+        performSearch(term);
+    };
+
+    const handleFocus = () => {
+        if (recentSearches.length > 0) {
+            setShowRecent(true);
+        }
+    };
+
+    const clearRecentSearches = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setRecentSearches([]);
+        localStorage.removeItem('recentSearches');
+        setShowRecent(false);
+    };
+
     return (
-        <div className="flex justify-center items-center">
-            <form onSubmit={handleSubmit} className=" flex px-2 py-2 gap-2 sm:w-1/2 md:w-4/6 lg:w-1/2 border border-primary bg-secondary rounded-full text-lg">
-                <label htmlFor="query" className="sr-only">Search for a song</label>
-                <img src={magnifyingGlass} alt="SVG Icon" width="24" height="24" />
-                <input name="query" type='search' className="flex-1 outline-none bg-secondary text-textSecondary" placeholder="Search for a song" onChange={(e) => {setQuery(e.target.value)}}/>
+        <div ref={searchContainerRef} className="relative w-full max-w-3xl mx-auto">
+            <form onSubmit={handleSubmit} className="relative">
+                <div className="flex items-center bg-white bg-opacity-10 border border-gray-700 rounded-full overflow-hidden hover:bg-opacity-15 transition-all duration-200">
+                    {/* Search icon */}
+                    <div className="pl-4">
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="20" 
+                            height="20" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                            className="text-gray-400"
+                        >
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                    </div>
+                    
+                    {/* Input field */}
+                    <input 
+                        ref={searchInputRef}
+                        type="search" 
+                        className="w-full py-3 px-3 bg-transparent outline-none text-white placeholder-gray-400"
+                        placeholder="Search songs, artists, or albums..." 
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onFocus={handleFocus}
+                    />
+                    
+                    {/* Loading indicator or clear button */}
+                    {query && (
+                        <button 
+                            type="button"
+                            onClick={() => setQuery('')}
+                            className="pr-4 text-gray-400 hover:text-white"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    )}
+                    
+                    {/* Search button */}
+                    <button 
+                        type="submit" 
+                        className="bg-accent px-6 py-3 text-white font-medium h-full flex items-center justify-center"
+                        disabled={isSearching || !query.trim()}
+                    >
+                        {isSearching ? (
+                            <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        ) : (
+                            "Search"
+                        )}
+                    </button>
+                </div>
             </form>
+            
+            {/* Recent searches dropdown */}
+            {showRecent && recentSearches.length > 0 && (
+                <div className="absolute z-10 mt-2 w-full bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                    <div className="flex justify-between items-center px-4 py-2 border-b border-gray-700">
+                        <h3 className="text-sm font-medium text-gray-300">Recent Searches</h3>
+                        <button 
+                            onClick={clearRecentSearches}
+                            className="text-xs text-gray-400 hover:text-accent"
+                        >
+                            Clear all
+                        </button>
+                    </div>
+                    <ul>
+                        {recentSearches.map((term, index) => (
+                            <li key={index}>
+                                <button
+                                    className="w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 flex items-center gap-2"
+                                    onClick={() => handleRecentSearchClick(term)}
+                                >
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        width="16" 
+                                        height="16" 
+                                        viewBox="0 0 24 24" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        strokeWidth="2" 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round"
+                                        className="text-gray-400"
+                                    >
+                                        <polyline points="15 18 9 12 15 6"></polyline>
+                                    </svg>
+                                    {term}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
-    )   
-}
+    );
+};
+
 export default SearchBar;

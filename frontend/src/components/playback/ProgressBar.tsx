@@ -1,5 +1,5 @@
 import React, { ReactEventHandler, useEffect, useRef, useState} from "react";
-import msToMinutesSeconds from '../../utils/msToMinutesSeconds';
+import formatDuration from '../../utils/formatDuration';
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 
 interface ProgressBarProps {
@@ -13,12 +13,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({duration}): JSX.Element => {
     const rectRef = useRef<DOMRect | null>(null);
     const { seek, currentPosition } = useMusicPlayer()
 
-    const durationFormatted = msToMinutesSeconds(duration); 
-    let positionFormatted = isDragging ? msToMinutesSeconds(dragPositionRef.current) : msToMinutesSeconds(currentPosition);
+    const durationFormatted = formatDuration(duration); 
+    let positionFormatted = isDragging ? formatDuration(dragPositionRef.current) : formatDuration(currentPosition);
     const progressPercentage = duration ? Math.min(((dragPositionRef.current ?? currentPosition) / duration) * 100, 100) : 0;
 
     useEffect(() => {
-        positionFormatted = isDragging ? msToMinutesSeconds(dragPositionRef.current) : msToMinutesSeconds(currentPosition);
+        positionFormatted = isDragging ? formatDuration(dragPositionRef.current) : formatDuration(currentPosition);
     }, [currentPosition]);
 
     const handlePointerDown: ReactEventHandler = (e: React.PointerEvent<HTMLDivElement>) => {

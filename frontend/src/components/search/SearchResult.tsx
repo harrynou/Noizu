@@ -16,7 +16,7 @@ const SearchResult: React.FC = (): JSX.Element => {
     <div id="Results Container" className="">
         <div className="border-2 border-black h-[70vh]">
             {/* Parent Results Containers */}
-            <div className=" flex border-2 border-white h-full gap-4">
+            <div className="bg-slate-50 grid auto-cols-auto border-2 border-white h-full gap-4">
                 {/* Tabs */}
                 <div>
 

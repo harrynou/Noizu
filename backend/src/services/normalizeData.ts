@@ -26,6 +26,7 @@ export const normalizeTrackData = async (provider:string, searchData: any, userI
                 albumType: track.album.album_type,
                 duration: track.duration_ms,
                 uri: track.uri,
+                provider: 'spotify',
             }));
         } else if (provider === 'soundcloud') {
             tracks = searchData.map((track: any) => ({
@@ -42,6 +43,7 @@ export const normalizeTrackData = async (provider:string, searchData: any, userI
                 albumType: null,
                 duration: track.duration,
                 uri: track.uri,
+                provider: 'soundcloud',
             }));
         } else {
             throw Error("Unknown Provider");

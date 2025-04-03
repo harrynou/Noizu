@@ -332,8 +332,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             await startSpotifyPlayback(options);
         } else if (currentTrack.provider === 'soundcloud' && soundCloudPlayerRef.current) {
             setCurrentProvider('soundcloud');
-            console.log(autoPlay);
-            soundCloudPlayerRef.current.load(currentTrack.uri, {auto_play:autoPlay});
+            soundCloudPlayerRef.current.load(currentTrack.uri, {auto_play:true});
             if (currentPosition !== 0) {
                 setTimeout(() => {
                     seek(currentPosition); 

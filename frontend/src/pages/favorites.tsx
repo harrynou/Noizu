@@ -16,7 +16,8 @@ const FavoritesPage: React.FC = () : JSX.Element => {
         <div>
             <div className="border-2 border-black h-[70vh]">
             <Items data={spotifyFavoriteTracks} provider='spotify' />
-            <Items data={soundcloudFavoriteTracks} provider='soundcloud' />
+            <Items data={soundcloudFavoriteTracks} provider='soundcloud'/>
+            
             </div>
         </div>
 

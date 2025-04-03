@@ -1,7 +1,6 @@
 import RedHeartSVG from '../../assets/heart-red.svg';
 import WhiteHeartSVG from '../../assets/heart-white.svg';
 import { useAuth } from '../../contexts/authContext';
-import { favoriteTrack } from '../../services/api';
 import { useFavoriteContext } from '../../contexts/favoriteContext';
 import { useSearchResult } from '../../contexts/searchResultContext';
 
@@ -20,18 +19,15 @@ const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Eleme
         if (isFavorited(trackId,provider)){
             removeFavorite(trackId,provider);
         } else {
-            addFavorite();
-        }
-        try {
-            await favoriteTrack(trackId, provider);   
-        } catch (error) {
-            toggleFavorite(trackId, provider);
+            const track = getTrack(trackId, provider);
+            if (!track) return;
+            addFavorite(track);
         }
     }
 
     return (
         <div>
-            {isAuthenticated ? (<img src={isFavorited ? RedHeartSVG : WhiteHeartSVG} onClick={handleClick} className='w-6 h-4 hover:cursor-pointer hover:opacity-50'/>) : null}
+            {isAuthenticated ? (<img src={isFavorited(trackId,provider) ? RedHeartSVG : WhiteHeartSVG} onClick={handleClick} className='w-6 h-4 hover:cursor-pointer hover:opacity-50'/>) : null}
         </div>
     )
 }

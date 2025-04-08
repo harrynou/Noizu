@@ -1,6 +1,5 @@
 import { useAuth } from "../../contexts/authContext";
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
-import { Track } from "../../contexts/musicPlayerContext";
 import AddToQueueSVG from '../../assets/AddToQueue.svg';
 
 

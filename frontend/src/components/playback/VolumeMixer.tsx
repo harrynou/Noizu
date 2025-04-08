@@ -1,4 +1,4 @@
-import { useState, useRef, ReactEventHandler, useEffect } from "react";
+import { useState, useRef, ReactEventHandler, useEffect, useCallback } from "react";
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 import { setUserVolume } from "../../services/api";
 import {useAuth} from '../../contexts/authContext'
@@ -13,14 +13,9 @@ const VolumeMixer: React.FC = (): JSX.Element => {
     const {isAuthenticated} = useAuth();
     const [isMuted, setIsMuted] = useState<boolean>(currentVolume === 0);
     const previousVolumeRef = useRef<number>(currentVolume || 0.5);
+    const [showTooltip, setShowTooltip] = useState<boolean>(false);
 
-    // useEffect(() => {
-    //     window.addEventListener('keydown', handleMKey);
-    //     return () => {
-    //         window.removeEventListener('keydown', handleMKey);
-    //     }
-    // })
-
+    // Update local state when currentVolume changes
     useEffect(() => {
         if (currentVolume !== null){
             setDragPosition(currentVolume * 100); // Convert to percentage
@@ -37,7 +32,7 @@ const VolumeMixer: React.FC = (): JSX.Element => {
 
     }
 
-    const updateDragPosition = (clientX: number) => {
+    const updateDragPosition = useCallback((clientX: number) => {
 
         if (!rectRef.current) return;
         const newProgress = Math.max(0, Math.min(1, (clientX - rectRef.current.left) / rectRef.current.width));
@@ -53,24 +48,24 @@ const VolumeMixer: React.FC = (): JSX.Element => {
         setDragPosition(newVolume); 
         setNewVolume(newVolume / 100);
 
-    };
+    }, [currentVolume, setNewVolume]);
 
 
-    const handlePointerMove = (e: PointerEvent) => {
+    const handlePointerMove = useCallback((e: PointerEvent) => {
         if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = requestAnimationFrame(() => updateDragPosition(e.clientX));
-    }
+    }, [updateDragPosition]);
 
-    const handlePointerUp = () => {
+    const handlePointerUp = useCallback(() => {
         document.removeEventListener("pointermove", handlePointerMove);
         document.removeEventListener("pointerup", handlePointerUp);
         setDragPosition((latestDragPosition) => {
             if (isAuthenticated) setUserVolume(latestDragPosition / 100);
             return latestDragPosition;
         });
-    };
+    }, [dragPosition, handlePointerMove, isAuthenticated]);
 
-    const handleMute = () => {
+    const handleMute = useCallback(() => {
         if (!isMuted) {
             previousVolumeRef.current = currentVolume || 0.5; // Save last volume before mute
             setNewVolume(0);
@@ -78,18 +73,13 @@ const VolumeMixer: React.FC = (): JSX.Element => {
             setNewVolume(previousVolumeRef.current);
         }
         setIsMuted(!isMuted);
-    };
-
-    // const handleMKey = (event: KeyboardEvent) => {
-    //     if (event.code === 'KeyM'){
-    //         event.preventDefault();
-    //         handleMute();
-    //     }
-    // }
+    }, [isMuted, currentVolume, setNewVolume]);
 
     return (
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}>
             {/* speaker icon */}
             <div onClick={handleMute} className="w-6">
                 <svg className="w-full h-full" viewBox="0 0 24 24" fill="none">
@@ -110,6 +100,12 @@ const VolumeMixer: React.FC = (): JSX.Element => {
                     className={"absolute top-0 left-0 bg-textPrimary rounded"}
                     style={{ width: `${volumePercentage}%`, height: '6px' }}>
                 </div>
+            {/* Tooltip */}
+            {showTooltip && (
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap">
+                        {Math.round(volumePercentage)}%
+                    </div>
+                )}
             </div>
         </div>
 

@@ -8,6 +8,7 @@ import { useAuth } from "../contexts/authContext";
 import SpotifyIcon from '../assets/spotify/Icon.svg';
 import SoundcloudIcon from '../assets/soundcloud/Icon.svg';
 import QueueManager from '../components/playback/QueueManager';
+import ItemCard from '../components/search/ItemCard';
 
 const HomePage: React.FC = (): JSX.Element => {
     const { spotifyTracks, soundcloudTracks } = useSearchResult();
@@ -30,61 +31,6 @@ const HomePage: React.FC = (): JSX.Element => {
 
     const toggleQueueDisplay = () => {
         setShowQueue(!showQueue);
-    };
-
-    // Track display component with play/queue actions
-    const TrackItem = ({ track, provider }: { track: any, provider: string }) => {
-        return (
-            <div className="flex justify-between items-center bg-primary hover:bg-gray-800 rounded-md p-3 mb-2 transition-all duration-200">
-                <div className="flex items-center gap-4 flex-1">
-                    <img 
-                        src={track.imageUrl || '/default-album-art.jpg'} 
-                        alt={track.title} 
-                        className="w-12 h-12 object-cover rounded-md"
-                    />
-                    <div className="flex flex-col flex-1 min-w-0">
-                        <p className="text-white font-medium truncate">{track.title}</p>
-                        <div className="text-gray-400 text-sm flex flex-wrap">
-                            {track.artistInfo.map((artist: any, index: number) => (
-                                <React.Fragment key={artist.name}>
-                                    {index > 0 && <span>, </span>}
-                                    <a 
-                                        href={artist.profileUrl} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="hover:underline hover:text-accent truncate"
-                                    >
-                                        {artist.name}
-                                    </a>
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <img 
-                        src={provider === 'spotify' ? SpotifyIcon : SoundcloudIcon} 
-                        alt={`${provider} logo`}
-                        className="w-5 h-5"
-                    />
-                    <button 
-                        onClick={() => handleAddToQueue({
-                            id: track.id,
-                            title: track.title,
-                            artists: track.artistInfo,
-                            imageUrl: track.imageUrl,
-                            provider: provider,
-                            uri: track.uri || track.trackUrl,
-                            duration: track.duration,
-                            isFavorited: track.isFavorited
-                        })}
-                        className="text-white bg-accent hover:bg-opacity-80 px-3 py-1 rounded-full text-sm transition-colors duration-200"
-                    >
-                        Add to Queue
-                    </button>
-                </div>
-            </div>
-        );
     };
 
     // Render welcome or no results message
@@ -171,7 +117,7 @@ const HomePage: React.FC = (): JSX.Element => {
                                                     Spotify Results
                                                 </h2>
                                                 {spotifyTracks.slice(0, 5).map((track) => (
-                                                    <TrackItem key={track.id} track={track} provider="spotify" />
+                                                    <ItemCard key={track.id} item={track} provider={track.provider}/>
                                                 ))}
                                                 {spotifyTracks.length > 5 && (
                                                     <button 
@@ -191,7 +137,7 @@ const HomePage: React.FC = (): JSX.Element => {
                                                     SoundCloud Results
                                                 </h2>
                                                 {soundcloudTracks.slice(0, 5).map((track) => (
-                                                    <TrackItem key={track.id} track={track} provider="soundcloud" />
+                                                    <ItemCard key={track.id} item={track} provider={track.provider}/>
                                                 ))}
                                                 {soundcloudTracks.length > 5 && (
                                                     <button 
@@ -207,11 +153,11 @@ const HomePage: React.FC = (): JSX.Element => {
                                 )}
                                 
                                 {activeTab === 'spotify' && spotifyTracks.map((track) => (
-                                    <TrackItem key={track.id} track={track} provider="spotify" />
+                                    <ItemCard key={track.id} item={track} provider={track.provider}/>
                                 ))}
                                 
                                 {activeTab === 'soundcloud' && soundcloudTracks.map((track) => (
-                                    <TrackItem key={track.id} track={track} provider="soundcloud" />
+                                    <ItemCard key={track.id} item={track} provider={track.provider}/>
                                 ))}
                             </div>
                         )}

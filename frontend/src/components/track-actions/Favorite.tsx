@@ -7,7 +7,6 @@ import { useSearchResult } from '../../contexts/searchResultContext';
 interface FavoriteProps {
     trackId: string;
     provider: string;
-    isFavorited: boolean;
 }
 
 const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Element => {

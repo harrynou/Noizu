@@ -12,7 +12,7 @@ import ItemCard from '../components/search/ItemCard';
 
 const HomePage: React.FC = (): JSX.Element => {
     const { spotifyTracks, soundcloudTracks } = useSearchResult();
-    const { currentTrack, addToQueue, isPlaying, togglePlayPause } = useMusicPlayer();
+    const { currentTrack, isPlaying, togglePlayPause } = useMusicPlayer();
     const { isAuthenticated } = useAuth();
     const [activeTab, setActiveTab] = useState<'all' | 'spotify' | 'soundcloud'>('all');
     const [showQueue, setShowQueue] = useState<boolean>(false);
@@ -24,10 +24,6 @@ const HomePage: React.FC = (): JSX.Element => {
             setSearchPerformed(true);
         }
     }, [spotifyTracks, soundcloudTracks]);
-
-    const handleAddToQueue = (track: Track) => {
-        addToQueue(track);
-    };
 
     const toggleQueueDisplay = () => {
         setShowQueue(!showQueue);

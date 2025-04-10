@@ -14,9 +14,14 @@ const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Eleme
     const { isAuthenticated } = useAuth();
     const { addFavorite, removeFavorite, isFavorited} = useFavoriteContext();
     const { getTrack } = useSearchResult();
+    const trackFavorited = isFavorited(trackId,provider);
+
 
     const handleClick = async () => {
-        if (isFavorited(trackId,provider)){
+        if (!isAuthenticated) {
+            return;
+        }
+        if (trackFavorited){
             removeFavorite(trackId,provider);
         } else {
             const track = getTrack(trackId, provider);
@@ -27,8 +32,12 @@ const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Eleme
 
     return (
         <div>
-            {isAuthenticated ? (<img src={isFavorited(trackId,provider) ? RedHeartSVG : WhiteHeartSVG} onClick={handleClick} className='w-6 h-4 hover:cursor-pointer hover:opacity-50'/>) : null}
-        </div>
+<img 
+                        src={trackFavorited ? RedHeartSVG : WhiteHeartSVG} 
+                        className="w-4 h-4 group-hover:opacity-80 transition-transform hover:scale-125"
+                        alt={trackFavorited ? "Favorited" : "Not favorited"} 
+                        onClick={handleClick}
+                    />        </div>
     )
 }
 

@@ -124,7 +124,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
                 </div>
                 {/* Track Actions */}
                 <div className='flex items-center gap-4'>
-                    <FavoriteAction trackId={track.id} provider={track.provider} isFavorited={track.isFavorited}/>
+                    <FavoriteAction trackId={track.id} provider={track.provider}/>
                     <AddToQueueAction track={track}/>
                 </div>
             </div>

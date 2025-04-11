@@ -55,7 +55,7 @@ const Navbar: React.FC = (): JSX.Element => {
         return (
             <nav className="bg-primary flex justify-between items-center text-white px-4 md:px-8 py-2 h-16">
                 <div className="flex items-center gap-8">
-                    <div className="font-bold text-lg">MeloSearch</div>
+                    <div className="font-bold text-lg">Noizu</div>
                 </div>
                 <div className="animate-pulse bg-gray-700 h-6 w-20 rounded"></div>
             </nav>
@@ -77,7 +77,7 @@ const Navbar: React.FC = (): JSX.Element => {
                                         <circle cx="18" cy="16" r="3"></circle>
                                     </svg>
                                 </div>
-                                <span className="font-bold text-xl text-white tracking-tight">MeloSearch</span>
+                                <span className="font-bold text-xl text-white tracking-tight">Noizu</span>
                             </div>
                         </Link>
 

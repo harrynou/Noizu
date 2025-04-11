@@ -34,7 +34,7 @@ const HomePage: React.FC = (): JSX.Element => {
         if (!searchPerformed) {
             return (
                 <div className="flex flex-col items-center justify-center text-center py-20">
-                    <h2 className="text-2xl font-bold mb-4">Welcome to MeloSearch</h2>
+                    <h2 className="text-2xl font-bold mb-4">Welcome to Noizu</h2>
                     <p className="text-gray-300 max-w-md mb-6">
                         Search for your favorite songs across Spotify and SoundCloud in one place.
                         {!isAuthenticated && " Sign in to save favorites and create playlists."}

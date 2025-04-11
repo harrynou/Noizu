@@ -63,27 +63,27 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">1. Acceptance of Terms</h2>
                                     <p className="text-gray-300 mb-4">
-                                        By accessing or using MeloSearch, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this service.
+                                        By accessing or using Noizu, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this service.
                                     </p>
                                     <p className="text-gray-300">
-                                        We reserve the right to modify these terms at any time, and changes will be effective immediately upon posting to the website. Your continued use of MeloSearch after any such changes constitutes your acceptance of the new Terms of Service.
+                                        We reserve the right to modify these terms at any time, and changes will be effective immediately upon posting to the website. Your continued use of Noizu after any such changes constitutes your acceptance of the new Terms of Service.
                                     </p>
                                 </section>
                                 
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">2. Account Registration</h2>
                                     <p className="text-gray-300 mb-4">
-                                        To access certain features of MeloSearch, you may be required to register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.
+                                        To access certain features of Noizu, you may be required to register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.
                                     </p>
                                     <p className="text-gray-300 mb-4">
-                                        You are responsible for safeguarding the password that you use to access MeloSearch and for any activities or actions under your password. We encourage you to use "strong" passwords (passwords that use a combination of upper and lower case letters, numbers, and symbols) with your account.
+                                        You are responsible for safeguarding the password that you use to access Noizu and for any activities or actions under your password. We encourage you to use "strong" passwords (passwords that use a combination of upper and lower case letters, numbers, and symbols) with your account.
                                     </p>
                                 </section>
                                 
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">3. Authentication with Third-Party Services</h2>
                                     <p className="text-gray-300 mb-4">
-                                        MeloSearch allows you to authenticate using your Spotify and SoundCloud accounts. By connecting these accounts, you authorize MeloSearch to access your information from these platforms according to their respective terms and privacy policies.
+                                        Noizu allows you to authenticate using your Spotify and SoundCloud accounts. By connecting these accounts, you authorize Noizu to access your information from these platforms according to their respective terms and privacy policies.
                                     </p>
                                     <p className="text-gray-300 mb-4">
                                         We only request the minimum necessary permissions to provide our service. You can revoke access to these platforms at any time through their respective settings.
@@ -93,30 +93,30 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">4. Service Usage</h2>
                                     <p className="text-gray-300 mb-4">
-                                        MeloSearch is provided "as is" without any guarantees or warranty. We make no promises about the reliability, availability, or continuity of our services.
+                                        Noizu is provided "as is" without any guarantees or warranty. We make no promises about the reliability, availability, or continuity of our services.
                                     </p>
                                     <p className="text-gray-300 mb-4">
-                                        We reserve the right to modify, suspend, or discontinue MeloSearch or any part thereof at any time, with or without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuance of the service.
+                                        We reserve the right to modify, suspend, or discontinue Noizu or any part thereof at any time, with or without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuance of the service.
                                     </p>
                                 </section>
                                 
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">5. Content and Copyright</h2>
                                     <p className="text-gray-300 mb-4">
-                                        MeloSearch does not claim ownership of any content accessed through third-party services such as Spotify and SoundCloud. All music, album artwork, and related content remain the property of their respective owners.
+                                        Noizu does not claim ownership of any content accessed through third-party services such as Spotify and SoundCloud. All music, album artwork, and related content remain the property of their respective owners.
                                     </p>
                                     <p className="text-gray-300 mb-4">
-                                        Any content that you create on MeloSearch, such as playlists, is subject to our Content Policy. You retain ownership of your original content, but grant us a license to use, modify, and display that content for the purpose of providing MeloSearch services.
+                                        Any content that you create on Noizu, such as playlists, is subject to our Content Policy. You retain ownership of your original content, but grant us a license to use, modify, and display that content for the purpose of providing Noizu services.
                                     </p>
                                 </section>
                                 
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">6. Termination</h2>
                                     <p className="text-gray-300 mb-4">
-                                        We may terminate or suspend your account and access to MeloSearch immediately, without prior notice or liability, for any reason, including if you breach the Terms of Service.
+                                        We may terminate or suspend your account and access to Noizu immediately, without prior notice or liability, for any reason, including if you breach the Terms of Service.
                                     </p>
                                     <p className="text-gray-300 mb-4">
-                                        Upon termination, your right to use MeloSearch will immediately cease. All provisions of these Terms which by their nature should survive termination shall survive, including ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
+                                        Upon termination, your right to use Noizu will immediately cease. All provisions of these Terms which by their nature should survive termination shall survive, including ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
                                     </p>
                                 </section>
                                 
@@ -142,7 +142,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         When you connect your Spotify or SoundCloud accounts, we collect information from these services, including your public profile information, playlists, and favorites. We only access the information necessary to provide our services.
                                     </p>
                                     <p className="text-gray-300 mb-4">
-                                        We automatically collect certain information when you use MeloSearch, including your IP address, browser type, operating system, referring URLs, access times, and pages viewed.
+                                        We automatically collect certain information when you use Noizu, including your IP address, browser type, operating system, referring URLs, access times, and pages viewed.
                                     </p>
                                 </section>
                                 
@@ -170,7 +170,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                     <ul className="list-disc pl-6 mb-4 text-gray-300 space-y-2">
                                         <li>With vendors, consultants, and other service providers who need access to such information to carry out work on our behalf</li>
                                         <li>In response to a request for information if we believe disclosure is in accordance with any applicable law, regulation, or legal process</li>
-                                        <li>If we believe your actions are inconsistent with our user agreements or policies, or to protect the rights, property, and safety of MeloSearch or others</li>
+                                        <li>If we believe your actions are inconsistent with our user agreements or policies, or to protect the rights, property, and safety of Noizu or others</li>
                                         <li>In connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company</li>
                                     </ul>
                                 </section>
@@ -214,7 +214,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">1. Digital Millennium Copyright Act (DMCA)</h2>
                                     <p className="text-gray-300 mb-4">
-                                        MeloSearch respects the intellectual property rights of others and expects its users to do the same. We will respond to notices of alleged copyright infringement that comply with applicable law and are properly provided to us.
+                                        Noizu respects the intellectual property rights of others and expects its users to do the same. We will respond to notices of alleged copyright infringement that comply with applicable law and are properly provided to us.
                                     </p>
                                     <p className="text-gray-300 mb-4">
                                         If you believe that your content has been copied in a way that constitutes copyright infringement, please provide us with the following information:
@@ -233,9 +233,9 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">2. MeloSearch's Response to DMCA Notices</h2>
+                                    <h2 className="text-xl font-semibold mb-4">2. Noizu's Response to DMCA Notices</h2>
                                     <p className="text-gray-300 mb-4">
-                                        Upon receiving a compliant DMCA notice, MeloSearch will promptly take the following actions:
+                                        Upon receiving a compliant DMCA notice, Noizu will promptly take the following actions:
                                     </p>
                                     <ul className="list-disc pl-6 mb-4 text-gray-300 space-y-2">
                                         <li>Remove or disable access to the content identified in the notice</li>
@@ -287,7 +287,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">2. Content Guidelines</h2>
                                     <p className="text-gray-300 mb-4">
-                                        You are solely responsible for any content that you create, upload, post, or share on MeloSearch. This includes playlist names, descriptions, and any comments or messages.
+                                        You are solely responsible for any content that you create, upload, post, or share on Noizu. This includes playlist names, descriptions, and any comments or messages.
                                     </p>
                                     <p className="text-gray-300 mb-4">
                                         The following types of content are prohibited:
@@ -331,7 +331,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold mb-4">1. Overview</h2>
                                     <p className="text-gray-300 mb-4">
-                                        MeloSearch allows you to connect to third-party services such as Spotify and SoundCloud. These integrations enable you to access content from these platforms within our application.
+                                        Noizu allows you to connect to third-party services such as Spotify and SoundCloud. These integrations enable you to access content from these platforms within our application.
                                     </p>
                                     <p className="text-gray-300 mb-4">
                                         Your use of these third-party services is subject to their respective terms of service and privacy policies. We encourage you to review these documents before connecting your accounts.
@@ -350,7 +350,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         <li>Create and modify playlists on your Spotify account</li>
                                     </ul>
                                     <p className="text-gray-300 mb-4">
-                                        To use these features, you must authorize MeloSearch to access your Spotify account. You can revoke this access at any time through your Spotify account settings.
+                                        To use these features, you must authorize Noizu to access your Spotify account. You can revoke this access at any time through your Spotify account settings.
                                     </p>
                                     <p className="text-gray-300 mb-4">
                                         For more information about Spotify's terms and privacy policy, please visit:
@@ -372,7 +372,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         <li>Access your SoundCloud likes and playlists</li>
                                     </ul>
                                     <p className="text-gray-300 mb-4">
-                                        To use these features, you must authorize MeloSearch to access your SoundCloud account. You can revoke this access at any time through your SoundCloud account settings.
+                                        To use these features, you must authorize Noizu to access your SoundCloud account. You can revoke this access at any time through your SoundCloud account settings.
                                     </p>
                                     <p className="text-gray-300 mb-4">
                                         For more information about SoundCloud's terms and privacy policy, please visit:
@@ -386,13 +386,13 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <section>
                                     <h2 className="text-xl font-semibold mb-4">4. Disclaimer</h2>
                                     <p className="text-gray-300 mb-4">
-                                        MeloSearch is not affiliated with, endorsed by, or sponsored by Spotify or SoundCloud. All trademarks, service marks, trade names, and logos are the property of their respective owners.
+                                        Noizu is not affiliated with, endorsed by, or sponsored by Spotify or SoundCloud. All trademarks, service marks, trade names, and logos are the property of their respective owners.
                                     </p>
                                     <p className="text-gray-300 mb-4">
-                                        We do not guarantee the availability, reliability, or functionality of these third-party services. MeloSearch may be affected by changes to their APIs, terms of service, or business practices.
+                                        We do not guarantee the availability, reliability, or functionality of these third-party services. Noizu may be affected by changes to their APIs, terms of service, or business practices.
                                     </p>
                                     <p className="text-gray-300 mb-4">
-                                        In the event that a third-party service becomes unavailable or changes in a way that affects MeloSearch, we will make reasonable efforts to adapt our application accordingly, but we cannot guarantee continuous or uninterrupted access to these services.
+                                        In the event that a third-party service becomes unavailable or changes in a way that affects Noizu, we will make reasonable efforts to adapt our application accordingly, but we cannot guarantee continuous or uninterrupted access to these services.
                                     </p>
                                 </section>
                             </div>

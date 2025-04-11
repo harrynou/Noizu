@@ -28,7 +28,7 @@ const AboutMePage: React.FC = (): JSX.Element => {
         <div className="container mx-auto p-4 md:p-6 pb-24">
             {/* Hero Section */}
             <section className="text-center mb-12 pt-8">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">About MeloSearch</h1>
+                <h1 className="text-3xl md:text-4xl font-bold mb-4">About Noizu</h1>
                 <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                     The ultimate platform to discover and enjoy music from multiple streaming services in one place.
                 </p>
@@ -39,7 +39,7 @@ const AboutMePage: React.FC = (): JSX.Element => {
                 <div className="bg-gray-800 rounded-lg p-6 md:p-8">
                     <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
                     <p className="text-gray-300 leading-relaxed">
-                        MeloSearch was created with a simple goal: to unify the music streaming experience.
+                        Noizu was created with a simple goal: to unify the music streaming experience.
                         We believe that finding and enjoying music shouldn't be fragmented across multiple platforms.
                         Our application brings together content from Spotify and SoundCloud, allowing you to search,
                         discover, and create playlists that span across services, all in one seamless interface.

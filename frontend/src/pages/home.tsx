@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import SearchBar from '../components/search/SearchBar';
+import SearchBar from "../components/search/SearchBar";
 import { useSearchResult } from "../contexts/searchResultContext";
 import { useMusicPlayer } from "../contexts/musicPlayerContext";
 import { useAuth } from "../contexts/authContext";

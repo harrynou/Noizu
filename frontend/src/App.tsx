@@ -18,7 +18,7 @@ import { MusicPlayerProvider } from './contexts/musicPlayerContext.tsx';
 import PlaybackControls from './components/playback/PlaybackControls.tsx';
 import { SearchResultProvider } from './contexts/searchResultContext.tsx';
 import { FavoriteProvider } from './contexts/favoriteContext.tsx';
-import CreativeBackground from './components/Background.tsx';
+import Background from './components/Background.tsx';
 
 const AppRoutes = () => {
   const { isAuthenticated, hasPassword, loading } = useAuth();
@@ -53,11 +53,11 @@ const App: React.FC = (): JSX.Element => {
       <MusicPlayerProvider>
         <SearchResultProvider>
           <FavoriteProvider>
-            <CreativeBackground>
+            <Background>
           <Navbar/>
           <AppRoutes/>
           <PlaybackControls/>
-          </CreativeBackground>
+          </Background>
           </FavoriteProvider>
         </SearchResultProvider>
       </MusicPlayerProvider>

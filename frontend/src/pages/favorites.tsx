@@ -25,20 +25,20 @@ const FavoritesPage: React.FC = (): JSX.Element => {
                 <div className="flex">
                     <button
                         onClick={() => setActiveTab('all')}
-                        className={`py-2 px-4 ${activeTab === 'all' ? 'border-b-2 border-accent text-white' : 'text-gray-400'}`}
+                        className={`py-2 px-4 ${activeTab === 'all' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
                     >
                         All Favorites
                     </button>
                     <button
                         onClick={() => setActiveTab('spotify')}
-                        className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'spotify' ? 'border-b-2 border-accent text-white' : 'text-gray-400'}`}
+                        className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'spotify' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
                     >
                         <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
                         Spotify {spotifyFavoriteTracks.length > 0 && `(${spotifyFavoriteTracks.length})`}
                     </button>
                     <button
                         onClick={() => setActiveTab('soundcloud')}
-                        className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'soundcloud' ? 'border-b-2 border-accent text-white' : 'text-gray-400'}`}
+                        className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'soundcloud' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
                     >
                         <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
                         SoundCloud {soundcloudFavoriteTracks.length > 0 && `(${soundcloudFavoriteTracks.length})`}
@@ -59,7 +59,7 @@ const FavoritesPage: React.FC = (): JSX.Element => {
                         <p className="text-gray-400 max-w-md mb-6">
                             Start exploring and add songs to your favorites by clicking the heart icon.
                         </p>
-                        <Link to="/home" className="inline-block px-6 py-2 bg-accent text-white rounded-full text-center">
+                        <Link to="/home" className="inline-block px-6 py-2 bg-accentPrimary text-white rounded-full text-center">
                             Explore Music
                         </Link>
                     </div>

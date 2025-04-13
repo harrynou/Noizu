@@ -109,7 +109,7 @@ const QueueManager: React.FC = () => {
                                                     snapshot.isDragging ? 'opacity-70' : 'opacity-100'
                                                 } ${
                                                     isCurrentlyPlaying 
-                                                        ? 'bg-gradient-to-r from-accent/30 to-gray-800 border-l-2 border-accent' 
+                                                        ? 'bg-gradient-to-r from-accentPrimary/30 to-gray-800 border-l-2 border-accentPrimary' 
                                                         : 'bg-gray-800 hover:bg-gray-700'
                                                 }`}
                                                 onClick={() => handleTrackClick(index)}

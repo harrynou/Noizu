@@ -87,7 +87,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                 </div>
                 <button 
                     onClick={() => setShowCreateModal(true)}
-                    className="px-4 py-2 bg-accent text-white rounded-full flex items-center gap-2"
+                    className="px-4 py-2 bg-accentPrimary text-white rounded-full flex items-center gap-2"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -103,7 +103,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                     onClick={() => setActiveFilter('all')}
                     className={`px-4 py-2 rounded-full whitespace-nowrap ${
                         activeFilter === 'all' 
-                            ? 'bg-accent text-white' 
+                            ? 'bg-accentPrimary text-white' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                     }`}
                 >
@@ -113,7 +113,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                     onClick={() => setActiveFilter('spotify')}
                     className={`px-4 py-2 rounded-full flex items-center gap-2 whitespace-nowrap ${
                         activeFilter === 'spotify' 
-                            ? 'bg-accent text-white' 
+                            ? 'bg-accentPrimary text-white' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                     }`}
                 >
@@ -124,7 +124,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                     onClick={() => setActiveFilter('soundcloud')}
                     className={`px-4 py-2 rounded-full flex items-center gap-2 whitespace-nowrap ${
                         activeFilter === 'soundcloud' 
-                            ? 'bg-accent text-white' 
+                            ? 'bg-accentPrimary text-white' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                     }`}
                 >
@@ -135,7 +135,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                     onClick={() => setActiveFilter('custom')}
                     className={`px-4 py-2 rounded-full flex items-center gap-2 whitespace-nowrap ${
                         activeFilter === 'custom' 
-                            ? 'bg-accent text-white' 
+                            ? 'bg-accentPrimary text-white' 
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                     }`}
                 >
@@ -212,7 +212,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                     </p>
                     <button 
                         onClick={() => setShowCreateModal(true)} 
-                        className="px-6 py-2 bg-accent text-white rounded-full"
+                        className="px-6 py-2 bg-accentPrimary text-white rounded-full"
                     >
                         Create Playlist
                     </button>
@@ -235,7 +235,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                                     value={newPlaylistName}
                                     onChange={(e) => setNewPlaylistName(e.target.value)}
                                     placeholder="My Awesome Playlist"
-                                    className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                                    className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accentPrimary"
                                     required
                                 />
                             </div>
@@ -246,7 +246,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                                 <textarea
                                     id="playlist-desc"
                                     placeholder="Describe your playlist"
-                                    className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                                    className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accentPrimary"
                                     rows={3}
                                 />
                             </div>
@@ -275,7 +275,7 @@ const PlaylistsPage: React.FC = (): JSX.Element => {
                                 </button>
                                 <button 
                                     type="submit" 
-                                    className="px-4 py-2 bg-accent text-white rounded hover:bg-opacity-90"
+                                    className="px-4 py-2 bg-accentPrimary text-white rounded hover:bg-opacity-90"
                                     disabled={!newPlaylistName.trim()}
                                 >
                                     Create

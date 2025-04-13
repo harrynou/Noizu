@@ -43,7 +43,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
 
     return (
         <div 
-            className="flex justify-between bg-primary text-white p-2 hover:bg-gray-800 rounded-md transition-all duration-200"
+            className="flex justify-between  text-white p-2 hover:bg-gray-700 rounded-md"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -86,7 +86,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
                                     href={artist.profileUrl} 
                                     target="_blank" 
                                     rel="noopener noreferrer" 
-                                    className="inline-block whitespace-nowrap hover:underline hover:text-accent opacity-75"
+                                    className="inline-block whitespace-nowrap hover:underline hover:text-accentPrimary opacity-75"
                                 >
                                     {artist.name}
                                 </a>

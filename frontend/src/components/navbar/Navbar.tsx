@@ -13,8 +13,8 @@ const NavLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to, chil
       to={to}
       className={`px-3 py-2 text-sm font-medium ${
         isActive
-          ? 'text-white border-b-2 border-accent'
-          : 'text-gray-300 hover:text-white hover:border-b-2 hover:border-accent'
+          ? 'text-white border-b-2 border-accentPrimary'
+          : 'text-gray-300 hover:text-white hover:border-b-2 hover:border-accentPrimary'
       } transition-colors duration-200`}
     >
       {children}
@@ -70,7 +70,7 @@ const Navbar: React.FC = (): JSX.Element => {
                         {/* Logo and brand name */}
                         <Link to="/" className="flex items-center">
                             <div className="flex items-center space-x-2">
-                                <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-white">
                                         <path d="M9 18V5l12-2v13"></path>
                                         <circle cx="6" cy="18" r="3"></circle>
@@ -101,10 +101,10 @@ const Navbar: React.FC = (): JSX.Element => {
                     <div className="hidden md:flex md:items-center md:space-x-4">
                         {!isAuthenticated ? (
                             <>
-                                <Link to="/sign-in" className="text-white hover:text-accent transition-colors duration-200">
+                                <Link to="/sign-in" className="text-white hover:text-accentPrimary transition-colors duration-200">
                                     Sign In
                                 </Link>
-                                <Link to="/sign-up" className="px-4 py-2 rounded-full bg-accent text-white hover:bg-opacity-90 transition-colors duration-200">
+                                <Link to="/sign-up" className="px-4 py-2 rounded-full bg-accentPrimary text-white hover:bg-opacity-90 transition-colors duration-200">
                                     Sign Up
                                 </Link>
                             </>
@@ -158,10 +158,10 @@ const Navbar: React.FC = (): JSX.Element => {
                     <div className="flex items-center justify-around px-5">
                         {!isAuthenticated ? (
                             <>
-                                <Link to="/sign-in" className="block px-4 py-2 text-base font-medium text-white hover:text-accent transition-colors duration-200">
+                                <Link to="/sign-in" className="block px-4 py-2 text-base font-medium text-white hover:text-accentPrimary transition-colors duration-200">
                                     Sign In
                                 </Link>
-                                <Link to="/sign-up" className="block px-4 py-2 rounded-full bg-accent text-white hover:bg-opacity-90 transition-colors duration-200">
+                                <Link to="/sign-up" className="block px-4 py-2 rounded-full bg-accentPrimary text-white hover:bg-opacity-90 transition-colors duration-200">
                                     Sign Up
                                 </Link>
                             </>

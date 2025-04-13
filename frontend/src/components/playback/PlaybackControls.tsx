@@ -90,7 +90,7 @@ const PlaybackControls: React.FC = () => {
                                                 href={artist.profileUrl} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer" 
-                                                className="hover:underline hover:text-accent truncate"
+                                                className="hover:underline hover:text-accentPrimary truncate"
                                             >
                                                 {artist.name}
                                             </a>
@@ -149,7 +149,7 @@ const PlaybackControls: React.FC = () => {
                     >
                         <img src={queueSvg} className="w-6 h-6" alt="Queue" />
                         {queue.length > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-accent text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 bg-accentPrimary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                                 {queue.length}
                             </span>
                         )}

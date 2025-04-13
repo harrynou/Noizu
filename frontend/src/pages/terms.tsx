@@ -34,7 +34,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                             onClick={() => handleSectionChange(section.id)}
                                             className={`w-full text-left px-3 py-2 rounded-md transition ${
                                                 activeSection === section.id
-                                                    ? 'bg-accent text-white'
+                                                    ? 'bg-accentPrimary text-white'
                                                     : 'text-gray-300 hover:bg-gray-700'
                                             }`}
                                         >
@@ -55,13 +55,13 @@ const TermsPage: React.FC = (): JSX.Element => {
                 
                 {/* Main content area */}
                 <main className="md:w-3/4">
-                    <div className="bg-gray-800 rounded-lg p-6">
+                    <div className="text-secondary rounded-lg p-6">
                         {activeSection === 'terms' && (
                             <div>
-                                <h1 className="text-2xl font-bold mb-6">Terms of Service</h1>
+                                <h1 className="text-2xl font-bold mb-8"><span className='bg-accentPrimary rounded-full px-6 py-3'>Terms of Service</span></h1>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">1. Acceptance of Terms</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>1. Acceptance of Terms</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         By accessing or using Noizu, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this service.
                                     </p>
@@ -71,7 +71,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">2. Account Registration</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>2. Account Registration</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         To access certain features of Noizu, you may be required to register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.
                                     </p>
@@ -81,7 +81,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">3. Authentication with Third-Party Services</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>3. Authentication with Third-Party Services</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Noizu allows you to authenticate using your Spotify and SoundCloud accounts. By connecting these accounts, you authorize Noizu to access your information from these platforms according to their respective terms and privacy policies.
                                     </p>
@@ -91,7 +91,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">4. Service Usage</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>4. Service Usage</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Noizu is provided "as is" without any guarantees or warranty. We make no promises about the reliability, availability, or continuity of our services.
                                     </p>
@@ -101,7 +101,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">5. Content and Copyright</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>5. Content and Copyright</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Noizu does not claim ownership of any content accessed through third-party services such as Spotify and SoundCloud. All music, album artwork, and related content remain the property of their respective owners.
                                     </p>
@@ -111,7 +111,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">6. Termination</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>6. Termination</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         We may terminate or suspend your account and access to Noizu immediately, without prior notice or liability, for any reason, including if you breach the Terms of Service.
                                     </p>
@@ -121,9 +121,9 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section>
-                                    <h2 className="text-xl font-semibold mb-4">7. Contact Us</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>7. Contact Us</span></h2>
                                     <p className="text-gray-300 mb-4">
-                                        If you have any questions about these Terms of Service, please contact us at <a href="mailto:legal@melosearch.com" className="text-accent hover:underline">legal@melosearch.com</a>.
+                                        If you have any questions about these Terms of Service, please contact us at <a href="mailto:legal@Noizu.com" className="text-accentPrimary hover:underline">legal@Noizu.com</a>.
                                     </p>
                                 </section>
                             </div>
@@ -134,7 +134,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <h1 className="text-2xl font-bold mb-6">Privacy Policy</h1>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">1. Information We Collect</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>1. Information We Collect</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         We collect information that you provide directly to us, such as when you create an account, update your profile, or interact with features of our service. This may include your name, email address, and password.
                                     </p>
@@ -147,7 +147,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">2. How We Use Your Information</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>2. How We Use Your Information</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         We use the information we collect to:
                                     </p>
@@ -163,7 +163,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">3. Sharing of Information</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>3. Sharing of Information</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         We do not sell, trade, or otherwise transfer your personal information to outside parties except in the following circumstances:
                                     </p>
@@ -176,7 +176,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">4. Data Security</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>4. Data Security</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         We take reasonable measures to help protect information about you from loss, theft, misuse, and unauthorized access, disclosure, alteration, and destruction.
                                     </p>
@@ -186,7 +186,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">5. Your Choices</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>5. Your Choices</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         You may update, correct, or delete your account information at any time by logging into your account settings. If you wish to delete your account, please contact us.
                                     </p>
@@ -196,7 +196,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section>
-                                    <h2 className="text-xl font-semibold mb-4">6. Changes to this Privacy Policy</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>6. Changes to this Privacy Policy</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.
                                     </p>
@@ -212,7 +212,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <h1 className="text-2xl font-bold mb-6">Copyright Policy</h1>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">1. Digital Millennium Copyright Act (DMCA)</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>1. Digital Millennium Copyright Act (DMCA)</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Noizu respects the intellectual property rights of others and expects its users to do the same. We will respond to notices of alleged copyright infringement that comply with applicable law and are properly provided to us.
                                     </p>
@@ -228,12 +228,12 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         <li>A statement, made under penalty of perjury, that the above information is accurate, and that you are the copyright owner or are authorized to act on behalf of the owner</li>
                                     </ul>
                                     <p className="text-gray-300 mb-4">
-                                        DMCA notices should be sent to <a href="mailto:copyright@melosearch.com" className="text-accent hover:underline">copyright@melosearch.com</a>.
+                                        DMCA notices should be sent to <a href="mailto:copyright@Noizu.com" className="text-accentPrimary hover:underline">copyright@Noizu.com</a>.
                                     </p>
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">2. Noizu's Response to DMCA Notices</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>2. Noizu's Response to DMCA Notices</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Upon receiving a compliant DMCA notice, Noizu will promptly take the following actions:
                                     </p>
@@ -246,7 +246,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section>
-                                    <h2 className="text-xl font-semibold mb-4">3. Counter-Notices</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>3. Counter-Notices</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         If you believe that your content was removed or disabled by mistake or misidentification, you may send us a counter-notice. Your counter-notice must include:
                                     </p>
@@ -269,7 +269,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <h1 className="text-2xl font-bold mb-6">Acceptable Use Policy</h1>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">1. Prohibited Activities</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>1. Prohibited Activities</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         You agree not to engage in any of the following prohibited activities:
                                     </p>
@@ -285,7 +285,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">2. Content Guidelines</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>2. Content Guidelines</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         You are solely responsible for any content that you create, upload, post, or share on Noizu. This includes playlist names, descriptions, and any comments or messages.
                                     </p>
@@ -303,7 +303,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section>
-                                    <h2 className="text-xl font-semibold mb-4">3. Enforcement</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>3. Enforcement</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         We reserve the right, but are not obligated, to remove or disable access to any content that violates these guidelines or our Terms of Service.
                                     </p>
@@ -318,7 +318,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         <li>Legal action, if appropriate</li>
                                     </ul>
                                     <p className="text-gray-300 mb-4">
-                                        If you believe that a user has violated this policy, please report it to <a href="mailto:support@melosearch.com" className="text-accent hover:underline">support@melosearch.com</a>.
+                                        If you believe that a user has violated this policy, please report it to <a href="mailto:support@Noizu.com" className="text-accentPrimary hover:underline">support@Noizu.com</a>.
                                     </p>
                                 </section>
                             </div>
@@ -329,7 +329,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 <h1 className="text-2xl font-bold mb-6">Third-Party Services</h1>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">1. Overview</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>1. Overview</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Noizu allows you to connect to third-party services such as Spotify and SoundCloud. These integrations enable you to access content from these platforms within our application.
                                     </p>
@@ -339,7 +339,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">2. Spotify Integration</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>2. Spotify Integration</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Our Spotify integration allows you to:
                                     </p>
@@ -356,13 +356,13 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         For more information about Spotify's terms and privacy policy, please visit:
                                     </p>
                                     <ul className="list-disc pl-6 mb-4 text-gray-300 space-y-2">
-                                        <li><a href="https://www.spotify.com/legal/end-user-agreement/" className="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Spotify Terms of Service</a></li>
-                                        <li><a href="https://www.spotify.com/legal/privacy-policy/" className="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Spotify Privacy Policy</a></li>
+                                        <li><a href="https://www.spotify.com/legal/end-user-agreement/" className="text-accentPrimary hover:underline" target="_blank" rel="noopener noreferrer">Spotify Terms of Service</a></li>
+                                        <li><a href="https://www.spotify.com/legal/privacy-policy/" className="text-accentPrimary hover:underline" target="_blank" rel="noopener noreferrer">Spotify Privacy Policy</a></li>
                                     </ul>
                                 </section>
                                 
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold mb-4">3. SoundCloud Integration</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>3. SoundCloud Integration</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Our SoundCloud integration allows you to:
                                     </p>
@@ -378,13 +378,13 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         For more information about SoundCloud's terms and privacy policy, please visit:
                                     </p>
                                     <ul className="list-disc pl-6 mb-4 text-gray-300 space-y-2">
-                                        <li><a href="https://soundcloud.com/terms-of-use" className="text-accent hover:underline" target="_blank" rel="noopener noreferrer">SoundCloud Terms of Use</a></li>
-                                        <li><a href="https://soundcloud.com/pages/privacy" className="text-accent hover:underline" target="_blank" rel="noopener noreferrer">SoundCloud Privacy Policy</a></li>
+                                        <li><a href="https://soundcloud.com/terms-of-use" className="text-accentPrimary hover:underline" target="_blank" rel="noopener noreferrer">SoundCloud Terms of Use</a></li>
+                                        <li><a href="https://soundcloud.com/pages/privacy" className="text-accentPrimary hover:underline" target="_blank" rel="noopener noreferrer">SoundCloud Privacy Policy</a></li>
                                     </ul>
                                 </section>
                                 
                                 <section>
-                                    <h2 className="text-xl font-semibold mb-4">4. Disclaimer</h2>
+                                    <h2 className="text-xl font-notbold mb-4"><span className='bg-accentSecondary rounded-lg p-2'>4. Disclaimer</span></h2>
                                     <p className="text-gray-300 mb-4">
                                         Noizu is not affiliated with, endorsed by, or sponsored by Spotify or SoundCloud. All trademarks, service marks, trade names, and logos are the property of their respective owners.
                                     </p>

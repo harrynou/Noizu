@@ -211,7 +211,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }): JSX.Element => {
                     {/* Search button */}
                     <button 
                         type="submit" 
-                        className="bg-accent px-6 py-3 text-white font-medium h-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-accentPrimary px-6 py-3 text-white font-medium h-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isSearching || !query.trim()}
                         aria-label={isSearching ? "Searching..." : "Search"}
                     >
@@ -234,7 +234,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }): JSX.Element => {
                         <h3 className="text-sm font-medium text-gray-300">Recent Searches</h3>
                         <button 
                             onClick={clearRecentSearches}
-                            className="text-xs text-gray-400 hover:text-accent"
+                            className="text-xs text-gray-400 hover:text-accentPrimary"
                             aria-label="Clear all recent searches"
                         >
                             Clear all

@@ -76,10 +76,10 @@ const SignUpCard: React.FC = (): JSX.Element => {
     }
 
     return (
-        <div className="flex flex-col flex-grow justify-center items-center">
+        <div className="flex flex-col flex-grow justify-center items-center text-textPrimary">
             <div className="flex flex-col justify-center items-center mb-5">
                 <img src="" alt="Place Logo Here" className="w-16 h-16 md:w-20 md:h-20"/>
-                <div className="font-bold text-xl md:text-2xl text-center">Sign Up for an Account</div>
+                <div className="font-bold text-xl md:text-2xl text-center">Sign Up</div>
             </div>
             <div className="bg-secondary text-textSecondary flex flex-col p-6 sm:px-8 w-11/12 sm:w-3/4 md:w-2/4 lg:w-2/6 shadow-md rounded gap-5">
                 <form onSubmit={handleSubmit} autoComplete="off">

@@ -109,7 +109,7 @@ const NavDropdown: React.FC = (): JSX.Element => {
                 aria-expanded={open}
             >
                 {/* User avatar */}
-                <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white font-medium">
+                <div className="w-8 h-8 bg-accentPrimary rounded-full flex items-center justify-center text-white font-medium">
                     U
                 </div>
                 

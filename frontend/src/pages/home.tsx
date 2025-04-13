@@ -76,20 +76,20 @@ const HomePage: React.FC = (): JSX.Element => {
                             <div className="flex">
                                 <button
                                     onClick={() => setActiveTab('all')}
-                                    className={`py-2 px-4 ${activeTab === 'all' ? 'border-b-2 border-accent text-white' : 'text-gray-400'}`}
+                                    className={`py-2 px-4 ${activeTab === 'all' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
                                 >
                                     All Results
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('spotify')}
-                                    className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'spotify' ? 'border-b-2 border-accent text-white' : 'text-gray-400'}`}
+                                    className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'spotify' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
                                 >
                                     <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
                                     Spotify {spotifyTracks.length > 0 && `(${spotifyTracks.length})`}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('soundcloud')}
-                                    className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'soundcloud' ? 'border-b-2 border-accent text-white' : 'text-gray-400'}`}
+                                    className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'soundcloud' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
                                 >
                                     <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
                                     SoundCloud {soundcloudTracks.length > 0 && `(${soundcloudTracks.length})`}
@@ -118,7 +118,7 @@ const HomePage: React.FC = (): JSX.Element => {
                                                 {spotifyTracks.length > 5 && (
                                                     <button 
                                                         onClick={() => setActiveTab('spotify')}
-                                                        className="text-accent hover:underline text-sm"
+                                                        className="text-accentPrimary hover:underline text-sm"
                                                     >
                                                         Show all {spotifyTracks.length} Spotify results
                                                     </button>
@@ -138,7 +138,7 @@ const HomePage: React.FC = (): JSX.Element => {
                                                 {soundcloudTracks.length > 5 && (
                                                     <button 
                                                         onClick={() => setActiveTab('soundcloud')}
-                                                        className="text-accent hover:underline text-sm"
+                                                        className="text-accentPrimary hover:underline text-sm"
                                                     >
                                                         Show all {soundcloudTracks.length} SoundCloud results
                                                     </button>
@@ -180,7 +180,7 @@ const HomePage: React.FC = (): JSX.Element => {
                 {!showQueue && (
                     <button 
                         onClick={toggleQueueDisplay}
-                        className="bg-accent text-white p-3 rounded-full shadow-lg flex items-center gap-2"
+                        className="bg-accentPrimary text-white p-3 rounded-full shadow-lg flex items-center gap-2"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -208,7 +208,7 @@ const HomePage: React.FC = (): JSX.Element => {
                     </div>
                     <button 
                         onClick={togglePlayPause}
-                        className="bg-accent rounded-full p-2"
+                        className="bg-accentPrimary rounded-full p-2"
                     >
                         {isPlaying ? (
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

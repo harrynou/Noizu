@@ -1,36 +1,35 @@
 import React from 'react';
 import SpotifyIcon from '../assets/spotify/Icon.svg';
 import SoundCloudIcon from '../assets/soundcloud/Icon.svg';
+import pfp from '../assets/aboutMe/pfp.jpg'
 
 const AboutMePage: React.FC = (): JSX.Element => {
-    // Define team members
-    const teamMembers = [
+    // About-Me Info
+    const aboutMeInfo =
         {
-            name: 'Your Name',
-            role: 'Lead Developer',
-            avatar: 'https://via.placeholder.com/150',
+            name: 'Harrison Nou',
+            role: 'Sole Developer',
+            avatar: pfp,
             bio: 'Full-stack developer with a passion for music and web technologies.'
-        }
-        // Add more team members if needed
-    ];
+        };
 
     // Tech stack used in the project
     const technologies = [
-        { name: 'React', icon: '⚛️' },
-        { name: 'TypeScript', icon: '🔷' },
-        { name: 'TailwindCSS', icon: '🎨' },
-        { name: 'Node.js', icon: '🟢' },
-        { name: 'Express', icon: '🚂' },
-        { name: 'MongoDB', icon: '🍃' }
+        { name: 'React', icon: '' },
+        { name: 'TypeScript', icon: '' },
+        { name: 'TailwindCSS', icon: '' },
+        { name: 'Node.js', icon: '' },
+        { name: 'Express', icon: '' },
+        { name: 'MongoDB', icon: '' }
     ];
 
     return (
-        <div className="container mx-auto p-4 md:p-6 pb-24">
+        <div className="text-textPrimary container mx-auto p-4 md:p-6 pb-24">
             {/* Hero Section */}
             <section className="text-center mb-12 pt-8">
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">About Noizu</h1>
                 <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                    The ultimate platform to discover and enjoy music from multiple streaming services in one place.
+                    A unified platform designed to help you discover and enjoy music from multiple streaming services
                 </p>
             </section>
 
@@ -39,10 +38,10 @@ const AboutMePage: React.FC = (): JSX.Element => {
                 <div className="bg-gray-800 rounded-lg p-6 md:p-8">
                     <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
                     <p className="text-gray-300 leading-relaxed">
-                        Noizu was created with a simple goal: to unify the music streaming experience.
-                        We believe that finding and enjoying music shouldn't be fragmented across multiple platforms.
-                        Our application brings together content from Spotify and SoundCloud, allowing you to search,
-                        discover, and create playlists that span across services, all in one seamless interface.
+                        Noizu was born out of frustration, I was constantly switching between Spotify and SoundCloud just 
+                        to listen to the music I love. It got exhausting juggling between two apps, two playlists, and 
+                        two different experiences. I wanted something easier, something that brought it all together.
+                        With Noizu, you can search, discover, and create playlists using tracks from both platforms.
                     </p>
                 </div>
             </section>
@@ -52,8 +51,8 @@ const AboutMePage: React.FC = (): JSX.Element => {
                 <h2 className="text-2xl font-bold mb-6">Key Features</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                        <div className="w-12 h-12 bg-accentPrimary/20 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accentPrimary">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
@@ -65,8 +64,8 @@ const AboutMePage: React.FC = (): JSX.Element => {
                     </div>
 
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                        <div className="w-12 h-12 bg-accentPrimary/20 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accentPrimary">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                             </svg>
                         </div>
@@ -77,8 +76,8 @@ const AboutMePage: React.FC = (): JSX.Element => {
                     </div>
 
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                        <div className="w-12 h-12 bg-accentPrimary/20 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accentPrimary">
                                 <path d="M9 18V5l12-2v13"></path>
                                 <circle cx="6" cy="18" r="3"></circle>
                                 <circle cx="18" cy="16" r="3"></circle>
@@ -86,13 +85,13 @@ const AboutMePage: React.FC = (): JSX.Element => {
                         </div>
                         <h3 className="text-lg font-semibold mb-2">Integrated Playback</h3>
                         <p className="text-gray-400">
-                            Enjoy seamless playback of tracks from different platforms without switching between apps.
+                            Enjoy playback of tracks from different platforms without switching between apps.
                         </p>
                     </div>
 
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                        <div className="w-12 h-12 bg-accentPrimary/20 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accentPrimary">
                                 <line x1="8" y1="6" x2="21" y2="6"></line>
                                 <line x1="8" y1="12" x2="21" y2="12"></line>
                                 <line x1="8" y1="18" x2="21" y2="18"></line>
@@ -107,19 +106,19 @@ const AboutMePage: React.FC = (): JSX.Element => {
                         </p>
                     </div>
 
-                    <div className="bg-gray-800 rounded-lg p-6">
-                        <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                    {/* <div className="bg-gray-800 rounded-lg p-6">
+                        <div className="w-12 h-12 bg-accentPrimary/20 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accentPrimary">
                                 <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
                                 <line x1="12" y1="9" x2="12" y2="13"></line>
                                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
                             </svg>
                         </div>
-                        <h3 className="text-lg font-semibold mb-2">Smart Recommendations</h3>
+                        <h3 className="text-lg font-semibold mb-2"></h3>
                         <p className="text-gray-400">
-                            Discover new music with intelligent recommendations based on your listening habits across platforms.
+                            
                         </p>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 
@@ -132,7 +131,7 @@ const AboutMePage: React.FC = (): JSX.Element => {
                         <div>
                             <h3 className="text-lg font-semibold mb-1">Spotify</h3>
                             <p className="text-gray-400">
-                                Access your Spotify library, playlists, and enjoy seamless playback with your premium account.
+                                Access your Spotify library, playlists, and enjoy  playback with your premium account.
                             </p>
                         </div>
                     </div>
@@ -148,22 +147,22 @@ const AboutMePage: React.FC = (): JSX.Element => {
                 </div>
             </section>
 
-            {/* Team Section */}
-            <section className="mb-16">
-                <h2 className="text-2xl font-bold mb-6">Meet the Team</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {teamMembers.map((member, index) => (
-                        <div key={index} className="bg-gray-800 rounded-lg p-6 flex flex-col items-center text-center">
-                            <img 
-                                src={member.avatar} 
-                                alt={member.name} 
-                                className="w-24 h-24 rounded-full object-cover mb-4"
-                            />
-                            <h3 className="text-lg font-semibold">{member.name}</h3>
-                            <p className="text-accent mb-2">{member.role}</p>
-                            <p className="text-gray-400">{member.bio}</p>
+            {/* Me Section */}
+            <section className="mb-16 ">
+                <h2 className="text-2xl font-bold mb-6">Meet Me</h2>
+                <div className="grid grid-cols-1 gap-6">
+                        <div className="bg-gray-800 rounded-lg p-6 flex flex-col items-center text-center">
+                            <div className='relative w-24 h-24 overflow-hidden rounded-full'>
+                                <img
+                                    src={aboutMeInfo.avatar}
+                                    alt={aboutMeInfo.name}
+                                    className="absolute -left-3 object-cover scale-150 mb-4 w-full h-full"
+                                />
+                            </div>
+                            <h3 className="text-lg font-semibold">{aboutMeInfo.name}</h3>
+                            <p className="text-accentPrimary mb-2">{aboutMeInfo.role}</p>
+                            <p className="text-gray-400">{aboutMeInfo.bio}</p>
                         </div>
-                    ))}
                 </div>
             </section>
 
@@ -191,8 +190,8 @@ const AboutMePage: React.FC = (): JSX.Element => {
                     </p>
                     <div className="flex gap-4">
                         <a 
-                            href="mailto:contact@melosearch.com" 
-                            className="px-4 py-2 bg-accent text-white rounded-md flex items-center gap-2"
+                            href="mailto:contact@Noizu.com" 
+                            className="px-4 py-2 bg-accentPrimary text-white rounded-md flex items-center gap-2"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>

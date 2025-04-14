@@ -2,7 +2,12 @@ import React from 'react';
 import SpotifyIcon from '../assets/spotify/Icon.svg';
 import SoundCloudIcon from '../assets/soundcloud/Icon.svg';
 import pfp from '../assets/aboutMe/pfp.jpg'
-
+import reactLogo from '../assets/aboutMe/reactLogo.svg'
+import tailwindLogo from '../assets/aboutMe/tailwindLogo.svg'
+import tsLogo from '../assets/aboutMe/tsLogo.png'
+import jsLogo from '../assets/aboutMe/jsLogo.svg'
+import expressLogo from '../assets/aboutMe/expressLogo.svg'
+import postgresSQLLogo from '../assets/aboutMe/postgresSQLLogo.svg'
 const AboutMePage: React.FC = (): JSX.Element => {
     // About-Me Info
     const aboutMeInfo =
@@ -15,12 +20,12 @@ const AboutMePage: React.FC = (): JSX.Element => {
 
     // Tech stack used in the project
     const technologies = [
-        { name: 'React', icon: '' },
-        { name: 'TypeScript', icon: '' },
-        { name: 'TailwindCSS', icon: '' },
-        { name: 'Node.js', icon: '' },
-        { name: 'Express', icon: '' },
-        { name: 'MongoDB', icon: '' }
+        { name: 'React', icon: reactLogo },
+        { name: 'TypeScript', icon: tsLogo },
+        { name: 'TailwindCSS', icon: tailwindLogo },
+        { name: 'Node.js', icon: jsLogo },
+        { name: 'Express', icon: expressLogo },
+        { name: 'PostgresSQL', icon: postgresSQLLogo }
     ];
 
     return (
@@ -173,7 +178,7 @@ const AboutMePage: React.FC = (): JSX.Element => {
                     <div className="flex flex-wrap gap-4 justify-center">
                         {technologies.map((tech, index) => (
                             <div key={index} className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full">
-                                <span>{tech.icon}</span>
+                                <img className="w-6" src={tech.icon}/>
                                 <span>{tech.name}</span>
                             </div>
                         ))}
@@ -186,7 +191,7 @@ const AboutMePage: React.FC = (): JSX.Element => {
                 <h2 className="text-2xl font-bold mb-6">Get in Touch</h2>
                 <div className="bg-gray-800 rounded-lg p-6">
                     <p className="text-gray-300 mb-4">
-                        Have questions, suggestions, or feedback? We'd love to hear from you!
+                        Have questions, suggestions, or feedback? 
                     </p>
                     <div className="flex gap-4">
                         <a 

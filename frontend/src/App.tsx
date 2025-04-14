@@ -56,7 +56,6 @@ const App: React.FC = (): JSX.Element => {
             <Background>
           <Navbar/>
           <AppRoutes/>
-          <PlaybackControls/>
           </Background>
           </FavoriteProvider>
         </SearchResultProvider>

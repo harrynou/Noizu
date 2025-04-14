@@ -8,6 +8,9 @@ import tsLogo from '../assets/aboutMe/tsLogo.png'
 import jsLogo from '../assets/aboutMe/jsLogo.svg'
 import expressLogo from '../assets/aboutMe/expressLogo.svg'
 import postgresSQLLogo from '../assets/aboutMe/postgresSQLLogo.svg'
+import instagramLogo from '../assets/aboutMe/instagramLogo.png'
+import githubLogo from '../assets/aboutMe/githubLogo.png'
+import linkedinLogo from '../assets/aboutMe/linkedinLogo.png'
 const AboutMePage: React.FC = (): JSX.Element => {
     // About-Me Info
     const aboutMeInfo =
@@ -41,12 +44,15 @@ const AboutMePage: React.FC = (): JSX.Element => {
             {/* Mission Statement */}
             <section className="mb-16">
                 <div className="bg-gray-800 rounded-lg p-6 md:p-8">
-                    <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
+                    <h2 className="text-2xl font-bold mb-4">How Noizu Started</h2>
                     <p className="text-gray-300 leading-relaxed">
-                        Noizu was born out of frustration, I was constantly switching between Spotify and SoundCloud just 
-                        to listen to the music I love. It got exhausting juggling between two apps, two playlists, and 
-                        two different experiences. I wanted something easier, something that brought it all together.
-                        With Noizu, you can search, discover, and create playlists using tracks from both platforms.
+                    Noizu came out of pure frustration, honestly. I'd be listening to music on Spotify, then 
+                    remember a remix that only existed on SoundCloud. So I'd have to stop what I was doing, 
+                    open a new app, search again, and try to get back into it. It sounds small, but when you're 
+                    doing that all the time, it gets annoying real quick.I just wanted one place where I could 
+                    search, queue up tracks, and build playlists across both platforms without thinking about 
+                    where the song lives. That's what Noizu is. It's not fancy. Just something I made because 
+                    I was tired of the back and forth. It's just way less of a hassle now, and that's what I wanted.
                     </p>
                 </div>
             </section>
@@ -156,7 +162,7 @@ const AboutMePage: React.FC = (): JSX.Element => {
             <section className="mb-16 ">
                 <h2 className="text-2xl font-bold mb-6">Meet Me</h2>
                 <div className="grid grid-cols-1 gap-6">
-                        <div className="bg-gray-800 rounded-lg p-6 flex flex-col items-center text-center">
+                        <div className="relative bg-gray-800 rounded-lg p-6 flex flex-col items-center text-center">
                             <div className='relative w-24 h-24 overflow-hidden rounded-full'>
                                 <img
                                     src={aboutMeInfo.avatar}
@@ -167,6 +173,26 @@ const AboutMePage: React.FC = (): JSX.Element => {
                             <h3 className="text-lg font-semibold">{aboutMeInfo.name}</h3>
                             <p className="text-accentPrimary mb-2">{aboutMeInfo.role}</p>
                             <p className="text-gray-400">{aboutMeInfo.bio}</p>
+                        </div>
+                        <div className='flex gap-2 justify-end'>
+                            <a className='bg-gray-800 rounded-lg p-2'
+                                href="https://www.instagram.com/harry.noudles/"
+                                target="_blank" 
+                                rel="noopener noreferrer">
+                                <img className='w-8' src={instagramLogo} alt="Instagram"/>
+                            </a>
+                            <a className='bg-gray-800 rounded-lg p-2'
+                                href="https://github.com/harrynou/"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                <img className='w-8' src={githubLogo} alt="Github"/>
+                            </a>
+                            <a className='bg-gray-800 rounded-lg p-2'
+                                href="https://www.linkedin.com/in/harrison-nou/"
+                                target="_blank" 
+                                rel="noopener noreferrer">
+                                <img className='w-8' src={linkedinLogo} alt="Linkedin"/>
+                            </a>
                         </div>
                 </div>
             </section>
@@ -191,29 +217,18 @@ const AboutMePage: React.FC = (): JSX.Element => {
                 <h2 className="text-2xl font-bold mb-6">Get in Touch</h2>
                 <div className="bg-gray-800 rounded-lg p-6">
                     <p className="text-gray-300 mb-4">
-                        Have questions, suggestions, or feedback? 
+                        Have questions, suggestions, or feedback?
                     </p>
                     <div className="flex gap-4">
                         <a 
-                            href="mailto:contact@Noizu.com" 
+                            href="mailto:mail@noizu.com" 
                             className="px-4 py-2 bg-accentPrimary text-white rounded-md flex items-center gap-2"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                 <polyline points="22,6 12,13 2,6"></polyline>
                             </svg>
-                            Email Us
-                        </a>
-                        <a 
-                            href="https://github.com/hnou/" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 bg-gray-700 text-white rounded-md flex items-center gap-2 hover:bg-gray-600"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                            </svg>
-                            GitHub
+                            Email Me
                         </a>
                     </div>
                 </div>

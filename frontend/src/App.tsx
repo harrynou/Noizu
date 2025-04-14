@@ -15,7 +15,7 @@ import NoPasswordRoute from './components/wrappers/NoPasswordRoute.tsx';
 import AccountSettingsPage from './pages/account-settings.tsx';
 import ProtectedRoute from './components/wrappers/ProtectedRoute.tsx';
 import { MusicPlayerProvider } from './contexts/musicPlayerContext.tsx';
-import PlaybackControls from './components/playback/PlaybackControls.tsx';
+// import PlaybackControls from './components/playback/PlaybackControls.tsx';
 import { SearchResultProvider } from './contexts/searchResultContext.tsx';
 import { FavoriteProvider } from './contexts/favoriteContext.tsx';
 import Background from './components/Background.tsx';

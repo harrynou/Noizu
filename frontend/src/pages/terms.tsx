@@ -20,7 +20,7 @@ const TermsPage: React.FC = (): JSX.Element => {
     ];
 
     return (
-        <div className="container mx-auto p-4 md:p-6 pb-24">
+        <div className="container text-textPrimary mx-auto p-2 md:p-6 pb-24">
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Sidebar navigation */}
                 <aside className="md:w-1/4">

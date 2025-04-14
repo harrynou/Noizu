@@ -11,14 +11,18 @@ export default {
         accentSecondary: '#9600CC',
         textPrimary: '#FFFFFF',
         textSecondary: '#121212',
-        'blue': '#0ea5e9',
-        'indigo': '#6366f1',
-        'purple': '#8b5cf6',
-        'pink': '#ec4899',
+        blue: '#0ea5e9',
+        indigo: '#6366f1',
+        purple: '#8b5cf6',
+        pink: '#ec4899',
+        cyan: '#06b6d4',    // Tailwind cyan-500
+        emerald: '#10b981', // Tailwind emerald-500
+        amber: '#f59e0b',   // Tailwind amber-500
+        rose: '#f43f5e',    // Tailwind rose-500
       },
       backgroundImage: {
         'custom-gradient': "from-blue-900 via-blue-600 to-blue-400",
-        'tw-gradient': "linear-gradient(to right, rgb(14, 165, 233), rgb(99, 102, 241), rgb(139, 92, 246), rgb(236, 72, 153))"
+        'gradient': "linear-gradient(to right, rgb(14, 165, 233), rgb(99, 102, 241), rgb(139, 92, 246), rgb(236, 72, 153))"
       },
       animation: {
         'gradient-shift': 'gradient-shift 10s ease infinite alternate',

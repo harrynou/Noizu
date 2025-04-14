@@ -57,6 +57,7 @@ const App: React.FC = (): JSX.Element => {
           <Navbar/>
           <AppRoutes/>
           </Background>
+          {/* <PlaybackControls/> */}
           </FavoriteProvider>
         </SearchResultProvider>
       </MusicPlayerProvider>

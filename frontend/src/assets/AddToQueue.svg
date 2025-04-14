@@ -1,1 +1,11 @@
-<svg id="egXSL9CoPcQ1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 300" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" project-id="a43f6ba1dab94e2598d48227fa06da95" export-id="d3b59618b423408ca0928f0eb28f782e" cached="false"><line x1="-15" y1="0" x2="185" y2="0" transform="translate(65 75)" fill="#f9f7f7" stroke="#f8f9fb" stroke-width="20" stroke-linecap="round"/><line x1="-15" y1="0" x2="185" y2="0" transform="translate(65 150)" fill="#f9f7f7" stroke="#f8f9fb" stroke-width="20" stroke-linecap="round"/><line x1="-15" y1="0" x2="115" y2="0" transform="matrix(.999997-.002408 0.002408 0.999997 65 225.204638)" fill="#f9f7f7" stroke="#f8f9fb" stroke-width="20" stroke-linecap="round"/><line x1="-15" y1="0" x2="85" y2="0" transform="matrix(0-1 1 0 288.677581 241.04534)" fill="#f9f7f7" stroke="#f8f9fb" stroke-width="20" stroke-linecap="round"/><line x1="-15" y1="0" x2="85" y2="0" transform="translate(253.677581 206.04534)" fill="#f9f7f7" stroke="#f8f9fb" stroke-width="20" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <g fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Horizontal lines representing the queue -->
+    <line x1="4" y1="6" x2="20" y2="6" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="18" x2="12" y2="18" />
+    
+    <line x1="18" y1="16" x2="18" y2="20" />
+    <line x1="16" y1="18" x2="20" y2="18" />
+  </g>
+</svg>

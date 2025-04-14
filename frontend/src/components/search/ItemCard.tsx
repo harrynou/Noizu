@@ -43,7 +43,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
 
     return (
         <div 
-            className="flex justify-between  text-white p-2 hover:bg-gray-700 rounded-md"
+            className="flex justify-between text-white p-2 hover:bg-gray-700 rounded-md"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -53,7 +53,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
                     <img 
                         src={item.imageUrl} 
                         alt={item.title}
-                        className="w-12 h-12 object-cover rounded-sm"
+                        className="w-12 w-min-12 h-12 object-cover rounded-sm"
                         loading="lazy"
                     />
                     <div 
@@ -103,7 +103,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
                     <div className='flex justify-center gap-2'>
                         <img 
                             src={provider === 'spotify' ? SpotifyIcon : SoundcloudIcon} 
-                            className={`sm:hidden object-contain ${provider === 'spotify' ? 'w-4' : 'w-5'}`} 
+                            className={`sm:hidden object-contain ${provider === 'spotify' ? 'w-4 w-min-4' : 'w-5'}`} 
                             alt={`${provider} logo`}
                         />
                         <img 
@@ -123,7 +123,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
                     </div>
                 </div>
                 {/* Track Actions */}
-                <div className='flex items-center gap-4'>
+                <div className='flex items-center space-x-4'>
                     <FavoriteAction trackId={track.id} provider={track.provider}/>
                     <AddToQueueAction track={track}/>
                 </div>

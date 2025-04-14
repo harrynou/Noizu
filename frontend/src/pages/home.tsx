@@ -33,7 +33,7 @@ const HomePage: React.FC = (): JSX.Element => {
     const renderEmptyState = () => {
         if (!searchPerformed) {
             return (
-                <div className="flex flex-col items-center justify-center text-center py-20">
+                <div className="flex flex-col items-center justify-center text-center text-textPrimary py-20">
                     <h2 className="text-2xl font-bold mb-4">Welcome to Noizu</h2>
                     <p className="text-gray-300 max-w-md mb-6">
                         Search for your favorite songs across Spotify and SoundCloud in one place.
@@ -50,7 +50,7 @@ const HomePage: React.FC = (): JSX.Element => {
             );
         } else {
             return (
-                <div className="flex flex-col items-center justify-center py-20">
+                <div className="text-textPrimary flex flex-col items-center justify-center py-20">
                     <h3 className="text-xl font-medium mb-3">No results found</h3>
                     <p className="text-gray-400">Try a different search term</p>
                 </div>
@@ -59,7 +59,7 @@ const HomePage: React.FC = (): JSX.Element => {
     };
 
     return (
-        <div className="flex flex-col p-4 md:p-6 flex-grow">
+        <div className="flex flex-col p-4 md:p-6 flex-grow text-textPrimary">
             {/* Hero section with search bar */}
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-6 text-center">Find Your Perfect Song</h1>

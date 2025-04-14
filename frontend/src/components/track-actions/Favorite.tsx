@@ -13,15 +13,15 @@ const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Eleme
     const { isAuthenticated } = useAuth();
     const { addFavorite, removeFavorite, isFavorited} = useFavoriteContext();
     const { getTrack } = useSearchResult();
-    const trackFavorited = isFavorited(trackId,provider);
+    const trackFavorited = isFavorited(trackId, provider);
 
-
-    const handleClick = async () => {
+    const handleClick = async (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent parent click events
         if (!isAuthenticated) {
             return;
         }
         if (trackFavorited){
-            removeFavorite(trackId,provider);
+            removeFavorite(trackId, provider);
         } else {
             const track = getTrack(trackId, provider);
             if (!track) return;
@@ -30,14 +30,20 @@ const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Eleme
     }
 
     return (
-        <div>
-<img 
-                        src={trackFavorited ? RedHeartSVG : WhiteHeartSVG} 
-                        className="w-4 h-4 group-hover:opacity-80 transition-transform hover:scale-125"
-                        alt={trackFavorited ? "Favorited" : "Not favorited"} 
-                        onClick={handleClick}
-                    />        </div>
-    )
+        <button 
+            onClick={handleClick}
+            disabled={!isAuthenticated}
+            className={`group  transition-transform ${isAuthenticated ? 'hover:scale-110' : 'opacity-50 cursor-not-allowed'}`}
+            aria-label={trackFavorited ? "Remove from favorites" : "Add to favorites"}
+            title={trackFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+            <img 
+                src={trackFavorited ? RedHeartSVG : WhiteHeartSVG} 
+                className="w-6 h-6 group-hover:opacity-80 transition-transform"
+                alt={trackFavorited ? "Favorited" : "Not favorited"} 
+            />
+        </button>
+    );
 }
 
-export default FavoriteAction
+export default FavoriteAction;

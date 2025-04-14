@@ -61,7 +61,7 @@ const AddToQueueAction: React.FC<AddToQueueProp> = ({ track }): JSX.Element => {
             
             {/* Success/already in queue tooltip */}
             {showTooltip && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 bg-black bg-opacity-80 text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-opacity duration-200">
+                <div className="hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 bg-black bg-opacity-80 text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-opacity duration-200">
                     {isAdded ? "Added to queue" : isInQueue ? "Already in queue" : ""}
                 </div>
             )}

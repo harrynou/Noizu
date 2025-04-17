@@ -47,7 +47,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const spotifyPlayerRef = useRef<Spotify.Player | null>(null);
     const soundCloudPlayerRef = useRef<SoundCloudWidget | null>(null);
     const [deviceId, setDeviceId] = useState<string>('');
-    const {getSpotifyToken, user} = useAuth()
+    const {getSpotifyToken, user} = useAuth();
     const [currentPosition, setCurrentPosition] = useState<number>(0);
     const [loadingSessionState, setLoadingSessionState] = useState<boolean>(true);
     const [loadingMusicPlayer, setLoadingMusicPlayer] = useState<boolean>(true);
@@ -396,11 +396,11 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             const updatedQueue = prevQueue.filter((track) => track.id !== trackId);
     
             // Handle the case where the removed track is currently playing
-            if (currentTrackIndex !== null && queue[currentTrackIndex]?.id === trackId) {
+            if (currentTrackIndex !== null && queue[currentTrackIndex].id === trackId) {
                 setCurrentTrackIndex((prevIndex) => {
                     if (prevIndex === null) return null;
     
-                    // If the current index is beyond the updated queue length, reset to null
+                    // If the removed track was the only song in queue, reset to null
                     if (updatedQueue.length === 0) return null;
     
                     // If there's a next track, play it

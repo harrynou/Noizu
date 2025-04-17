@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 // Logo imports
 import SpotifyIcon from '../assets/spotify/Icon.svg';
 import SoundcloudIcon from '../assets/soundcloud/Icon.svg';
+import SearchFilter from '../components/search/SearchFilter';
 
 const FavoritesPage: React.FC = (): JSX.Element => {
     const { spotifyFavoriteTracks, soundcloudFavoriteTracks } = useFavoriteContext();
@@ -14,7 +15,7 @@ const FavoritesPage: React.FC = (): JSX.Element => {
     const hasFavorites = spotifyFavoriteTracks.length > 0 || soundcloudFavoriteTracks.length > 0;
 
     return (
-        <div className="container mx-auto p-4 md:p-6 pb-24">
+        <div className="container mx-auto p-4 md:p-6 pb-24 text-textPrimary">
             <div className="mb-6">
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">Your Favorites</h1>
                 <p className="text-gray-400">All your favorite tracks in one place</p>
@@ -43,6 +44,7 @@ const FavoritesPage: React.FC = (): JSX.Element => {
                         <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
                         SoundCloud {soundcloudFavoriteTracks.length > 0 && `(${soundcloudFavoriteTracks.length})`}
                     </button>
+                    <SearchFilter items={spotifyFavoriteTracks} />
                 </div>
             </div>
 

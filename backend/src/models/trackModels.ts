@@ -1,15 +1,16 @@
 import pool from "../config/db";
-import { favoriteTrack } from "../controllers/trackControllers";
 
-export const toggleFavorite = async (userId: number, trackId: string, provider: string): Promise<void> => {
+export const addFavorite = async (userId: number, trackId: string, provider: string): Promise<void> => {
     try {
-        const exists = await pool.query('SELECT * FROM favorites WHERE user_id = $1 AND track_id = $2 AND provider = $3', [userId, trackId, provider]);
-        if (exists.rowCount && exists.rowCount > 0){
-            const favoriteId = exists.rows[0].favorite_id;
-            const deletion = await pool.query('DELETE FROM favorites WHERE favorite_id = $1', [favoriteId]);
-        } else {
-            const insert = await pool.query('INSERT INTO favorites(user_id, provider, track_id) VALUES ($1,$2,$3)', [userId, provider, trackId]);
-        }
+        const insertion = await pool.query('INSERT INTO favorites(user_id, provider, track_id) VALUES ($1,$2,$3)', [userId, provider, trackId]);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteFavorite = async (userId: number, trackId: string, provider: string): Promise<void> => {
+    try {
+        const deletion = await pool.query('DELETE FROM favorites WHERE user_id = $1 AND provider = $2 AND track_id = $3', [userId, provider, trackId]);
     } catch (error) {
         throw error;
     }

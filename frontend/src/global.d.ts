@@ -36,10 +36,16 @@ declare global {
         id: string;
         uri: string; 
         title: string;
-        artists: any;
+        artistInfo: Artist[];
         imageUrl?: string;
         provider: string;
         duration: number;
         isFavorited: boolean;
+    }
+
+    interface Artist {
+        name: string
+        id: string
+        profileUrl: string
     }
 }

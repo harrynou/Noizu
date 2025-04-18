@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from 'express'
 import {User} from '../utils/types'
-import { retrieveFavorites, toggleFavorite } from '../models/trackModels';
+import { addFavorite, retrieveFavorites, deleteFavorite } from '../models/trackModels';
 import { getSpotifyTracks } from '../services/spotify';
 import { getAccessToken } from '../models/tokenModels';
 import { normalizeTrackData } from '../services/normalizeData';
@@ -17,12 +17,26 @@ export const favoriteTrack = async (req:Request, res: Response, next:NextFunctio
         const user = req.user as User;
         const userId = user.userId;
         const {trackId, provider} = req.body;
-        toggleFavorite(userId,trackId,provider);
-        res.status(200).json("Favorite Added/Deleted.");
+        addFavorite(userId,trackId,provider);
+        res.status(200).json("Favorite Added.");
     } catch (error) {
         next(error);
     }
 }
+
+export const unfavoriteTrack = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user as User;
+        const userId = user.userId;
+        const {trackId, provider} = req.body;
+        deleteFavorite(userId, trackId, provider);
+        res.status(200).json("Favorite Removed.");
+    } catch (error) {
+        next(error);
+    }
+}
+
+
 
 export const getFavorites = async (req: Request, res: Response, next:NextFunction) => {
     try {

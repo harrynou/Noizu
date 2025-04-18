@@ -108,6 +108,16 @@ export const favoriteTrack = async (trackId: string, provider: string): Promise<
     }
 }
 
+export const unfavoriteTrack = async (trackId: string, provider: string): Promise<boolean> => {
+    try {
+        const response = await axiosInstance.delete('/api/track/favorite', { data: { trackId, provider } });
+        return (response.status === 200);
+    } catch (error) {
+        console.error("Error unfavoriting track:", error);
+        throw error;
+    }
+};
+
 export const getFavoriteTracks = async (): Promise<any> => {
     try {
         const response = await axiosInstance.get('/api/track/favorite');

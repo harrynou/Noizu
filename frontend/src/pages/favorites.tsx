@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFavoriteContext } from "../contexts/favoriteContext";
 import ItemCard from "../components/search/ItemCard";
 import { Link } from 'react-router-dom';
+import SearchFilter from "../components/search/SearchFilter";
 
 // Logo imports
 import SpotifyIcon from '../assets/spotify/Icon.svg';
 import SoundcloudIcon from '../assets/soundcloud/Icon.svg';
-import SearchFilter from '../components/search/SearchFilter';
 
 const FavoritesPage: React.FC = (): JSX.Element => {
     const { spotifyFavoriteTracks, soundcloudFavoriteTracks } = useFavoriteContext();
     const [activeTab, setActiveTab] = useState<'all' | 'spotify' | 'soundcloud'>('all');
+    const [filteredSpotifyTracks, setFilteredSpotifyTracks] = useState<Track[]>([]);
+    const [filteredSoundcloudTracks, setFilteredSoundcloudTracks] = useState<Track[]>([]);
     
     const hasFavorites = spotifyFavoriteTracks.length > 0 || soundcloudFavoriteTracks.length > 0;
+
+    // Initialize filtered tracks when component loads
+    useEffect(() => {
+        setFilteredSpotifyTracks(spotifyFavoriteTracks);
+        setFilteredSoundcloudTracks(soundcloudFavoriteTracks);
+    }, [spotifyFavoriteTracks, soundcloudFavoriteTracks]);
+
+    // Handle filter changes from the SearchFilter component
+    const handleFilterChange = (newFilteredSpotifyTracks: Track[], newFilteredSoundcloudTracks: Track[]) => {
+        setFilteredSpotifyTracks(newFilteredSpotifyTracks);
+        setFilteredSoundcloudTracks(newFilteredSoundcloudTracks);
+    };
 
     return (
         <div className="container mx-auto p-4 md:p-6 pb-24 text-textPrimary">
@@ -21,30 +35,41 @@ const FavoritesPage: React.FC = (): JSX.Element => {
                 <p className="text-gray-400">All your favorite tracks in one place</p>
             </div>
 
-            {/* Tabs for filtering */}
+            {/* Tabs and search filter row */}
             <div className="mb-6 border-b border-gray-700">
-                <div className="flex">
-                    <button
-                        onClick={() => setActiveTab('all')}
-                        className={`py-2 px-4 ${activeTab === 'all' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
-                    >
-                        All Favorites
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('spotify')}
-                        className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'spotify' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
-                    >
-                        <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
-                        Spotify {spotifyFavoriteTracks.length > 0 && `(${spotifyFavoriteTracks.length})`}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('soundcloud')}
-                        className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'soundcloud' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
-                    >
-                        <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
-                        SoundCloud {soundcloudFavoriteTracks.length > 0 && `(${soundcloudFavoriteTracks.length})`}
-                    </button>
-                    <SearchFilter items={spotifyFavoriteTracks} />
+                <div className="flex flex-wrap items-center justify-between">
+                    <div className="flex">
+                        <button
+                            onClick={() => setActiveTab('all')}
+                            className={`py-2 px-4 ${activeTab === 'all' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
+                        >
+                            All Favorites
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('spotify')}
+                            className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'spotify' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
+                        >
+                            <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
+                            Spotify {spotifyFavoriteTracks.length > 0 && `(${spotifyFavoriteTracks.length})`}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('soundcloud')}
+                            className={`py-2 px-4 flex items-center gap-2 ${activeTab === 'soundcloud' ? 'border-b-2 border-accentPrimary text-white' : 'text-gray-400'}`}
+                        >
+                            <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
+                            SoundCloud {soundcloudFavoriteTracks.length > 0 && `(${soundcloudFavoriteTracks.length})`}
+                        </button>
+                    </div>
+                    
+                    {/* Search Filter Component */}
+                    {hasFavorites && (
+                        <div className="mt-2 md:mt-0">
+                            <SearchFilter 
+                                onFilterChange={handleFilterChange}
+                                activeTab={activeTab}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -67,30 +92,37 @@ const FavoritesPage: React.FC = (): JSX.Element => {
                     </div>
                 ) : (
                     <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
+                        {/* When filtered results are empty */}
+                        {filteredSpotifyTracks.length === 0 && filteredSoundcloudTracks.length === 0 && (
+                            <div className="text-center py-10">
+                                <p className="text-gray-400">No matching tracks found. Try adjusting your filter.</p>
+                            </div>
+                        )}
+                        
                         {activeTab === 'all' && (
                             <>
-                                {spotifyFavoriteTracks.length > 0 && (
+                                {filteredSpotifyTracks.length > 0 && (
                                     <div className="mb-6">
                                         <h2 className="text-xl font-medium mb-3 flex items-center gap-2">
                                             <img src={SpotifyIcon} alt="Spotify" className="w-5 h-5" />
                                             Spotify Favorites
                                         </h2>
                                         <div className="space-y-2">
-                                            {spotifyFavoriteTracks.map((track) => (
+                                            {filteredSpotifyTracks.map((track) => (
                                                 <ItemCard key={track.id} item={track} provider="spotify" />
                                             ))}
                                         </div>
                                     </div>
                                 )}
                                 
-                                {soundcloudFavoriteTracks.length > 0 && (
+                                {filteredSoundcloudTracks.length > 0 && (
                                     <div>
                                         <h2 className="text-xl font-medium mb-3 flex items-center gap-2">
                                             <img src={SoundcloudIcon} alt="SoundCloud" className="w-5 h-5" />
                                             SoundCloud Favorites
                                         </h2>
                                         <div className="space-y-2">
-                                            {soundcloudFavoriteTracks.map((track) => (
+                                            {filteredSoundcloudTracks.map((track) => (
                                                 <ItemCard key={track.id} item={track} provider="soundcloud" />
                                             ))}
                                         </div>
@@ -101,13 +133,13 @@ const FavoritesPage: React.FC = (): JSX.Element => {
                         
                         {activeTab === 'spotify' && (
                             <div className="space-y-2">
-                                {spotifyFavoriteTracks.length > 0 ? (
-                                    spotifyFavoriteTracks.map((track) => (
+                                {filteredSpotifyTracks.length > 0 ? (
+                                    filteredSpotifyTracks.map((track) => (
                                         <ItemCard key={track.id} item={track} provider="spotify" />
                                     ))
                                 ) : (
                                     <div className="text-center py-10">
-                                        <p className="text-gray-400">No Spotify favorites yet</p>
+                                        <p className="text-gray-400">No matching Spotify favorites</p>
                                     </div>
                                 )}
                             </div>
@@ -115,13 +147,13 @@ const FavoritesPage: React.FC = (): JSX.Element => {
                         
                         {activeTab === 'soundcloud' && (
                             <div className="space-y-2">
-                                {soundcloudFavoriteTracks.length > 0 ? (
-                                    soundcloudFavoriteTracks.map((track) => (
+                                {filteredSoundcloudTracks.length > 0 ? (
+                                    filteredSoundcloudTracks.map((track) => (
                                         <ItemCard key={track.id} item={track} provider="soundcloud" />
                                     ))
                                 ) : (
                                     <div className="text-center py-10">
-                                        <p className="text-gray-400">No SoundCloud favorites yet</p>
+                                        <p className="text-gray-400">No matching SoundCloud favorites</p>
                                     </div>
                                 )}
                             </div>

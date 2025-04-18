@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getFavoriteTracks } from "../services/api";
+import { getFavoriteTracks, unfavoriteTrack } from "../services/api";
 import { favoriteTrack } from "../services/api";
 
 interface FavoriteContextType {
@@ -48,17 +48,21 @@ export const FavoriteProvider: React.FC<{children: React.ReactNode}> = ({childre
                 ])
             } else {console.error("Unknown Provider")};
         } catch (error) {
-            
+            console.error(error);
         }
     }
 
-    const removeFavorite = (trackId: string, provider: string) => {
-        if (provider === 'spotify'){
-            setSpotifyFavoriteTracks((prevTrack) => prevTrack.filter(track => track.id !== trackId));
-        } else if (provider === 'soundcloud'){
-            setSoundcloudFavoriteTracks((prevTrack) => prevTrack.filter(track => track.id !== trackId));
-
-        } else {console.error("Unknown Provider")};
+    const removeFavorite = async (trackId: string, provider: string) => {
+        try {
+            if (provider === 'spotify'){
+                setSpotifyFavoriteTracks((prevTrack) => prevTrack.filter(track => track.id !== trackId));
+            } else if (provider === 'soundcloud'){
+                setSoundcloudFavoriteTracks((prevTrack) => prevTrack.filter(track => track.id !== trackId));
+            } else {console.error("Unknown Provider")};
+            await unfavoriteTrack(trackId,provider);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const isFavorited = (trackId: string, provider: string) => {

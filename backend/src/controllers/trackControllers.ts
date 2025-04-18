@@ -44,15 +44,17 @@ export const getFavorites = async (req: Request, res: Response, next:NextFunctio
         const userId = user.userId;
 
         // Spotify
-        let trackIds = await retrieveFavorites(userId, 'spotify');
+        let FavoriteData = await retrieveFavorites(userId, 'spotify');
+        let trackIds = FavoriteData.map(item => item.trackId);
         let accessToken = await getAccessToken(userId, 'spotify');
-        let tracksData = (await getSpotifyTracks(trackIds, accessToken)).tracks;
-        let spotifyFavoriteTracks = await normalizeTrackData('spotify', tracksData);
+        let tracksData =  (await getSpotifyTracks(trackIds, accessToken)).tracks;
+        let spotifyFavoriteTracks = await normalizeTrackData('spotify', tracksData, userId);
 
         // Soundcloud
-        trackIds = await retrieveFavorites(userId, 'soundcloud');
+        FavoriteData = await retrieveFavorites(userId, 'soundcloud');
+        trackIds = FavoriteData.map(item => item.trackId);
         tracksData = await getSoundcloudTracks(trackIds);
-        let soundcloudFavoriteTracks = await normalizeTrackData('soundcloud', tracksData);
+        let soundcloudFavoriteTracks = await normalizeTrackData('soundcloud', tracksData, userId);
         res.status(200).json({spotifyFavoriteTracks, soundcloudFavoriteTracks});
     } catch (error) {
         next(error);

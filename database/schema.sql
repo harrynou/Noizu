@@ -26,7 +26,7 @@ CREATE TABLE favorites (
     user_id INTEGER REFERENCES users(user_id) on DELETE CASCADE NOT NULL,
     provider VARCHAR(50) NOT NULL,
     track_id VARCHAR(50) NOT NULL,
-    favorited_at TIMESTAMP WITH DEFAULT CURRENT_TIMESTAMP,
+    favorited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (user_id, provider, track_id)
 );
 

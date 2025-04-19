@@ -60,15 +60,39 @@ export const spotifySearchQuery = async (query:string, accessToken: string):Prom
     }
 }
 
-export const getSpotifyTracks = async (trackIds: string[], accessToken: string):Promise<any> => {
+export const getSpotifyTracks = async (trackIds: string[], accessToken: string): Promise<any> => {
     try {
-        const response = await axios.get('https://api.spotify.com/v1/tracks', {
-            headers: {
-                Authorization: 'Bearer ' + accessToken,
-            },
-            params: {ids: trackIds.toString()}
-        })
-        return response.data;
+        // If no tracks, return empty object with empty tracks array
+        if (trackIds.length === 0) {
+            return { tracks: [] };
+        }
+        
+        const batchSize = 50; // Spotify API limit
+        const batches = [];
+        
+        // Split trackIds into batches of 50 or fewer
+        for (let i = 0; i < trackIds.length; i += batchSize) {
+            const batchIds = trackIds.slice(i, i + batchSize);
+            batches.push(batchIds);
+        }
+        
+        const batchResults = await Promise.all(
+            batches.map(batch => {
+                return axios.get('https://api.spotify.com/v1/tracks', {
+                    headers: {
+                        Authorization: 'Bearer ' + accessToken,
+                    },
+                    params: { ids: batch.toString() }
+                });
+            })
+        );
+        
+        // Combine results from all batches
+        const allTracks = batchResults.reduce<any[]>((acc, response) => {
+            return [...acc, ...response.data.tracks];
+        }, []);
+        
+        return { tracks: allTracks };
     } catch (error) {
         throw error;
     }

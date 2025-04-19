@@ -16,7 +16,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onFilterChange, activeTab }
   useEffect(() => {
     setFilteredSpotifyTracks(spotifyFavoriteTracks);
     setFilteredSoundcloudTracks(soundcloudFavoriteTracks);
-  }, [spotifyFavoriteTracks, soundcloudFavoriteTracks]);
+    onFilterChange(spotifyFavoriteTracks, soundcloudFavoriteTracks);
+  }, [spotifyFavoriteTracks, soundcloudFavoriteTracks, onFilterChange]);
 
   // Filter tracks whenever search query changes
   useEffect(() => {
@@ -24,14 +25,13 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onFilterChange, activeTab }
       // If search is empty, reset to full lists
       setFilteredSpotifyTracks(spotifyFavoriteTracks);
       setFilteredSoundcloudTracks(soundcloudFavoriteTracks);
+      onFilterChange(spotifyFavoriteTracks, soundcloudFavoriteTracks);
     } else {
       const query = searchQuery.toLowerCase().trim();
       
       // Filter Spotify tracks
       const filteredSpotify = spotifyFavoriteTracks.filter(track => 
-        // Check if title contains search query
         track.title.toLowerCase().includes(query) ||
-        // Check if any artist name contains search query
         track.artistInfo.some(artist => 
           artist.name.toLowerCase().includes(query)
         )
@@ -39,9 +39,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onFilterChange, activeTab }
       
       // Filter SoundCloud tracks
       const filteredSoundcloud = soundcloudFavoriteTracks.filter(track => 
-        // Check if title contains search query
         track.title.toLowerCase().includes(query) ||
-        // Check if any artist name contains search query
         track.artistInfo.some(artist => 
           artist.name.toLowerCase().includes(query)
         )
@@ -49,11 +47,11 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onFilterChange, activeTab }
       
       setFilteredSpotifyTracks(filteredSpotify);
       setFilteredSoundcloudTracks(filteredSoundcloud);
+      
+      // Pass the newly created filtered arrays directly
+      onFilterChange(filteredSpotify, filteredSoundcloud);
     }
-    
-    // Notify parent component about the filtered tracks
-    onFilterChange(filteredSpotifyTracks, filteredSoundcloudTracks);
-  }, [searchQuery, spotifyFavoriteTracks, soundcloudFavoriteTracks]);
+  }, [searchQuery, spotifyFavoriteTracks, soundcloudFavoriteTracks, onFilterChange]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);

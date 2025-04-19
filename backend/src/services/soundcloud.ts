@@ -94,14 +94,44 @@ export const soundcloudQuery = async (query:string, accessToken:string):Promise<
     }
 }
 
-export const getSoundcloudTracks = async (trackIds: string[]):Promise<any> => {
+export const getSoundcloudTracks = async (trackIds: string[]): Promise<any> => {
     try {
-        const response = await axios.get('https://api-v2.soundcloud.com/tracks?', {
-            params: {ids: trackIds.toString(), client_id: `${process.env.SOUNDCLOUD_CLIENT_ID_V2}`},
-            headers: {
-                "accept": "application/json; charset=utf-8",
-            }});
-        return response.data;
+        // If no tracks, return empty array
+        if (trackIds.length === 0) {
+            return [];
+        }
+        
+        // Handle batching for more than 50 tracks
+        const batchSize = 50; // SoundCloud API limit
+        const batches = [];
+        
+        // Split trackIds into batches of 50 or fewer
+        for (let i = 0; i < trackIds.length; i += batchSize) {
+            const batchIds = trackIds.slice(i, i + batchSize);
+            batches.push(batchIds);
+        }
+        
+        // Process each batch with the API and combine results
+        const batchResults = await Promise.all(
+            batches.map(batch => {
+                return axios.get('https://api-v2.soundcloud.com/tracks', {
+                    params: {
+                        ids: batch.toString(),
+                        client_id: `${process.env.SOUNDCLOUD_CLIENT_ID_V2}`
+                    },
+                    headers: {
+                        "accept": "application/json; charset=utf-8",
+                    }
+                });
+            })
+        );
+        
+        // Combine results from all batches
+        const allTracks = batchResults.reduce<any[]>((acc, response) => {
+            return [...acc, ...response.data];
+        }, []);
+        
+        return allTracks;
     } catch (error) {
         throw error;
     }

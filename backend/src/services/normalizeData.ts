@@ -47,15 +47,16 @@ export const normalizeTrackData = async (provider:string, searchData: any, userI
         if (userId){
             favoriteData = await retrieveFavorites(userId, provider, trackIds);
         }
-        console.log(favoriteData)
-        return tracks.map(track => {
-            const favoriteInfo = favoriteData.find(item => item.trackId === track.id);
-            return {
-                ...track,
-                isFavorited: favoriteInfo ? true : false,
-                favoritedAt: favoriteInfo ? favoriteInfo.favoritedAt : null
-              };
+        const favoriteMap = new Map();
+        favoriteData.forEach(item => {
+            favoriteMap.set(item.trackId, item.favoritedAt);
         });
+        
+        return tracks.map(track => ({
+            ...track,
+            isFavorited: favoriteMap.has(track.id),
+            favoritedAt: favoriteMap.get(track.id) || null
+        }));
     } catch (error){
         throw error
     }

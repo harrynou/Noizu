@@ -9,6 +9,7 @@ import AddToQueueAction from '../track-actions/AddToQueue';
 import FavoriteAction from '../track-actions/Favorite';
 import formatDuration from '../../utils/formatDuration';
 import { useMusicPlayer } from '../../contexts/musicPlayerContext';
+import { smartFormatDate } from '../../utils/formatTime';
 
 interface ItemCardProps {
     item: any;
@@ -24,12 +25,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
     const track: Track = {
         id: item.id,
         title: item.title,
-        artists: item.artistInfo,
+        artistInfo: item.artistInfo,
         imageUrl: item.imageUrl,
         provider: provider,
         uri: item.uri || item.trackUrl, 
         duration: item.duration,
         isFavorited: item.isFavorited,
+        favoritedAt: item.favoritedAt
     };
 
     const handlePlayClick = (e: React.MouseEvent) => {
@@ -40,6 +42,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
             playTrack(track);
         }
     };
+    console.log(smartFormatDate(track.favoritedAt))
 
     return (
         <div 
@@ -126,6 +129,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
                 <div className='flex items-center space-x-4'>
                     <FavoriteAction trackId={track.id} provider={track.provider}/>
                     <AddToQueueAction track={track}/>
+                    {track.isFavorited ? `${smartFormatDate(track.favoritedAt)}` : null}
                 </div>
             </div>
         </div>

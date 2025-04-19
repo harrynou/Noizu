@@ -41,6 +41,7 @@ declare global {
         provider: string;
         duration: number;
         isFavorited: boolean;
+        favoritedAt: string;
     }
 
     interface Artist {

@@ -142,13 +142,13 @@ const QueueManager: React.FC = () => {
                                                             {track.title}
                                                         </p>
                                                         <div className="flex flex-wrap text-xs text-gray-400">
-                                                            {track.artists.slice(0, 1).map((artist: any) => (
+                                                            {track.artistInfo.slice(0, 1).map((artist: any) => (
                                                                 <span key={artist.name} className="truncate" title={artist.name}>
                                                                     {artist.name}
                                                                 </span>
                                                             ))}
-                                                            {track.artists.length > 1 && (
-                                                                <span className="truncate"> + {track.artists.length - 1} more</span>
+                                                            {track.artistInfo.length > 1 && (
+                                                                <span className="truncate"> + {track.artistInfo.length - 1} more</span>
                                                             )}
                                                         </div>
                                                     </div>

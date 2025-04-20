@@ -202,7 +202,7 @@ const HomePage: React.FC = (): JSX.Element => {
                         <div className="truncate">
                             <p className="font-medium text-sm truncate">{currentTrack.title}</p>
                             <p className="text-xs text-gray-400 truncate">
-                                {currentTrack.artists[0]?.name}
+                                {currentTrack.artistInfo[0]?.name}
                             </p>
                         </div>
                     </div>

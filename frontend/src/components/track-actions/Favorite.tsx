@@ -25,6 +25,7 @@ const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Eleme
         } else {
             const track = getTrack(trackId, provider);
             if (!track) return;
+            track.favoritedAt = new Date().toISOString();
             addFavorite(track);
         }
     }

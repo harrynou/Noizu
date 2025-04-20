@@ -19,7 +19,7 @@ export const deleteFavorite = async (userId: number, trackId: string, provider: 
 
 export const retrieveFavorites = async (userId: number, provider?: string, trackIds?: string[]): Promise<FavoriteDataType[]> => {
     try {
-        let query = 'SELECT track_id, favorited_at FROM favorites WHERE user_id = $1';
+        let query = 'SELECT track_id, favorited_at AT TIME ZONE \'UTC\' as favorited_at FROM favorites WHERE user_id = $1';
         const params: any[] = [userId];
         if (provider) {
             query += ' AND provider = $2';

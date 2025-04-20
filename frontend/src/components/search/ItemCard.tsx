@@ -42,8 +42,6 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, provider }): JSX.Element => {
             playTrack(track);
         }
     };
-    console.log(smartFormatDate(track.favoritedAt))
-
     return (
         <div 
             className="flex justify-between text-white p-2 hover:bg-gray-700 rounded-md"

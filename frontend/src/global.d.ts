@@ -49,4 +49,9 @@ declare global {
         id: string
         profileUrl: string
     }
+
+    interface UserType {
+        volume:number,
+    
+    }
 }

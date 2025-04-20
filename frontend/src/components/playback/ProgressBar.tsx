@@ -6,7 +6,7 @@ interface ProgressBarProps {
     duration: number | null;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({duration}): JSX.Element => {
+const ProgressBar = ({duration}: ProgressBarProps): JSX.Element => {
     const [isDragging, setIsDragging] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState(0);

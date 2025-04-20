@@ -9,6 +9,10 @@ const Background: React.FC<BackgroundProps> = memo(({ children }) => {
     // Set overscroll background to match your theme
     document.body.style.backgroundColor = '#0f172a';
     document.documentElement.style.backgroundColor = '#0f172a';
+    return () => {
+      document.body.style.backgroundColor = '';
+      document.documentElement.style.backgroundColor = '';
+    };
   }, []);
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-900">

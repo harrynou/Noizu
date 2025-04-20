@@ -1,19 +1,14 @@
 import {createContext, useContext, useState, useEffect, useMemo} from "react";
 import { checkAuth, logoutUser, getAccessToken } from "../services/api";
 
-interface userType {
-    volume:number,
-
-}
-
 interface authContextType {
     isAuthenticated:boolean;
     hasPassword:boolean;
-    user: userType | null;
+    user: UserType | null;
     loading:boolean;
     hasSpotifyPremium: boolean;
     spotifyToken: string | null;
-    login: (userData:userType, userHasPassword:boolean) => void;
+    login: (userData:UserType, userHasPassword:boolean) => void;
     logout: () => void;
     Password: () => void;
     getAuth: () => void;
@@ -37,7 +32,7 @@ const authContext = createContext<authContextType>({
 export const AuthContextProvider: React.FC<{children:React.ReactNode}> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [hasPassword, setHasPassword] = useState(false);
-    const [user, setUser] = useState<userType | null>(null);
+    const [user, setUser] = useState<UserType | null>(null);
     const [loading, setLoading] = useState(true);
     const [hasSpotifyPremium, setHasSpotifyPremium] = useState<boolean>(false);
     const [spotifyToken, setSpotifyToken] = useState<string | null>(null);

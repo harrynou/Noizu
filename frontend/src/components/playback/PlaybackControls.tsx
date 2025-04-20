@@ -8,7 +8,7 @@ import queueSvg from '../../assets/queue-icon.svg';
 import ProgressBar from './ProgressBar';
 import VolumeMixer from './VolumeMixer';
 
-const PlaybackControls: React.FC = () => {
+const PlaybackControls = () => {
     const { 
         currentTrack, 
         isPlaying, 
@@ -138,7 +138,7 @@ const PlaybackControls: React.FC = () => {
                                     <div className="flex flex-col min-w-0">
                                         <p className="text-sm font-medium truncate">{currentTrack.title}</p>
                                         <div className="flex flex-wrap text-xs text-gray-400">
-                                            {currentTrack.artists.map((artist: any, index: number) => (
+                                            {currentTrack.artistInfo.map((artist: any, index: number) => (
                                                 <React.Fragment key={artist.name}>
                                                     {index > 0 && <span>, </span>}
                                                     <a
@@ -248,7 +248,7 @@ const PlaybackControls: React.FC = () => {
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-medium truncate">{track.title}</p>
                                                 <p className="text-xs text-gray-400 truncate">
-                                                    {track.artists[0]?.name}
+                                                    {track.artistInfo[0]?.name}
                                                 </p>
                                             </div>
                                         </li>
@@ -270,7 +270,7 @@ const PlaybackControls: React.FC = () => {
                         />
                         <div className="truncate">
                             <p className="text-sm font-medium truncate text-white">{currentTrack.title}</p>
-                            <p className="text-xs text-gray-400 truncate">{currentTrack.artists[0]?.name}</p>
+                            <p className="text-xs text-gray-400 truncate">{currentTrack.artistInfo[0]?.name}</p>
                         </div>
                     </div>
                     

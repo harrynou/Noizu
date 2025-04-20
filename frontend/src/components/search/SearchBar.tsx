@@ -7,7 +7,7 @@ interface SearchBarProps {
     onSearch?: () => void;  // Optional callback for when search is performed
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }): JSX.Element => {
+const SearchBar = ({ onSearch }: SearchBarProps): JSX.Element => {
     const [query, setQuery] = useState<string>('');
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [recentSearches, setRecentSearches] = useState<string[]>([]);

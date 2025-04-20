@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 // import { useAuth } from "../contexts/authContext";
 
-import SpotifyIcon from '../assets/spotify/Icon.svg';
-import SoundcloudIcon from '../assets/soundcloud/Icon.svg';
+//import SpotifyIcon from '../assets/spotify/Icon.svg';
+// import SoundcloudIcon from '../assets/soundcloud/Icon.svg';
 
 interface Playlist {
     id: string;

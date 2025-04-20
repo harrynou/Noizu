@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useFavoriteContext } from "../contexts/favoriteContext";
 import ItemCard from "../components/search/ItemCard";
 import { Link } from 'react-router-dom';

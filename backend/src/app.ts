@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes';
 import searchRoutes from './routes/searchRoutes';
 import playbackRoutes from './routes/playbackRoutes';
 import trackRoutes from './routes/trackRoutes';
+import playlistRoutes from './routes/playlistRoutes';
 import errorHandle from './middleware/errorHandle';
 import passport from 'passport';
 import { passportConfig } from './config/passport-config';
@@ -45,6 +46,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/playback', playbackRoutes);
 app.use('/api/track', trackRoutes);
+app.use('/api/playlists', playlistRoutes);
 app.use(errorHandle);
 
 

@@ -1,6 +1,5 @@
-import { IsEmail, IsString, IsStrongPassword, Length, IsOptional, IsNumber } from "class-validator"
+import { IsEmail, IsString, IsStrongPassword, Length, IsOptional, IsNumber, IsAlphanumeric, IsAlpha, isString } from "class-validator"
 import { Transform } from 'class-transformer';
-import { Providers } from "../utils/types";
 
 export class userCredentialsDto {
     @Transform(({value}) => value.toLowerCase())
@@ -23,7 +22,8 @@ export class searchQueryDto {
     query:string;
 
     @IsString()
-    provider: string
+    @IsAlpha()
+    provider: string;
 }
 
 export class volumeDto {
@@ -35,7 +35,28 @@ export class favoriteTrackDto {
     trackId: string;
 
     @IsString()
+    @IsAlpha()
     provider: string;
 }
 
+export class createPlaylistDTO {
+    @IsString()
+    @IsAlphanumeric()
+    name: string;
 
+    @IsString()
+    image_url?: string;
+
+}
+
+export class playlistTrackDTO {
+    @IsNumber()
+    playlist_id: number;
+
+    @IsString()
+    track_id: number;
+
+    @IsString()
+    @IsAlphanumeric()
+    provider: string;
+}

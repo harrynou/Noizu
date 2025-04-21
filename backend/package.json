@@ -28,6 +28,7 @@
     "express": "^4.21.2",
     "ioredis": "^5.4.2",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.2",
     "passport": "^0.7.0",
     "passport-oauth2": "^1.8.0",
     "passport-soundcloud": "^0.2.0",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
     "@types/node": "^20.17.12",
     "@types/passport": "^1.0.17",
     "@types/passport-spotify": "^2.0.4",

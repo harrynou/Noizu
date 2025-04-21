@@ -43,10 +43,6 @@ export class createPlaylistDTO {
     @IsString()
     @IsAlphanumeric()
     name: string;
-
-    @IsString()
-    image_url?: string;
-
 }
 
 export class playlistTrackDTO {

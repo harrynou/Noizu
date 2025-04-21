@@ -3,11 +3,12 @@ import * as playlistController from '../controllers/playlistControllers';
 import { authenticateJWT } from '../middleware/jwtAutenticate';
 import { createPlaylistDTO, playlistTrackDTO } from '../dtos/dtos';
 import { validateRequest } from '../middleware/validateRequest';
+import { uploadImage } from '../middleware/upload';
 
 const router = Router();
 
 router.get('/', authenticateJWT, playlistController.getPlaylists);
-router.put('/', authenticateJWT, validateRequest(createPlaylistDTO, 'body'), playlistController.createPlaylist);
+router.put('/', uploadImage.single('playlistCover'), validateRequest(createPlaylistDTO, 'body'), playlistController.createPlaylist);
 router.put('/track', authenticateJWT, validateRequest(playlistTrackDTO, 'body'), playlistController.addTrack);
 router.delete('/track', authenticateJWT, validateRequest(playlistTrackDTO, 'body'), playlistController.removeTrack);
 

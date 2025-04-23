@@ -26,4 +26,10 @@ class NotFoundError extends AppError {
     }
 }
 
+export class S3UploadError extends AppError {
+    constructor(message: "Error Uploading Image") {
+        super(message, 500);
+    }
+}
+
 export { AppError, UnauthorizedError, ConflictError, NotFoundError };

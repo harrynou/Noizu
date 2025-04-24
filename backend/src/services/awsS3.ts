@@ -25,7 +25,5 @@ const uploadImageToS3 = async (file: Express.Multer.File, folder: string = 'play
     } catch (error) {
         throw S3UploadError;
     }
-
 };
-
 export default uploadImageToS3;

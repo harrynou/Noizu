@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-// Define storage settings
+// storage settings
 const storage = multer.memoryStorage();
 
 // Create file filter for images
@@ -42,9 +42,8 @@ export const handleMulterError = (req: Request, res: Response, next: NextFunctio
     }
     
     if (req.headers['content-type']?.includes('multipart/form-data') && 
-        req.body.name &&
-        !req.file) {
-        return next(new AppError('File upload failed. The file may be too large (max: 5MB).', 400));
+        req.body.name && req.body.requireImage === 'true' && !req.file) {
+        return next(new AppError('File could not be processed.', 400));
     }
     
     next();

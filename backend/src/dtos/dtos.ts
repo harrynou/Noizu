@@ -39,12 +39,20 @@ export class favoriteTrackDto {
     provider: string;
 }
 
+// Playlist DTO's
 export class createPlaylistDTO {
     @IsString()
     @IsAlphanumeric()
     name: string;
 }
 
+export class removePlaylistDTO {
+    @IsNumber()
+    playlist_id: number;
+}
+
+
+// Used for Insert and Delete
 export class playlistTrackDTO {
     @IsNumber()
     playlist_id: number;
@@ -55,4 +63,10 @@ export class playlistTrackDTO {
     @IsString()
     @IsAlphanumeric()
     provider: string;
+}
+
+
+export class getPlaylistTracks {
+    @IsNumber()
+    playlist_id: number;
 }

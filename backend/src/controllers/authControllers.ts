@@ -40,7 +40,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
         const userId = await insertUser(email, hashed_password);
         const token = generateToken({userId});
         res.cookie('authToken', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: cookieExpiration,});
-        return res.status(201).json({msg:'Registration Successful', userInfo:{volume:0.5}, userHasPassword: true})
+        return res.status(201).json({message:'Registration Successful', userInfo:{volume:0.5}, userHasPassword: true})
     } catch (error:any) {
         next(error);
     }
@@ -72,7 +72,7 @@ export const soundcloudRedirect = async (req: Request, res: Response, next: Next
         const codeVerifier = generateCodeVerifier();
         const codeChallenge = await generateCodeChallenge(codeVerifier);
         await setToken(`authState:${state}`,codeVerifier, 600);
-        res.redirect(`https://secure.soundcloud.com/authorize?client_id=${process.env.SOUNDCLOUD_CLIENT_ID}&redirect_uri=${process.env.SOUNDCLOUD_REDIRECT_URI}&response_type=code&code_challenge=${codeChallenge}&code_challenge_method=S256&state=${state}`)
+        return res.redirect(`https://secure.soundcloud.com/authorize?client_id=${process.env.SOUNDCLOUD_CLIENT_ID}&redirect_uri=${process.env.SOUNDCLOUD_REDIRECT_URI}&response_type=code&code_challenge=${codeChallenge}&code_challenge_method=S256&state=${state}`)
     } catch (error) {
         next(error)
     }
@@ -116,9 +116,9 @@ export const signInUser = async (req: Request, res: Response, next: NextFunction
             const userId = userInfo.user_id;
             const token =  generateToken({userId})
             res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});
-            res.status(200).json({msg:'Sign-In Successful.', userHasPassword: true,})
+            return res.status(200).json({messageg:'Sign-In Successful.', userHasPassword: true,})
         } else {
-            res.status(401).json({error:"Incorrect password."})
+            return res.status(401).json({error:"Incorrect password."})
         }
     } catch (error){
         next(error)
@@ -145,7 +145,7 @@ export const setupAccount = async (req: Request, res: Response, next: NextFuncti
         const userId = user.userId;
         const hashed_password = await hashString(password);
         await updateEmailandPassword(userId,email,hashed_password);
-        res.status(200).json({msg:'Account Successfully Updated.'});
+        return res.status(200).json({message:'Account Successfully Updated.'});
     } catch (error) {
         next(error)
     }
@@ -158,7 +158,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
         const password = req.body.password;
         const hashed_password = await hashString(password);
         await updatePassword(userId, hashed_password);
-        res.status(200).json({msg:'Password Change Successful.'});
+        return res.status(200).json({message:'Password Change Successful.'});
     } catch (error) {
         next(error)
     }

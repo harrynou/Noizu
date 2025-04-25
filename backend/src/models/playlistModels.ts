@@ -45,7 +45,7 @@ export const retrievePlaylists = async (userId:number) => {
 // Inserts a track into a playlist, returns playlist_track_id 
 export const insertPlaylistTrack = async (userId: number, playlistId: number, trackId: number, provider: string) => {
     try {
-        const result = await pool.query('INSERT INTO playlistTracks (user_id, playlist_id, track_id, provider) VALUES($1,$2,$3,$4) RETURNING playlist_track_id', [userId, playlistId, trackId, provider]);   
+        const result = await pool.query('INSERT INTO playlist_tracks (user_id, playlist_id, track_id, provider) VALUES($1,$2,$3,$4) RETURNING playlist_track_id', [userId, playlistId, trackId, provider]);   
         return result.rows[0].playlist_track_id;
     } catch (error) {
         throw error;
@@ -55,7 +55,7 @@ export const insertPlaylistTrack = async (userId: number, playlistId: number, tr
 // Deletes playlist track, returns success boolean
 export const deletePlaylistTrack = async (userId: number, playlistId: number, trackId: number, provider: string) => {
     try {
-        const result = await pool.query("DELETE FROM playlistTracks WHERE user_id = $1 AND playlist_id = $2 AND track_id = $3 AND provider = $4", [userId, playlistId, trackId, provider]);
+        const result = await pool.query("DELETE FROM playlist_tracks WHERE user_id = $1 AND playlist_id = $2 AND track_id = $3 AND provider = $4", [userId, playlistId, trackId, provider]);
         return result.rowCount !== null && result.rowCount > 0;
     } catch (error) {
         throw error;

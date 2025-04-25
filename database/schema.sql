@@ -45,6 +45,7 @@ CREATE TABLE playlist_tracks (
     playlist_track_id SERIAL PRIMARY KEY,
 	playlist_id INTEGER NOT NULL REFERENCES playlists(playlist_id) ON DELETE CASCADE,
 	track_id VARCHAR(100) NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     provider VARCHAR(50) NOT NULL,
 	added_at TIMESTAMP DEFAULT NOW(),
 	UNIQUE (playlist_id, track_id, provider)

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback} from 'react';
 import { useFavoriteContext } from "../contexts/favoriteContext";
 import ItemCard from "../components/search/ItemCard";
 import { Link } from 'react-router-dom';
@@ -24,10 +24,10 @@ const FavoritesPage = () => {
     }, [spotifyFavoriteTracks, soundcloudFavoriteTracks]);
 
     // Handle filter changes from the SearchFilter component
-    const handleFilterChange = (newFilteredSpotifyTracks: Track[], newFilteredSoundcloudTracks: Track[]) => {
+    const handleFilterChange = useCallback((newFilteredSpotifyTracks: Track[], newFilteredSoundcloudTracks: Track[]) => {
         setFilteredSpotifyTracks(newFilteredSpotifyTracks);
         setFilteredSoundcloudTracks(newFilteredSoundcloudTracks);
-    };
+    }, [spotifyFavoriteTracks, soundcloudFavoriteTracks]);
 
     // Handle tab changes
     const handleTabChange = (tab: 'all' | 'spotify' | 'soundcloud') => {
@@ -92,6 +92,8 @@ const FavoritesPage = () => {
                     {hasFavorites && (
                         <div className="mt-2 md:mt-0">
                             <SearchFilter 
+                               spotifyTracks={spotifyFavoriteTracks} 
+                                soundcloudTracks={soundcloudFavoriteTracks}
                                 onFilterChange={handleFilterChange}
                                 activeTab={activeTab}
                             />

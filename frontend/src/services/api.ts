@@ -182,4 +182,110 @@ export const startSpotifyPlayback = async ({token, device_id, uris, position}:st
 }
 
 
-// APIs dealing with SoundCloud
+// APIs for playlists
+
+export interface Playlist {
+    playlist_id: number;
+    name: string;
+    image_url: string | null;
+    user_id: number;
+    created_at: string;
+  }
+  
+  export interface PlaylistTrack extends Track {
+    playlist_track_id?: number;
+    added_at?: string;
+  }
+
+  export interface PlaylistTracksResponse {
+    spotifyPlaylistTracks: PlaylistTrack[];
+    soundcloudPlaylistTracks: PlaylistTrack[];
+  }
+  
+  // Get all playlists for the current user
+  export const getPlaylists = async (): Promise<Playlist[]> => {
+    try {
+      const response = await axiosInstance.get('/api/playlists');
+      return response.data.playlists || [];
+    } catch (error) {
+      console.error('Error fetching playlists:', error);
+      throw error;
+    }
+  };
+  
+// Get tracks for a specific playlist
+export const getPlaylistTracks = async (playlistId: number): Promise<PlaylistTracksResponse> => {
+    try {
+      const response = await axiosInstance.get(`/api/playlists/${playlistId}/tracks`);
+      return {
+        spotifyPlaylistTracks: response.data.playlistTracks.spotifyPlaylistTracks || [],
+        soundcloudPlaylistTracks: response.data.playlistTracks.soundcloudPlaylistTracks || []
+      };
+    } catch (error) {
+      console.error('Error fetching playlist tracks:', error);
+      throw error;
+    }
+  };
+  
+  // Create a new playlist
+  export const createPlaylist = async (name: string, playlistCover?: File): Promise<Playlist> => {
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      
+      if (playlistCover) {
+        formData.append('playlistCover', playlistCover);
+      }
+      
+      const response = await axiosInstance.put('/api/playlists', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error creating playlist:', error);
+      throw error;
+    }
+  };
+  
+  // Delete a playlist
+  export const deletePlaylist = async (playlistId: number): Promise<void> => {
+    try {
+      await axiosInstance.delete('/api/playlists', { data: { playlistId } });
+    } catch (error) {
+      console.error('Error deleting playlist:', error);
+      throw error;
+    }
+  };
+  
+  // Add a track to a playlist
+  export const addTrackToPlaylist = async (playlistId: number, trackId: string, provider: string): Promise<void> => {
+    try {
+      await axiosInstance.put('/api/playlists/track', {
+        playlistId,
+        trackId,
+        provider
+      });
+    } catch (error) {
+      console.error('Error adding track to playlist:', error);
+      throw error;
+    }
+  };
+  
+  // Remove a track from a playlist
+  export const removeTrackFromPlaylist = async (playlistId: number, trackId: string, provider: string): Promise<void> => {
+    try {
+      await axiosInstance.delete('/api/playlists/track', {
+        data: {
+          playlistId,
+          trackId,
+          provider
+        }
+      });
+    } catch (error) {
+      console.error('Error removing track from playlist:', error);
+      throw error;
+    }
+  };

@@ -226,7 +226,7 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         <li>A statement, made under penalty of perjury, that the above information is accurate, and that you are the copyright owner or are authorized to act on behalf of the owner</li>
                                     </ul>
                                     <p className="text-gray-300 mb-4">
-                                        DMCA notices should be sent to <a href="mailto:copyright@Noizu.com" className="text-accentPrimary hover:underline">copyright@Noizu.com</a>.
+                                        DMCA notices should be sent to <a href="mailto:mail@noizu.xyz" className="text-accentPrimary hover:underline">mail@noizu.xyz</a>.
                                     </p>
                                 </section>
                                 
@@ -241,23 +241,6 @@ const TermsPage: React.FC = (): JSX.Element => {
                                         <li>Provide the user with a copy of the DMCA complaint</li>
                                         <li>Provide the user with information about submitting a counter-notice</li>
                                     </ul>
-                                </section>
-                                
-                                <section>
-                                    <h2 className="text-xl font-notbold mb-4"><span className={subHeaderStyles}>3. Counter-Notices</span></h2>
-                                    <p className="text-gray-300 mb-4">
-                                        If you believe that your content was removed or disabled by mistake or misidentification, you may send us a counter-notice. Your counter-notice must include:
-                                    </p>
-                                    <ul className="list-disc pl-6 mb-4 text-gray-300 space-y-2">
-                                        <li>Your physical or electronic signature</li>
-                                        <li>Identification of the content that has been removed or to which access has been disabled and the location at which the content appeared before it was removed or disabled</li>
-                                        <li>A statement under penalty of perjury that you have a good faith belief that the content was removed or disabled as a result of mistake or a misidentification</li>
-                                        <li>Your name, address, telephone number, and email address</li>
-                                        <li>A statement that you consent to the jurisdiction of the federal court in [Your Jurisdiction] and a statement that you will accept service of process from the person who provided notification of the alleged infringement</li>
-                                    </ul>
-                                    <p className="text-gray-300 mb-4">
-                                        If we receive a counter-notice, we may send a copy to the original complainant informing them that we may restore the removed content in 10 business days. Unless the copyright owner files an action seeking a court order against the content provider, the removed content may be restored in 10 to 14 business days or more after receipt of the counter-notice.
-                                    </p>
                                 </section>
                             </div>
                         )}

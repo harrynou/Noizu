@@ -7,6 +7,7 @@ import SoundcloudIcon from '../../assets/soundcloud/Icon.svg';
 
 import AddToQueueAction from '../track-actions/AddToQueue';
 import FavoriteAction from '../track-actions/Favorite';
+import AddToPlaylist from '../track-actions/AddToPlaylist';
 import formatDuration from '../../utils/formatDuration';
 import { useMusicPlayer } from '../../contexts/musicPlayerContext';
 import { smartFormatDate } from '../../utils/formatTime';
@@ -153,6 +154,7 @@ const ItemCard = memo(({ item, provider }: ItemCardProps) => {
                 <div className='flex items-center space-x-4'>
                     <FavoriteAction trackId={track.id} provider={track.provider} />
                     <AddToQueueAction track={track} />
+                    <AddToPlaylist track={track} />
                     
                     {/* Only render time if track is favorited */}
                     {formattedTimeAdded && (

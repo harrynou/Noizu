@@ -7,7 +7,8 @@ import TermsPage from './pages/terms.tsx'
 import SignInPage from './pages/sign-in.tsx';
 import SignUpPage from './pages/sign-up.tsx';
 import FavoritesPage from './pages/favorites.tsx'
-import PlaylistsPage from './pages/playlists.tsx'
+import PlaylistsPage from './pages/playlists/playlists.tsx'
+import PlaylistDetailPage from './pages/playlists/playlistDetails.tsx'
 import { AuthContextProvider, useAuth} from './contexts/authContext.tsx';
 import PublicRoute from './components/wrappers/PublicRoute.tsx';
 import SetUpAccount from './pages/set-up-account.tsx';
@@ -40,6 +41,7 @@ const AppRoutes = () => {
       <Route path='/about-me' element={<AboutMePage/>}></Route>
       <Route path='/favorites' element={<ProtectedRoute><FavoritesPage/></ProtectedRoute>}></Route>
       <Route path='/playlists' element={<ProtectedRoute><PlaylistsPage/></ProtectedRoute>}></Route>
+      <Route path='/playlists/:id' element={<ProtectedRoute><PlaylistDetailPage/></ProtectedRoute>}></Route>
       <Route path='/setup-account' element={<NoPasswordRoute><SetUpAccount/></NoPasswordRoute>}></Route>
       <Route path='/account-settings' element={<AccountSettingsPage/>}></Route>
     </Routes>

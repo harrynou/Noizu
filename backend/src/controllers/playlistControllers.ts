@@ -2,6 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import {User} from '../utils/types'
 import uploadImageToS3 from '../services/awsS3';
 import { insertPlaylist, deletePlaylist, retrievePlaylists, insertPlaylistTrack, deletePlaylistTrack, retrievePlaylistTracks } from '../models/playlistModels';
+import { grabTrackIds } from '../utils/helper';
+import { getSpotifyTracks } from '../services/spotify';
+import { getAccessToken } from '../models/tokenModels';
+import { normalizeTrackData } from '../services/normalizeData';
+import { getSoundcloudTracks } from '../services/soundcloud';
 
 export const createPlaylist = async (req: Request, res:Response, next:NextFunction) => {
     try {
@@ -31,6 +36,7 @@ export const removePlaylist = async (req:Request, res:Response, next:NextFunctio
         const {playlistId} = req.body;
        
         await deletePlaylist(userId, playlistId);
+        return res.status(200).json({message:"Playlist successfully removed."})
     } catch (error) {
         next(error);        
     }    
@@ -75,10 +81,32 @@ export const removeTrack = async (req: Request, res:Response, next:NextFunction)
 
 export const getPlaylistTracks = async (req:Request, res:Response, next:NextFunction) => {
     try {
-        const {playlistId} = req.body;
+        const user = req.user as User;
+        const userId = user.userId;
+        const {playlistId} = req.params;
 
-        const playlistTracks = await retrievePlaylistTracks(playlistId);
-        return res.status(200).json({playlistTracks, message:"Playlist tracks successfully retrieved."});
+        let trackIds;
+        let accessToken;
+        let trackData;
+        let spotifyPlaylistTracks: any[] = [];
+        let soundcloudPlaylistTracks: any[] = [];
+        const playlistData = await retrievePlaylistTracks(Number(playlistId));
+
+        trackIds = grabTrackIds(playlistData, 'spotify');
+        if (trackIds.length > 0){
+            accessToken = await getAccessToken(userId, 'spotify');
+            trackData = (await getSpotifyTracks(trackIds, accessToken)).tracks;
+            spotifyPlaylistTracks = await normalizeTrackData('spotify', trackData, userId);
+        }
+
+        trackIds = grabTrackIds(playlistData, 'soundcloud');
+        if (trackIds.length > 0){
+            trackData = await getSoundcloudTracks(trackIds);
+            soundcloudPlaylistTracks = await normalizeTrackData('soundcloud', trackData, userId);
+        }
+        
+
+        return res.status(200).json({playlistTracks: {spotifyPlaylistTracks, soundcloudPlaylistTracks}, message:"Playlist tracks successfully retrieved."});
     } catch (error) {
         next(error);
     }

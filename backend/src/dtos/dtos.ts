@@ -1,5 +1,5 @@
-import { IsEmail, IsString, IsStrongPassword, Length, IsOptional, IsNumber, IsAlphanumeric, IsAlpha, isString } from "class-validator"
-import { Transform } from 'class-transformer';
+import { IsEmail, IsString, IsStrongPassword, Length, IsOptional, IsNumber, IsAlphanumeric, IsAlpha } from "class-validator"
+import { Transform, Type } from 'class-transformer';
 
 export class userCredentialsDto {
     @Transform(({value}) => value.toLowerCase())
@@ -48,17 +48,17 @@ export class createPlaylistDTO {
 
 export class removePlaylistDTO {
     @IsNumber()
-    playlist_id: number;
+    playlistId: number;
 }
 
 
 // Used for Insert and Delete
 export class playlistTrackDTO {
     @IsNumber()
-    playlist_id: number;
+    playlistId: number;
 
     @IsString()
-    track_id: number;
+    trackId: number;
 
     @IsString()
     @IsAlphanumeric()
@@ -66,7 +66,8 @@ export class playlistTrackDTO {
 }
 
 
-export class getPlaylistTracks {
+export class getPlaylistTracksDTO {
     @IsNumber()
-    playlist_id: number;
+    @Type(() => Number)
+    playlistId: number;
 }

@@ -9,7 +9,7 @@ interface FavoriteProps {
     provider: string;
 }
 
-const FavoriteAction: React.FC<FavoriteProps> = ({trackId, provider}): JSX.Element => {
+const FavoriteAction = ({trackId, provider}: FavoriteProps): JSX.Element => {
     const { isAuthenticated } = useAuth();
     const { addFavorite, removeFavorite, isFavorited} = useFavoriteContext();
     const { getTrack } = useSearchResult();

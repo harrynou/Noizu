@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
     redirectTo?: string;
 }
 // Redirects users if they are accessing a page meant for Authenticated Users
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({children, redirectTo = '/sign-in'}) => {
+const ProtectedRoute = ({children, redirectTo = '/sign-in'}: ProtectedRouteProps) => {
     const {isAuthenticated, loading} = useAuth()
 
     if (loading){

@@ -1,6 +1,6 @@
 import SignUpCard from '../components/auth/SignUpCard.tsx'
 
-const SignUpPage: React.FC = (): JSX.Element => {
+const SignUpPage = (): JSX.Element => {
 
     return (
         <div className="overflow-y-auto mb-24">

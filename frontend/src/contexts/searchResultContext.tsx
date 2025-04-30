@@ -8,6 +8,10 @@ interface SearchResultContextType {
     getTrack: (trackId: string, provider: string) => Track | null;
 }
 
+interface ContextProvider {
+    children: React.ReactNode
+}
+
 
 const SearchResultContext = createContext<SearchResultContextType | undefined>(undefined);
 
@@ -19,7 +23,7 @@ export const useSearchResult = () => {
     return context;
 };
 
-export const SearchResultProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
+export const SearchResultProvider = ({children}: ContextProvider) => {
     const [spotifyTracks, setSpotifyTracks] = useState<any[]>([]);
     const [soundcloudTracks, setSoundcloudTracks] = useState<any[]>([]);
 

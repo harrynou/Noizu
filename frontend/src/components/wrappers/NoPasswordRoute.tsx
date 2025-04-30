@@ -7,7 +7,7 @@ interface NoPasswordRouteProp {
     redirectTo?:string;
 }
 // Redirects users if they have not setup a password for their account
-const NoPasswordRoute: React.FC<NoPasswordRouteProp> = ({children, redirectTo = '/home'}) => {
+const NoPasswordRoute = ({children, redirectTo = '/home'}: NoPasswordRouteProp) => {
     const {isAuthenticated, loading, hasPassword} = useAuth()
     if (loading){
         return <div>Loading...</div>; // TODO: Add Spinner

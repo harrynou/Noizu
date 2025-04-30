@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const TermsPage: React.FC = (): JSX.Element => {
+const TermsPage = (): JSX.Element => {
     const [activeSection, setActiveSection] = useState<string>('terms');
     
     // Function to handle section navigation

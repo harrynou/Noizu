@@ -6,7 +6,7 @@ interface AddToPlaylistProps {
   track: Track;
 }
 
-const AddToPlaylist: React.FC<AddToPlaylistProps> = ({ track }) => {
+const AddToPlaylist = ({ track }: AddToPlaylistProps) => {
   const { isAuthenticated } = useAuth();
   const [playlists, setPlaylists] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);

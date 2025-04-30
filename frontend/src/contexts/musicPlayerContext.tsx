@@ -39,7 +39,11 @@ export const useMusicPlayer = () => {
     return context;
 };
 
-export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface ContextProp {
+    children: React.ReactNode
+} 
+
+export const MusicPlayerProvider = ({ children }: ContextProp) => {
     const [queue, setQueue] = useState<Track[]>([]);
     const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);

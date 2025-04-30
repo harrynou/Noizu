@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate,} from 'react-router-dom';
 import { getPlaylistTracks, getPlaylists, removeTrackFromPlaylist, Playlist, PlaylistTrack } from '../../services/api';
 import ItemCard from '../../components/search/ItemCard';
@@ -7,7 +7,7 @@ import { useMusicPlayer } from '../../contexts/musicPlayerContext';
 import SpotifyIcon from '../../assets/spotify/Icon.svg';
 import SoundcloudIcon from '../../assets/soundcloud/Icon.svg';
 
-const PlaylistDetailPage: React.FC = () => {
+const PlaylistDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { playTrack, addToQueue } = useMusicPlayer();

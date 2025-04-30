@@ -10,6 +10,10 @@ interface FavoriteContextType {
     isFavorited: (trackId: string, provider: string) => boolean;
 }
 
+interface ContextProp {
+    children: React.ReactNode
+}
+
 const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined);
 
 export const useFavoriteContext = () => {
@@ -20,7 +24,7 @@ export const useFavoriteContext = () => {
     return context;
 }
 
-export const FavoriteProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
+export const FavoriteProvider = ({children}: ContextProp) => {
     const [spotifyFavoriteTracks, setSpotifyFavoriteTracks] = useState<Track[]>([]);
     const [soundcloudFavoriteTracks, setSoundcloudFavoriteTracks] = useState<Track[]>([]);
 

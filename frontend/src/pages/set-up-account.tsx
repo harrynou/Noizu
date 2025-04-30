@@ -1,7 +1,7 @@
 import SetUpAccountCard from '../components/auth/SetUpAccountCard'
 
 
-const SetUpAccountPage: React.FC = ():JSX.Element => {
+const SetUpAccountPage = ():JSX.Element => {
     return (
         <SetUpAccountCard/>
     )

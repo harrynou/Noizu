@@ -8,7 +8,7 @@ interface PublicRouteProp {
 }
 
 // Redirects users if they are accessing a page meant for non-Authenticated Users
-const PublicRoute: React.FC<PublicRouteProp> = ({children, redirectTo = '/home'}) => {
+const PublicRoute = ({children, redirectTo = '/home'}: PublicRouteProp) => {
     const {isAuthenticated, loading} = useAuth()
     if (loading){
         return <div>Loading...</div>; // TODO: Add Spinner

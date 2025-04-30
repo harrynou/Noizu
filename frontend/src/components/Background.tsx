@@ -4,7 +4,7 @@ interface BackgroundProps {
   children: React.ReactNode;
 }
 
-const Background: React.FC<BackgroundProps> = memo(({ children }) => {
+const Background = memo(({ children }: BackgroundProps) => {
   useEffect(() => {
     // Set overscroll background to match your theme
     document.body.style.backgroundColor = '#0f172a';
@@ -70,7 +70,7 @@ const Background: React.FC<BackgroundProps> = memo(({ children }) => {
           }}
         ></div>
       </div>
-      <div className="relative z-10 min-h-screen">
+      <div className="relative z-10 min-h-screen pb-24">
         {children}
       </div>
     </div>

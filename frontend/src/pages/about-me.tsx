@@ -11,7 +11,7 @@ import postgresSQLLogo from '../assets/aboutMe/postgresSQLLogo.svg'
 import instagramLogo from '../assets/aboutMe/instagramLogo.png'
 import githubLogo from '../assets/aboutMe/githubLogo.png'
 import linkedinLogo from '../assets/aboutMe/linkedinLogo.png'
-const AboutMePage: React.FC = (): JSX.Element => {
+const AboutMePage = (): JSX.Element => {
     // About-Me Info
     const aboutMeInfo =
         {

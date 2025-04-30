@@ -1,6 +1,6 @@
 import SignInCard from "../components/auth/SignInCard"
 
-const SignInPage: React.FC = (): JSX.Element => {
+const SignInPage = (): JSX.Element => {
 
     return (
         <SignInCard></SignInCard>

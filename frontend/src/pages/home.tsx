@@ -10,7 +10,7 @@ import SoundcloudIcon from '../assets/soundcloud/Icon.svg';
 import QueueManager from '../components/playback/QueueManager';
 import ItemCard from '../components/search/ItemCard';
 
-const HomePage: React.FC = (): JSX.Element => {
+const HomePage = (): JSX.Element => {
     const { spotifyTracks, soundcloudTracks } = useSearchResult();
     const { currentTrack, isPlaying, togglePlayPause } = useMusicPlayer();
     const { isAuthenticated } = useAuth();
@@ -175,7 +175,7 @@ const HomePage: React.FC = (): JSX.Element => {
                 </div>
             </div>
             
-            {/* Mobile queue button - only visible when queue is hidden */}
+            {/* Mobile queue button */}
             <div className="md:hidden fixed bottom-24 right-4">
                 {!showQueue && (
                     <button 
@@ -190,7 +190,7 @@ const HomePage: React.FC = (): JSX.Element => {
                 )}
             </div>
             
-            {/* Now playing bar - fixed at bottom, only visible when playing */}
+
             {currentTrack && (
                 <div className="fixed bottom-20 left-0 right-0 bg-gray-900 p-3 flex items-center justify-between md:hidden">
                     <div className="flex items-center gap-3">

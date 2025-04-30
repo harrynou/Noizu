@@ -3,7 +3,7 @@ import { getPlaylists, createPlaylist, deletePlaylist, Playlist } from '../../se
 import PlaylistCard from '../../components/playlists/PlaylistCard';
 import { useNavigate } from 'react-router-dom';
 
-const PlaylistsPage: React.FC = () => {
+const PlaylistsPage = () => {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);

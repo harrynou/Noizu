@@ -7,7 +7,7 @@ interface AddToQueueProp {
     track: Track;
 }
 
-const AddToQueueAction: React.FC<AddToQueueProp> = ({ track }): JSX.Element => {
+const AddToQueueAction = ({ track }: AddToQueueProp): JSX.Element => {
     const { isAuthenticated } = useAuth();
     const { addToQueue, queue } = useMusicPlayer();
     const [isAdded, setIsAdded] = useState(false);

@@ -11,7 +11,7 @@ interface PlaylistCardProps {
   };
 }
 
-const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist }) => {
+const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const navigate = useNavigate();
   
   // Default image if none provided

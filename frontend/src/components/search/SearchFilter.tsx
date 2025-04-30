@@ -7,7 +7,7 @@ interface SearchFilterProps {
     activeTab: string;
 }
 
-const SearchFilter: React.FC<SearchFilterProps> = ({spotifyTracks, soundcloudTracks, onFilterChange, activeTab }): JSX.Element => {
+const SearchFilter = ({spotifyTracks, soundcloudTracks, onFilterChange, activeTab }: SearchFilterProps): JSX.Element => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredSpotifyTracks, setFilteredSpotifyTracks] = useState<Track[]>(spotifyTracks);
     const [filteredSoundcloudTracks, setFilteredSoundcloudTracks] = useState<Track[]>(soundcloudTracks);

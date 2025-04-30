@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 
@@ -8,7 +8,7 @@ interface NavOption {
     icon: JSX.Element;
 }
 
-const NavDropdown: React.FC = (): JSX.Element => {
+const NavDropdown = (): JSX.Element => {
     const [open, setOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();

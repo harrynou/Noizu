@@ -1,7 +1,7 @@
 
 
 
-const AccountSettingsPage: React.FC = ():JSX.Element => {
+const AccountSettingsPage = ():JSX.Element => {
     return (
         <div className="flex">
 

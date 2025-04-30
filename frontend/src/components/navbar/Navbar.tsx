@@ -3,8 +3,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from "../../contexts/authContext";
 import NavDropdown from "./NavDropdown";
 
+interface NavLink {
+    to: string;
+    children: React.ReactNode
+}
+
 // Link component for desktop navigation
-const NavLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to, children }) => {
+const NavLink = ({ to, children }: NavLink) => {
   const location = useLocation();
   const isActive = location.pathname === to;
   
@@ -15,7 +20,7 @@ const NavLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to, chil
         isActive
           ? 'text-white border-b-2 border-accentPrimary'
           : 'text-gray-300 hover:text-white hover:border-b-2 hover:border-accentPrimary'
-      } transition-colors duration-200`}
+      } transition-colors`}
     >
       {children}
     </Link>
@@ -23,7 +28,7 @@ const NavLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to, chil
 };
 
 // Link component for mobile navigation
-const MobileNavLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to, children }) => {
+const MobileNavLink = ({ to, children }: NavLink) => {
   const location = useLocation();
   const isActive = location.pathname === to;
   
@@ -41,7 +46,7 @@ const MobileNavLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to
   );
 };
 
-const Navbar: React.FC = (): JSX.Element => {
+const Navbar = (): JSX.Element => {
     const { isAuthenticated, loading } = useAuth();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
@@ -101,10 +106,10 @@ const Navbar: React.FC = (): JSX.Element => {
                     <div className="hidden md:flex md:items-center md:space-x-4">
                         {!isAuthenticated ? (
                             <>
-                                <Link to="/sign-in" className="text-white hover:text-accentPrimary transition-colors duration-200">
+                                <Link to="/sign-in" className="text-white hover:text-accentPrimary transition-colors">
                                     Sign In
                                 </Link>
-                                <Link to="/sign-up" className="px-4 py-2 rounded-full bg-accentPrimary text-white hover:bg-opacity-90 transition-colors duration-200">
+                                <Link to="/sign-up" className="px-4 py-2 rounded-full bg-accentPrimary text-white hover:bg-opacity-90 transition-colors">
                                     Sign Up
                                 </Link>
                             </>
@@ -158,10 +163,10 @@ const Navbar: React.FC = (): JSX.Element => {
                     <div className="flex items-center justify-around px-5">
                         {!isAuthenticated ? (
                             <>
-                                <Link to="/sign-in" className="block px-4 py-2 text-base font-medium text-white hover:text-accentPrimary transition-colors duration-200">
+                                <Link to="/sign-in" className="block px-4 py-2 text-base font-medium text-white hover:text-accentPrimary transition-colors">
                                     Sign In
                                 </Link>
-                                <Link to="/sign-up" className="block px-4 py-2 rounded-full bg-accentPrimary text-white hover:bg-opacity-90 transition-colors duration-200">
+                                <Link to="/sign-up" className="block px-4 py-2 rounded-full bg-accentPrimary text-white hover:bg-opacity-90 transition-colors">
                                     Sign Up
                                 </Link>
                             </>

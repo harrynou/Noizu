@@ -49,7 +49,7 @@ const AppRoutes = () => {
 }
 
 
-const App: React.FC = (): JSX.Element => {
+const App = (): JSX.Element => {
   return (
     <AuthContextProvider>
       <MusicPlayerProvider>

@@ -2,7 +2,7 @@ import ItemCard from "./ItemCard";
 import { useSearchResult } from "../../contexts/searchResultContext";
 
 
-const SearchResult: React.FC = (): JSX.Element => {
+const SearchResult = (): JSX.Element => {
     const { spotifyTracks, soundcloudTracks} =  useSearchResult();
     const Items = ({data, provider}: {data: any[], provider: string}) => {
         return (
@@ -17,10 +17,6 @@ const SearchResult: React.FC = (): JSX.Element => {
         <div className="border-2 border-black h-[70vh]">
             {/* Parent Results Containers */}
             <div className="bg-slate-50 grid auto-cols-auto border-2 border-white h-full gap-4">
-                {/* Tabs */}
-                <div>
-
-                </div>
                 {/* Spotify Results Items */}
                 <div className="flex-1 overflow-auto">
                 {spotifyTracks ? (

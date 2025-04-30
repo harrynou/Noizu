@@ -29,7 +29,11 @@ const authContext = createContext<authContextType>({
     getSpotifyToken: async () => '',
 })
 
-export const AuthContextProvider: React.FC<{children:React.ReactNode}> = ({ children }) => {
+interface ContextProp {
+    children: React.ReactNode
+}
+
+export const AuthContextProvider = ({ children }: ContextProp) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [hasPassword, setHasPassword] = useState(false);
     const [user, setUser] = useState<UserType | null>(null);

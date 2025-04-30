@@ -3,7 +3,7 @@ import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 import { setUserVolume } from "../../services/api";
 import {useAuth} from '../../contexts/authContext'
 
-const VolumeMixer: React.FC = (): JSX.Element => {
+const VolumeMixer = (): JSX.Element => {
     const {setNewVolume, currentVolume} = useMusicPlayer();
     const volumeMixerRef = useRef<HTMLDivElement | null>(null);
     const rectRef = useRef<DOMRect | null>(null);

@@ -24,6 +24,64 @@ interface ItemCardProps {
     index?: number;
     isCompact?: boolean;
 }
+interface LazyImageProps {
+    src?:string | undefined;
+    alt?:string;
+    className?: string;
+    onLoad?: () => void;
+}
+
+// Custom lazy image component using Intersection Observer
+const LazyImage = ({ src, alt, className, onLoad }: LazyImageProps) => {
+    const imgRef = useRef(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
+    
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { 
+                rootMargin: '200px 0px', // Start loading images 200px before they enter viewport
+                threshold: 0.01 
+            }
+        );
+        
+        if (imgRef.current) {
+            observer.observe(imgRef.current);
+        }
+        
+        return () => {
+            if (observer) {
+                observer.disconnect();
+            }
+        };
+    }, []);
+    
+    const handleImageLoad = () => {
+        setIsLoaded(true);
+        if (onLoad) onLoad();
+    };
+    
+    return (
+        <div ref={imgRef} className={`${className} overflow-hidden bg-gray-800`}>
+            {isVisible && (
+                <img 
+                    src={src} 
+                    alt={alt} 
+                    className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    onLoad={handleImageLoad}
+                    loading="lazy"
+                    decoding="async"
+                />
+            )}
+        </div>
+    );
+};
 
 const TOOLTIP_HIDE_DELAY = 100; // ms
 const QUEUE_ANIMATION_DURATION = 2000; // ms
@@ -400,7 +458,7 @@ const ItemCard = memo(({
     const renderStandardLayout = () => (
         <div 
             ref={itemCardRef}
-            className={`grid grid-cols-[16px_4fr_1fr_auto] gap-4 p-2 rounded-md items-center ${
+            className={`grid grid-cols-[16px_4fr_1fr_auto] gap-4 p-2 pr-4 rounded-md items-center ${
                 isCurrentTrack ? 'bg-gray-700/60' : 'hover:bg-gray-700/30'
             } group transition-colors duration-150 cursor-pointer`}
             onClick={handleItemClick}
@@ -443,15 +501,12 @@ const ItemCard = memo(({
 
             {/* Track info - middle section */}
             <div className="flex items-center min-w-0 gap-3">
-                {/* Album artwork */}
-                <div className="w-10 h-10 flex-shrink-0 rounded overflow-hidden shadow">
-                    <img 
-                        src={item.imageUrl} 
-                        alt={`${item.title} artwork`}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                    />
-                </div>
+                {/* Album artwork with lazy loading */}
+                <LazyImage 
+                    src={item.imageUrl} 
+                    alt={`${item.title} artwork`}
+                    className="w-10 h-10 flex-shrink-0 rounded overflow-hidden shadow"
+                />
                 
                 {/* Title and artist */}
                 <div className="flex flex-col min-w-0">
@@ -478,6 +533,9 @@ const ItemCard = memo(({
                     src={getProviderDetails.icon} 
                     alt={provider} 
                     className="w-4 h-4"
+                    width="16"
+                    height="16"
+                    loading="lazy"
                 />
             </div>
 
@@ -507,6 +565,9 @@ const ItemCard = memo(({
                                 src={trackFavorited ? RedHeartSVG : WhiteHeartSVG} 
                                 alt="" 
                                 className="w-4 h-4"
+                                width="16"
+                                height="16"
+                                loading="lazy"
                                 aria-hidden="true"
                             />
                         </button>
@@ -527,6 +588,9 @@ const ItemCard = memo(({
                                 src={AddToQueueSVG} 
                                 alt="" 
                                 className={`w-4 h-4 ${isAddedToQueue ? 'animate-pulse' : ''}`}
+                                width="16"
+                                height="16"
+                                loading="lazy"
                                 aria-hidden="true"
                             />
                         </button>
@@ -683,6 +747,9 @@ const ItemCard = memo(({
                                 alt="" 
                                 className="w-4 h-4"
                                 aria-hidden="true"
+                                width="16"
+                                height="16"
+                                loading="lazy"
                             />
                         </button>
                     </div>

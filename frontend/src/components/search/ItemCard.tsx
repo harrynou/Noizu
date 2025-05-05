@@ -1,5 +1,6 @@
 import React, {useState, useCallback, memo, useMemo, useRef, useEffect} from "react";
-import {useMusicContext} from "../../contexts/musicPlayerContext";
+import { usePlayerState } from "../../contexts/playerStateContext";
+import { useQueue } from "../../contexts/queueContext";
 import {useFavoriteContext} from "../../contexts/favoriteContext";
 import {useAuth} from "../../contexts/authContext";
 import formatDuration from "../../utils/formatDuration";
@@ -100,10 +101,16 @@ const ItemCard = memo(
     index,
     isCompact = false,
   }: ItemCardProps) => {
-    const {currentTrack, playTrack, isPlaying, togglePlayPause, addToQueue, queue} =
-      useMusicContext();
+    // Get only what we need from each context for better performance
+    const { isPlaying, togglePlayPause, playTrack: playTrackState } = usePlayerState();
+    const { queue, addToQueue } = useQueue();
+    const queueState = useQueue();
     const {isAuthenticated} = useAuth();
     const {isFavorited, addFavorite, removeFavorite} = useFavoriteContext();
+
+    // Computed property - derive currentTrack from queue context
+    const currentTrack = queueState.currentTrackIndex !== null ? 
+      queueState.queue[queueState.currentTrackIndex] : null;
 
     const [isHovered, setIsHovered] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
@@ -201,6 +208,15 @@ const ItemCard = memo(
       }
     }, [showOptions]);
 
+    // This is the playTrack function we'll use in the component
+    // It wraps the playTrackState function from PlayerStateContext
+    const playTrack = useCallback((track: Track) => {
+      playTrackState(track);
+      if (onTrackSelect) {
+        onTrackSelect(track);
+      }
+    }, [playTrackState, onTrackSelect]);
+
     const handlePlayClick = useCallback(
       (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
@@ -210,12 +226,8 @@ const ItemCard = memo(
         } else {
           playTrack(trackData);
         }
-
-        if (onTrackSelect) {
-          onTrackSelect(trackData);
-        }
       },
-      [isCurrentTrack, togglePlayPause, playTrack, trackData, onTrackSelect]
+      [isCurrentTrack, togglePlayPause, playTrack, trackData]
     );
 
     const handleAddToQueue = useCallback(
@@ -270,11 +282,7 @@ const ItemCard = memo(
       } else {
         playTrack(trackData);
       }
-
-      if (onTrackSelect) {
-        onTrackSelect(trackData);
-      }
-    }, [isCurrentTrack, togglePlayPause, playTrack, trackData, onTrackSelect]);
+    }, [isCurrentTrack, togglePlayPause, playTrack, trackData]);
 
     const handleTooltipShow = useCallback(
       (tooltipType: TooltipType, event: React.MouseEvent<HTMLElement>) => {

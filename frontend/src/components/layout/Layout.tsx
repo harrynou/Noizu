@@ -2,14 +2,14 @@ import QueueManager from "../playback/QueueManager";
 import PlaybackControls from "../playback/PlaybackControls";
 import Navbar from "../navbar/Navbar";
 import Background from "../Background";
-import { useMusicContext } from "../../contexts/musicPlayerContext";
+import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout = ({children}:LayoutProps): JSX.Element => {
-const {showQueueManager} = useMusicContext();
+const {showQueueManager} = useMusicPlayer();
 
   return (
     <div id='layout' className="flex flex-col min-h-screen">

@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useMusicContext } from '../../contexts/musicPlayerContext';
+import { useMusicPlayer } from '../../contexts/musicPlayerContext';
+import { usePlaybackSettings } from '../../contexts/playbackSettingsContext';
 import pauseButton from '../../assets/pause-button.svg';
 import playButton from '../../assets/play-button.svg';
 import previousButton from '../../assets/previous-button.svg'; 
@@ -16,13 +17,13 @@ const PlaybackControls = () => {
         playNextTrack, 
         playPreviousTrack,
         queue,
-    } = useMusicContext();
+        toggleQueueManager,
+        showQueueManager
+    } = useMusicPlayer();
     
-    const [showQueue, setShowQueue] = useState<boolean>(false);
-    const duration = currentTrack ? currentTrack.duration : null;
     const [isPlaybackExpanded, setIsPlaybackExpanded] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
+    const duration = currentTrack ? currentTrack.duration : null;
     useEffect(() => {
         const savedState = sessionStorage.getItem("playbackState");
         if (savedState) {
@@ -74,13 +75,13 @@ const PlaybackControls = () => {
             case 'KeyQ':
                 if (event.ctrlKey || event.metaKey) {
                     event.preventDefault();
-                    setShowQueue(prev => !prev);
+                    toggleQueueManager();
                 }
                 break;
             default:
                 break;
         }
-    }, [togglePlayPause, playNextTrack, playPreviousTrack]);
+    }, [togglePlayPause, playNextTrack, playPreviousTrack, toggleQueueManager]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyboardControls);
@@ -88,10 +89,6 @@ const PlaybackControls = () => {
             window.removeEventListener('keydown', handleKeyboardControls);
         };
     }, [handleKeyboardControls]);
-
-    const toggleQueueVisibility = () => {
-        setShowQueue(prev => !prev);
-    };
 
     if (!currentTrack) return null;
 
@@ -192,7 +189,7 @@ const PlaybackControls = () => {
                         {/* Right Side Options */}
                         <div className="w-1/4 flex justify-end items-center gap-4">
                             <button
-                                onClick={toggleQueueVisibility}
+                                onClick={toggleQueueManager}
                                 className="relative p-2 rounded-full hover:bg-gray-800 transition-colors"
                                 aria-label="Toggle queue"
                                 title="Toggle queue"

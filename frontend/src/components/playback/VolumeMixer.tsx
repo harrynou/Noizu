@@ -1,16 +1,15 @@
 import { useState, useRef, ReactEventHandler, useEffect, useCallback } from "react";
-import { useMusicContext } from "../../contexts/musicPlayerContext";
-import { setUserVolume } from "../../services/api";
-import {useAuth} from '../../contexts/authContext'
+import { usePlaybackSettings } from "../../contexts/playbackSettingsContext";
+import { useAuth } from '../../contexts/authContext'
 
 const VolumeMixer = (): JSX.Element => {
-    const {setNewVolume, currentVolume} = useMusicContext();
+    const { currentVolume, setNewVolume } = usePlaybackSettings();
     const volumeMixerRef = useRef<HTMLDivElement | null>(null);
     const rectRef = useRef<DOMRect | null>(null);
     const animationFrameRef = useRef<number | null>(null);
     const [dragPosition, setDragPosition] = useState<number>(50);
     const volumePercentage = Math.max(0, Math.min(100, dragPosition));
-    const {isAuthenticated} = useAuth();
+    const { isAuthenticated } = useAuth();
     const [isMuted, setIsMuted] = useState<boolean>(currentVolume === 0);
     const previousVolumeRef = useRef<number>(currentVolume || 0.5);
     const [showTooltip, setShowTooltip] = useState<boolean>(false);
@@ -29,11 +28,9 @@ const VolumeMixer = (): JSX.Element => {
         document.addEventListener('pointermove', handlePointerMove);
         document.addEventListener('pointerup', handlePointerUp);
         updateDragPosition(e.clientX);
-
     }
 
     const updateDragPosition = useCallback((clientX: number) => {
-
         if (!rectRef.current) return;
         const newProgress = Math.max(0, Math.min(1, (clientX - rectRef.current.left) / rectRef.current.width));
         const newVolume = newProgress * 100;
@@ -47,7 +44,6 @@ const VolumeMixer = (): JSX.Element => {
         }
         setDragPosition(newVolume); 
         setNewVolume(newVolume / 100);
-
     }, [currentVolume, setNewVolume]);
 
 
@@ -59,11 +55,7 @@ const VolumeMixer = (): JSX.Element => {
     const handlePointerUp = useCallback(() => {
         document.removeEventListener("pointermove", handlePointerMove);
         document.removeEventListener("pointerup", handlePointerUp);
-        setDragPosition((latestDragPosition) => {
-            if (isAuthenticated) setUserVolume(latestDragPosition / 100);
-            return latestDragPosition;
-        });
-    }, [dragPosition, handlePointerMove, isAuthenticated]);
+    }, [handlePointerMove]);
 
     const handleMute = useCallback(() => {
         if (!isMuted) {
@@ -76,7 +68,6 @@ const VolumeMixer = (): JSX.Element => {
     }, [isMuted, currentVolume, setNewVolume]);
 
     return (
-        
         <div className="flex items-center space-x-2"
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}>
@@ -108,7 +99,6 @@ const VolumeMixer = (): JSX.Element => {
                 )}
             </div>
         </div>
-
     )
 }
 

@@ -1,6 +1,6 @@
 import React, { ReactEventHandler, useEffect, useRef, useState, useCallback} from "react";
 import formatDuration from '../../utils/formatDuration';
-import { useMusicPlayer } from "../../contexts/musicPlayerContext";
+import { useMusicContext } from "../../contexts/musicPlayerContext";
 
 interface ProgressBarProps {
     duration: number | null;
@@ -14,7 +14,7 @@ const ProgressBar = ({duration}: ProgressBarProps): JSX.Element => {
     const tooltipRef = useRef<HTMLDivElement | null>(null);
     const rectRef = useRef<DOMRect | null>(null);
     const dragPositionRef = useRef<number | null>(null);
-    const { seek, currentPosition } = useMusicPlayer()
+    const { seek, currentPosition } = useMusicContext();
 
     const durationFormatted = formatDuration(duration); 
     let positionFormatted = isDragging ? formatDuration(dragPositionRef.current) : formatDuration(currentPosition);
@@ -36,7 +36,6 @@ const ProgressBar = ({duration}: ProgressBarProps): JSX.Element => {
         
         // Update tooltip position
         if (tooltipRef.current) {
-            console.log(tooltipRef.current);
             const tooltipWidth = tooltipRef.current.offsetWidth;
             const maxLeft = rect.width - tooltipWidth/2;
             const minLeft = tooltipWidth/2;

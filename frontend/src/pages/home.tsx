@@ -1,21 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from "../components/search/SearchBar";
 import { useSearchResult } from "../contexts/searchResultContext";
-import { useMusicPlayer } from "../contexts/musicPlayerContext";
+import { useMusicContext } from "../contexts/musicPlayerContext";
 import { useAuth } from "../contexts/authContext";
 
 // Logo imports
 import SpotifyIcon from '../assets/spotify/Icon.svg';
 import SoundcloudIcon from '../assets/soundcloud/Icon.svg';
-import QueueManager from '../components/playback/QueueManager';
 import ItemCard from '../components/search/ItemCard';
 
 const HomePage = (): JSX.Element => {
     const { spotifyTracks, soundcloudTracks } = useSearchResult();
-    const { currentTrack, isPlaying, togglePlayPause } = useMusicPlayer();
+    const { currentTrack, isPlaying, togglePlayPause } = useMusicContext();
     const { isAuthenticated } = useAuth();
     const [activeTab, setActiveTab] = useState<'all' | 'spotify' | 'soundcloud'>('all');
-    const [showQueue, setShowQueue] = useState<boolean>(false);
     const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
 
     // Set search performed flag based on tracks
@@ -24,10 +22,6 @@ const HomePage = (): JSX.Element => {
             setSearchPerformed(true);
         }
     }, [spotifyTracks, soundcloudTracks]);
-
-    const toggleQueueDisplay = () => {
-        setShowQueue(!showQueue);
-    };
 
     // Render welcome or no results message
     const renderEmptyState = () => {
@@ -69,7 +63,7 @@ const HomePage = (): JSX.Element => {
             {/* Main content section */}
             <div className="flex flex-1 gap-4">
                 {/* Results area */}
-                <div className={`flex-1 ${showQueue ? 'md:w-2/3' : 'w-full'}`}>
+                <div className='w-full'>
                     {/* Tabs */}
                     {(spotifyTracks.length > 0 || soundcloudTracks.length > 0) && (
                         <div className="mb-4 border-b border-gray-700">
@@ -99,7 +93,7 @@ const HomePage = (): JSX.Element => {
                     )}
 
                     {/* Results list */}
-                    <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
+                    <div className="overflow-y-auto">
                         {(spotifyTracks.length === 0 && soundcloudTracks.length === 0) ? (
                             renderEmptyState()
                         ) : (
@@ -113,7 +107,7 @@ const HomePage = (): JSX.Element => {
                                                     Spotify Results
                                                 </h2>
                                                 {spotifyTracks.slice(0, 5).map((track) => (
-                                                    <ItemCard key={track.id} item={track} provider={track.provider}/>
+                                                    <ItemCard key={track.id} item={track} provider={track.provider} isCompact={true}/>
                                                 ))}
                                                 {spotifyTracks.length > 5 && (
                                                     <button 
@@ -159,35 +153,6 @@ const HomePage = (): JSX.Element => {
                         )}
                     </div>
                 </div>
-                
-                {/* Queue sidebar - visible on larger screens, toggleable on mobile */}
-                <div className={`${showQueue ? 'block' : 'hidden md:block'} md:w-1/3 bg-gray-900 rounded-lg p-4`}>
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">Queue</h2>
-                        <button 
-                            className="md:hidden text-gray-400"
-                            onClick={toggleQueueDisplay}
-                        >
-                            Hide
-                        </button>
-                    </div>
-                    <QueueManager />
-                </div>
-            </div>
-            
-            {/* Mobile queue button */}
-            <div className="md:hidden fixed bottom-24 right-4">
-                {!showQueue && (
-                    <button 
-                        onClick={toggleQueueDisplay}
-                        className="bg-accentPrimary text-white p-3 rounded-full shadow-lg flex items-center gap-2"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        Queue
-                    </button>
-                )}
             </div>
             
 

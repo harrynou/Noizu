@@ -1,10 +1,10 @@
 import { useState, useRef, ReactEventHandler, useEffect, useCallback } from "react";
-import { useMusicPlayer } from "../../contexts/musicPlayerContext";
+import { useMusicContext } from "../../contexts/musicPlayerContext";
 import { setUserVolume } from "../../services/api";
 import {useAuth} from '../../contexts/authContext'
 
 const VolumeMixer = (): JSX.Element => {
-    const {setNewVolume, currentVolume} = useMusicPlayer();
+    const {setNewVolume, currentVolume} = useMusicContext();
     const volumeMixerRef = useRef<HTMLDivElement | null>(null);
     const rectRef = useRef<DOMRect | null>(null);
     const animationFrameRef = useRef<number | null>(null);

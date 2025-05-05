@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useMusicPlayer } from '../../contexts/musicPlayerContext';
+import { useMusicContext } from '../../contexts/musicPlayerContext';
 import pauseButton from '../../assets/pause-button.svg';
 import playButton from '../../assets/play-button.svg';
 import previousButton from '../../assets/previous-button.svg'; 
@@ -16,7 +16,7 @@ const PlaybackControls = () => {
         playNextTrack, 
         playPreviousTrack,
         queue,
-    } = useMusicPlayer();
+    } = useMusicContext();
     
     const [showQueue, setShowQueue] = useState<boolean>(false);
     const duration = currentTrack ? currentTrack.duration : null;
@@ -210,53 +210,6 @@ const PlaybackControls = () => {
                             </div>
                         </div>
                     </div>
-                
-                    {/* Queue panel (conditionally rendered) */}
-                    {showQueue && (
-                        <div className="absolute bottom-full right-0 mb-2 bg-gray-900 w-80 max-h-96 overflow-y-auto rounded-lg shadow-lg border border-gray-800">
-                            <div className="flex justify-between items-center p-3 border-b border-gray-800">
-                                <h3 className="font-medium">Queue ({queue.length})</h3>
-                                <button
-                                    onClick={toggleQueueVisibility}
-                                    className="text-gray-400 hover:text-white"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                
-                            {queue.length === 0 ? (
-                                <div className="p-4 text-center text-gray-400">
-                                    Your queue is empty
-                                </div>
-                            ) : (
-                                <ul className="py-2">
-                                    {queue.map((track, index) => (
-                                        <li
-                                            key={`${track.id}-${index}`}
-                                            className={`flex items-center p-2 hover:bg-gray-800 ${
-                                                currentTrack?.id === track.id ? 'bg-gray-800' : ''
-                                            }`}
-                                        >
-                                            <img
-                                                src={track.imageUrl}
-                                                alt={track.title}
-                                                className="w-10 h-10 object-cover rounded mr-3"
-                                            />
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-medium truncate">{track.title}</p>
-                                                <p className="text-xs text-gray-400 truncate">
-                                                    {track.artistInfo[0]?.name}
-                                                </p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    )}
                 </div>
             ) : (
                 // Mini player (collapsed view)

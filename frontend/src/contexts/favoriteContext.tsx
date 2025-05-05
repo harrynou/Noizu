@@ -19,7 +19,7 @@ const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined
 export const useFavoriteContext = () => {
     const context = useContext(FavoriteContext);
     if (!context){
-        throw new Error('useMusicPlayer must be used within MusicPlayerProvider');
+        throw new Error('useMusicContext must be used within MusicPlayerProvider');
     };
     return context;
 }

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, useMemo, useCallback} from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useMemo, useCallback, useReducer} from 'react';
 import {startSpotifyPlayback} from '../services/api';
 import { useAuth } from './authContext';
 
@@ -9,6 +9,7 @@ interface MusicPlayerContextProps {
     currentVolume: number;
     isPlaying: boolean;
     queue: Track[];
+    showQueueManager: boolean;
     playTrack: (track: Track) => void;
     addToQueue: (track: Track) => void;
     removeFromQueue: (trackId: string) => void;
@@ -28,13 +29,86 @@ interface startPlaybackOptions {
     position: number
 }
 
+interface PlayerState {
+    queue: Track[];
+    currentTrackIndex: number | null;
+    isPlaying: boolean;
+    currentPosition: number;
+    currentProvider: string | null;
+    currentVolume: number;
+    isLoading: {
+        sessionState: boolean;
+        musicPlayer: boolean;
+        track: boolean;
+    }
+    isSeeking: boolean;
+    showQueueManager: boolean;
+    deviceId: string;
+}
+
+const initialPlayerState: PlayerState = {
+    queue: [],
+    currentTrackIndex: null,
+    isPlaying: false,
+    currentPosition: 0,
+    currentProvider: null,
+    currentVolume: 50,
+    isLoading: {
+        sessionState: false,
+        musicPlayer: false,
+        track: false
+    },
+    isSeeking: false,
+    showQueueManager: false,
+    deviceId: ''
+
+}
+
+type PlayerAction =
+  | { type: 'INIT_FROM_SESSION'; payload: Partial<PlayerState> }
+  | { type: 'SET_SESSION_LOADING_COMPLETE' }
+  | { type: 'SET_PLAYER_LOADING_COMPLETE' }
+  | { type: 'SET_DEVICE_ID'; payload: string }
+  | { type: 'PLAY_TRACK'; payload: Track }
+  | { type: 'ADD_TO_QUEUE'; payload: Track }
+  | { type: 'REMOVE_FROM_QUEUE'; payload: string }
+  | { type: 'CLEAR_QUEUE' }
+  | { type: 'REORDER_QUEUE'; payload: { startIndex: number; endIndex: number } }
+  | { type: 'SELECT_TRACK'; payload: number }
+  | { type: 'NEXT_TRACK' }
+  | { type: 'PREVIOUS_TRACK' }
+  | { type: 'TOGGLE_PLAY_PAUSE' }
+  | { type: 'SET_PLAYING'; payload: boolean }
+  | { type: 'SET_POSITION'; payload: number }
+  | { type: 'SET_VOLUME'; payload: number }
+  | { type: 'SET_PROVIDER'; payload: string | null }
+  | { type: 'START_SEEKING' }
+  | { type: 'END_SEEKING' }
+  | { type: 'START_TRACK_LOADING' }
+  | { type: 'END_TRACK_LOADING' }
+  | { type: 'TOGGLE_QUEUE_MANAGER' }
+  | { type: 'SET_QUEUE_MANAGER'; payload: boolean 
+  };
+
+function reducer(state: PlayerState, action: PlayerAction) {
+    const {type} = action;
+
+    switch (type) {
+        case 'INIT_FROM_SESSION': {
+            
+        }
+    }
+
+}
+
+
 
 const MusicPlayerContext = createContext<MusicPlayerContextProps | undefined>(undefined);
 
-export const useMusicPlayer = () => {
+export const useMusicContext = () => {
     const context = useContext(MusicPlayerContext);
     if (!context) {
-        throw new Error('useMusicPlayer must be used within MusicPlayerProvider');
+        throw new Error('useMusicContext must be used within MusicPlayerProvider');
     }
     return context;
 };
@@ -44,6 +118,7 @@ interface ContextProp {
 } 
 
 export const MusicPlayerProvider = ({ children }: ContextProp) => {
+    //const [state, dispatch] = useReducer();
     const [queue, setQueue] = useState<Track[]>([]);
     const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -62,18 +137,18 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
     const currentVolumeRef = useRef<number>(currentVolume);
     const isTrackLoadingRef= useRef<boolean>(false);
     const isSeekingRef = useRef<boolean>(false);
-    const [autoPlay, setAutoPlay] = useState<boolean>(false);
+    const [showQueueManager, setShowQueueManager] = useState<boolean>(false);
 
     // Load previous states from session storage
     useEffect(() => {
         const savedState = sessionStorage.getItem("musicPlayerState");
         if (savedState) {
             try {
-                const { queue, currentTrackIndex, currentPosition } = JSON.parse(savedState);
+                const { queue, currentTrackIndex, currentPosition, showQueueManager } = JSON.parse(savedState);
                 setQueue(queue || []);
                 setCurrentTrackIndex(currentTrackIndex ?? null);
                 setCurrentPosition(currentPosition ?? 0);
-                setAutoPlay(autoPlay);
+                setShowQueueManager(showQueueManager);
                 if (queue && currentTrackIndex !== null){
                     setCurrentProvider(queue[currentTrackIndex].provider);
                 }
@@ -134,10 +209,10 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
                 queue,
                 currentTrackIndex,
                 currentPosition,
-                autoPlay,
+                showQueueManager
             }));
         }
-    }, [isPlaying, queue, currentTrackIndex, currentPosition, loadingMusicPlayer]);
+    }, [isPlaying, queue, currentTrackIndex, currentPosition, loadingMusicPlayer, showQueueManager]);
 
 
     // Keep ref in sync with state
@@ -175,6 +250,7 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
         return () => cancelAnimationFrame(animationFrameId);
     }, [isPlaying, currentTrackIndex, loadingMusicPlayer, currentProvider]);
 
+    // Promise function to load spotify sdk
     const loadSpotifySDK = useCallback(() => {
         return new Promise<void>((resolve) => {
         if (document.getElementById('spotify-web-sdk-script')){ 
@@ -240,6 +316,7 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
         })
     };
 
+    // Promise function to load soundcloud sdk
     const loadSoundCloudSDK = useCallback(() => {
         return new Promise<void>((resolve) => {
             if (document.getElementById('soundcloud-widget-script')) {
@@ -277,7 +354,7 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
                 iframe.width = "100%";
                 iframe.height = "1px";
                 iframe.allow = "autoplay; encrypted-media";
-                iframe.src = 'https://w.soundcloud.com/player/?url=&auto_play=true&buying=false&liking=false&download=false&sharing=false&show_user=false&show_artwork=false';
+                iframe.src = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2073684856&auto_play=false&buying=false&liking=false&download=false&sharing=false&show_user=false&show_artwork=false&show_playcount=false&show_comments=false';
                 document.body.appendChild(iframe);
             };
             const widget = window.SC.Widget(iframe);
@@ -364,11 +441,12 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
             seek(0);
         }
     };
+
     // Pauses all players
     const togglePause = useCallback(() => {
         if (spotifyPlayerRef.current) spotifyPlayerRef.current.pause();
         if (soundCloudPlayerRef.current) soundCloudPlayerRef.current.pause();
-    }, [isPlaying])
+    }, [])
 
     // Toggles play pause on current song
     const togglePlayPause = useCallback(() => {
@@ -388,9 +466,7 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
             if (currentTrackIndex === null) {
                 setCurrentTrackIndex(0);
                 setCurrentProvider(updatedQueue[0].provider);
-                
             }
-    
             return updatedQueue;
         });
     };
@@ -471,6 +547,7 @@ export const MusicPlayerProvider = ({ children }: ContextProp) => {
             playNextTrack,
             playPreviousTrack,
             seek,
+            showQueueManager
         }),
         [queue, currentTrackIndex, isPlaying, currentPosition, currentVolume, currentProvider]
     );

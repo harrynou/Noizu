@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { useMusicPlayer } from '../../contexts/musicPlayerContext';
+import { useMusicContext } from '../../contexts/musicPlayerContext';
 
 const QueueManager: React.FC = () => {
-    const { queue, reorderQueue, selectTrackToPlay, currentTrack, removeFromQueue, isPlaying, togglePlayPause } = useMusicPlayer();
+    const { queue, reorderQueue, selectTrackToPlay, currentTrack, removeFromQueue, isPlaying, togglePlayPause } = useMusicContext();
     const [showConfirmClear, setShowConfirmClear] = useState<boolean>(false);
 
     const handleDragEnd = (result: DropResult) => {
@@ -199,3 +199,26 @@ const QueueManager: React.FC = () => {
 };
 
 export default React.memo(QueueManager);
+
+
+
+// import { useState } from "react";
+// import { useMusicContext } from "../../contexts/musicPlayerContext";
+
+
+
+// const QueueManager = (): JSX.Element => {
+//   const { queue, showQueueManager } = useMusicContext();
+    
+//   if (!showQueueManager) {
+//       return <div></div>
+//   }
+
+//   return (
+//     <div>
+
+//     </div>
+//   );
+// };
+
+// export default QueueManager;

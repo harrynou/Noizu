@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from "../../contexts/authContext";
-import { useMusicPlayer } from "../../contexts/musicPlayerContext";
+import { useMusicContext } from "../../contexts/musicPlayerContext";
 import AddToQueueSVG from '../../assets/AddToQueue.svg';
 
 interface AddToQueueProp {
@@ -9,7 +9,7 @@ interface AddToQueueProp {
 
 const AddToQueueAction = ({ track }: AddToQueueProp): JSX.Element => {
     const { isAuthenticated } = useAuth();
-    const { addToQueue, queue } = useMusicPlayer();
+    const { addToQueue, queue } = useMusicContext();
     const [isAdded, setIsAdded] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
 

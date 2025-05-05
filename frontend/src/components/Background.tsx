@@ -15,7 +15,7 @@ const Background = memo(({ children }: BackgroundProps) => {
     };
   }, []);
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-900">
+    <div className="relative flex-1 overflow-hidden bg-slate-900">
       <div 
         className="absolute inset-0 overflow-hidden"
         style={{ contain: 'strict' }}
@@ -70,7 +70,7 @@ const Background = memo(({ children }: BackgroundProps) => {
           }}
         ></div>
       </div>
-      <div className="relative z-10 min-h-screen pb-24">
+      <div className="relative z-10">
         {children}
       </div>
     </div>

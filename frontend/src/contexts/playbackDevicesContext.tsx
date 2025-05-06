@@ -53,7 +53,6 @@ export const PlaybackDevicesProvider = ({children}: ProviderProps) => {
           spotifyPlayerRef.current = window.spotifyPlayer;
           soundCloudPlayerRef.current = window.soundcloudPlayer;
 
-          console.log("Players initialized:");
           console.log("Spotify Player:", spotifyPlayerRef.current);
           console.log("SoundCloud Player:", soundCloudPlayerRef.current);
 
@@ -118,9 +117,6 @@ export const PlaybackDevicesProvider = ({children}: ProviderProps) => {
       });
 
       // Add error event listeners
-      spotifyPlayer.addListener("autoplay_failed", () => {
-        console.log("Autoplay is not allowed by the browser autoplay rules");
-      });
       spotifyPlayer.on("initialization_error", (e) => console.error(e));
       spotifyPlayer.on("authentication_error", (e) => console.error(e));
       spotifyPlayer.on("account_error", (e) => console.error(e));

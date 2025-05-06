@@ -1,6 +1,5 @@
 import { useState, useRef, ReactEventHandler, useEffect, useCallback } from "react";
 import { usePlaybackSettings } from "../../contexts/playbackSettingsContext";
-import { useAuth } from '../../contexts/authContext'
 
 const VolumeMixer = (): JSX.Element => {
     const { currentVolume, setNewVolume } = usePlaybackSettings();
@@ -9,7 +8,6 @@ const VolumeMixer = (): JSX.Element => {
     const animationFrameRef = useRef<number | null>(null);
     const [dragPosition, setDragPosition] = useState<number>(50);
     const volumePercentage = Math.max(0, Math.min(100, dragPosition));
-    const { isAuthenticated } = useAuth();
     const [isMuted, setIsMuted] = useState<boolean>(currentVolume === 0);
     const previousVolumeRef = useRef<number>(currentVolume || 0.5);
     const [showTooltip, setShowTooltip] = useState<boolean>(false);

@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useMusicPlayer } from '../../contexts/musicPlayerContext';
-import { usePlaybackSettings } from '../../contexts/playbackSettingsContext';
 import pauseButton from '../../assets/pause-button.svg';
 import playButton from '../../assets/play-button.svg';
 import previousButton from '../../assets/previous-button.svg'; 

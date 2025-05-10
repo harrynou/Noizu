@@ -52,9 +52,15 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
   // Keep refs in sync with state
   useEffect(() => {
     currentProviderRef.current = currentProvider;
+  }, [currentProvider]);
+
+  useEffect(() => {
     isSeekingRef.current = isSeeking;
+  }, [isSeeking]);
+
+  useEffect(() => {
     isPlayingRef.current = isPlaying;
-  }, [currentProvider, isSeeking, isPlaying]);
+  }, [isPlaying]);
 
   // Used to signal the changing of tracks
   useEffect(() => {
@@ -69,13 +75,13 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
   useEffect(() => {
     if (currentTrackIndex !== null && queue.length > 0) {
       setCurrentProvider(queue[currentTrackIndex].provider);
+      currentProviderRef.current = queue[currentTrackIndex].provider;
     }
   }, [currentTrackIndex, queue]);
 
   // On load of a page or when currentTrackIndex changes
   useEffect(() => {
     if (!isPlayerInitialized || currentTrackIndex === null || !currentProvider || !deviceId) return;
-
     // Pause any current playback first
     togglePause();
 
@@ -131,7 +137,7 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
         spotifyPlayerRef.current.removeListener("player_state_changed", handlePlayerStateChanged);
       }
     };
-  }, [spotifyPlayerRef]);
+  }, [isPlayerInitialized]);
 
   // Set up SoundCloud player event listeners
   useEffect(() => {
@@ -163,7 +169,7 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
     };
 
     const handlePlayProgress = (progress: any) => {
-      if (!isPlayingRef.current) return;
+      if (!isPlaying) return;
       setCurrentPosition(progress.currentPosition);
       scPlayer.isPaused((isPaused: boolean) => {
         setIsPlaying(!isPaused);
@@ -183,7 +189,7 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
       scPlayer.unbind("finish");
       scPlayer.unbind("playProgress");
     };
-  }, [isPlayerInitialized, currentPosition]);
+  }, [isPlayerInitialized, currentPosition, isPlaying]);
 
   const playTrack = useCallback(
     (track: Track) => {
@@ -212,7 +218,6 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
 
     const currentTrack = queue[index];
     if (currentTrack.provider === "spotify" && spotifyPlayerRef.current) {
-      setCurrentProvider("spotify");
       await spotifyPlayerRef.current.activateElement();
       const token = await getSpotifyToken();
       let options = {
@@ -227,7 +232,6 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
         spotifyPlayerRef.current.setVolume(currentVolumeRef.current);
       }
     } else if (currentTrack.provider === "soundcloud" && soundCloudPlayerRef.current) {
-      setCurrentProvider("soundcloud");
       soundCloudPlayerRef.current.load(currentTrack.uri, {auto_play: true});
       // Set volume for SoundCloud
       if (currentVolumeRef.current !== null && soundCloudPlayerRef.current) {
@@ -285,10 +289,9 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
   const seek = (position: number) => {
     setIsSeeking(true);
     isSeekingRef.current = true;
-
-    if (currentProvider === "spotify" && spotifyPlayerRef.current) {
+    if (currentProviderRef.current === "spotify" && spotifyPlayerRef.current) {
       spotifyPlayerRef.current.seek(position);
-    } else if (currentProvider === "soundcloud" && soundCloudPlayerRef.current) {
+    } else if (currentProviderRef.current === "soundcloud" && soundCloudPlayerRef.current) {
       setCurrentPosition(position);
       soundCloudPlayerRef.current.seekTo(position);
     }

@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express';
-import {insertUser, isProviderConnected, registerByProvider, getUserInfo, updatePassword, updateEmailandPassword, hasSpotifyPremium} from '../models/authModels'
+import {insertUser, getUserInfo, updatePassword, updateEmailandPassword, hasSpotifyPremium, handleOAuth} from '../models/authModels'
 import {hashString, compareHash, generateCodeVerifier, generateCodeChallenge} from '../utils/encryption'
 import { generateToken } from '../utils/jwt';
 import crypto from 'crypto'
@@ -53,11 +53,7 @@ export const spotifyAuth = async (req: Request, res: Response, next: NextFunctio
         const providerUserId = user.id;
         const premium = (user.product === 'premium');
         const {accessToken,refreshToken} = (req.authInfo as any);
-        let userId = await isProviderConnected(provider, providerUserId, premium);
-        if (userId === null) { // Create an account if account does not exist
-            userId = await registerByProvider(provider, providerUserId, refreshToken, accessToken, premium);
-        } 
-        const token = generateToken({userId})
+        const token = await handleOAuth(provider,providerUserId,premium,refreshToken,accessToken);
         res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});
         return res.redirect(`${process.env.FRONTEND_BASE_URL}/home`);
     } catch (error:any) {
@@ -90,13 +86,10 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
         }
         const {access_token, refresh_token, expires_in} = await AuthSoundcloudToken(code, codeVerifier);
         const userInfo = await getSoundcloudUserInfo(access_token);
-        const provider = 'soundcloud'
-        const providerUserId = userInfo.id
-        let userId = await isProviderConnected(provider, providerUserId, false)
-        if (userId === null) { // Create an account if account does not exist
-            userId = await registerByProvider(provider, providerUserId, refresh_token, access_token, false); // Defaults as false premium acct, may change later
-        } 
-        const token = generateToken({userId})
+        const provider = 'soundcloud';
+        const providerUserId = userInfo.urn
+        const premium = false;
+        const token = handleOAuth(provider,providerUserId,premium,refresh_token, access_token);
         res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});
         return res.redirect(`${process.env.FRONTEND_BASE_URL}/home`)
     } catch (error) {

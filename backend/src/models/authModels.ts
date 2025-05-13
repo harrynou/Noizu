@@ -1,4 +1,5 @@
 import pool from '../config/db'
+import { generateToken } from '../utils/jwt';
 import { setAccessToken } from './tokenModels';
 
 
@@ -105,4 +106,14 @@ export const hasSpotifyPremium = async (userId: number): Promise<boolean> => {
     } catch (error) {
         throw error;
     }
+}
+
+
+export const handleOAuth = async (provider:string, providerUserId: string, premium: boolean, refreshToken: string, accessToken: string) => {
+    let userId = await isProviderConnected(provider, providerUserId, premium);
+    if (userId === null) { // Create an account if account does not exist
+        userId = await registerByProvider(provider, providerUserId, refreshToken, accessToken, premium);
+    } 
+    const token = generateToken({userId})
+    return token
 }

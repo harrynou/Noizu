@@ -1,4 +1,3 @@
-import React from "react";
 import SpotifyIcon from "../assets/spotify/Icon.svg";
 import SoundCloudIcon from "../assets/soundcloud/Icon.svg";
 import pfp from "../assets/aboutMe/pfp.jpg";

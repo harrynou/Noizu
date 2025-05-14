@@ -1,4 +1,4 @@
-import {createContext, useContext, useState, useEffect, useRef, useCallback} from "react";
+import {createContext, useContext, useState, useEffect, useRef} from "react";
 import {useAuth} from "./authContext";
 import {usePlaybackDevices} from "./playbackDevicesContext";
 import {setUserVolume} from "../services/api";

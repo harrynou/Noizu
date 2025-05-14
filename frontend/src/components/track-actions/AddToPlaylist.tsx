@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getPlaylists, addTrackToPlaylist } from '../../services/api';
 import { useAuth } from '../../contexts/authContext';
 

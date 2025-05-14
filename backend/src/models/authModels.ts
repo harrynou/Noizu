@@ -113,7 +113,7 @@ export const handleOAuth = async (provider:string, providerUserId: string, premi
     let userId = await isProviderConnected(provider, providerUserId, premium);
     if (userId === null) { // Create an account if account does not exist
         userId = await registerByProvider(provider, providerUserId, refreshToken, accessToken, premium);
-    } 
+    }
     const token = generateToken({userId})
     return token
 }

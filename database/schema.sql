@@ -6,7 +6,7 @@ CREATE TABLE users (
     soundcloud_account_id INTEGER DEFAULT NULL,
     volume FLOAT DEFAULT 0.5,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW() ON UPDATE NOW()
 );
 
 CREATE TABLE linked_accounts (
@@ -17,7 +17,7 @@ CREATE TABLE linked_accounts (
     provider_user_id VARCHAR(50) NOT NULL,
     refresh_token TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW() ON UPDATE NOW(),
     UNIQUE (provider, provider_user_id)
 );
 
@@ -62,3 +62,7 @@ ALTER TABLE users
     FOREIGN KEY (soundcloud_account_id)
     REFERENCES linked_accounts(account_id)
     ON DELETE SET NULL;
+
+CREATE OR REPLACE FUNCTION ()
+RETURNS TRIGGER AS $$
+BEGIN

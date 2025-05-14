@@ -89,7 +89,7 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
         const provider = 'soundcloud';
         const providerUserId = userInfo.urn
         const premium = false;
-        const token = handleOAuth(provider,providerUserId,premium,refresh_token, access_token);
+        const token = await handleOAuth(provider,providerUserId,premium,refresh_token, access_token);
         res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});
         return res.redirect(`${process.env.FRONTEND_BASE_URL}/home`)
     } catch (error) {

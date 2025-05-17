@@ -24,11 +24,11 @@ export const normalizeTrackData = async (provider:string, searchData: any, userI
             }));
         } else if (provider === 'soundcloud') {
             tracks = searchData.filter((track: any) => track.policy !== 'SNIP').map((track: any) => ({ // Removes tracks with only preview
-                id: track.urn, // soundcloud IDs may be numeric
+                id: track.urn.split(":")[2], // soundcloud IDs may be numeric
                 title: track.title,
                 artistInfo: [{
                     name: track.user.username,
-                    id: track.user.urn,
+                    id: track.user.urn.split(":")[2],
                     profileUrl: track.user.permalink_url,
                 }],
                 imageUrl: track.artwork_url || track.user.avatar_url,

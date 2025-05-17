@@ -87,7 +87,7 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
         const {access_token, refresh_token, expires_in} = await AuthSoundcloudToken(code, codeVerifier);
         const userInfo = await getSoundcloudUserInfo(access_token);
         const provider = 'soundcloud';
-        const providerUserId = userInfo.urn
+        const providerUserId = userInfo.urn.split(":")[2];
         const premium = false;
         const token = await handleOAuth(provider,providerUserId,premium,refresh_token, access_token);
         res.cookie('authToken', token, {httpOnly: true,secure: process.env.NODE_ENV === 'production',maxAge: cookieExpiration,});

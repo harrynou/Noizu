@@ -23,6 +23,7 @@ const PlaybackControls = () => {
     const [isPlaybackExpanded, setIsPlaybackExpanded] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const duration = currentTrack ? currentTrack.duration : null;
+    
     useEffect(() => {
         const savedState = sessionStorage.getItem("playbackState");
         if (savedState) {
@@ -189,11 +190,19 @@ const PlaybackControls = () => {
                         <div className="w-1/4 flex justify-end items-center gap-4">
                             <button
                                 onClick={toggleQueueManager}
-                                className="relative p-2 rounded-full hover:bg-gray-800 transition-colors"
+                                className={`relative p-2 rounded-full transition-colors duration-200 ${
+                                    showQueueManager 
+                                        ? 'bg-gray-700 text-accentPrimary' 
+                                        : 'hover:bg-gray-800 text-gray-300 hover:text-white'
+                                }`}
                                 aria-label="Toggle queue"
                                 title="Toggle queue"
                             >
-                                <img src={queueSvg} className="w-6 h-6" alt="Queue" />
+                                <img 
+                                    src={queueSvg} 
+                                    className="w-6 h-6" 
+                                    alt="Queue" 
+                                />
                                 {queue.length > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-accentPrimary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                                         {queue.length}
@@ -262,6 +271,24 @@ const PlaybackControls = () => {
                                 <path d="M5 4L15 12L5 20V4Z" fill="currentColor"/>
                                 <rect x="17" y="4" width="2" height="16" fill="currentColor"/>
                             </svg>
+                        </button>
+
+                        {/* Add queue button in mini player */}
+                        <button
+                            onClick={toggleQueueManager}
+                            className={`relative ml-2 transition-colors duration-200 ${
+                                showQueueManager 
+                                    ? 'text-accentPrimary' 
+                                    : 'text-gray-300 hover:text-white'
+                            }`}
+                            aria-label="Toggle queue"
+                        >
+                            <img src={queueSvg} className="w-5 h-5" alt="Queue" />
+                            {queue.length > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-accentPrimary text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                                    {queue.length}
+                                </span>
+                            )}
                         </button>
                     </div>
                 </div>

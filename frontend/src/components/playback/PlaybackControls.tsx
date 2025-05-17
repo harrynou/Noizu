@@ -17,7 +17,7 @@ const PlaybackControls = () => {
         playPreviousTrack,
         queue,
         toggleQueueManager,
-        // showQueueManager
+        showQueueManager
     } = useMusicPlayer();
     
     const [isPlaybackExpanded, setIsPlaybackExpanded] = useState<boolean>(true);

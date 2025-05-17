@@ -6,7 +6,7 @@ CREATE TABLE users (
     soundcloud_account_id INTEGER DEFAULT NULL,
     volume FLOAT DEFAULT 0.5,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW() ON UPDATE NOW()
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE linked_accounts (
@@ -17,7 +17,7 @@ CREATE TABLE linked_accounts (
     provider_user_id VARCHAR(50) NOT NULL,
     refresh_token TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW() ON UPDATE NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     UNIQUE (provider, provider_user_id)
 );
 
@@ -63,6 +63,20 @@ ALTER TABLE users
     REFERENCES linked_accounts(account_id)
     ON DELETE SET NULL;
 
-CREATE OR REPLACE FUNCTION ()
+CREATE OR REPLACE FUNCTION update_modified_column()
 RETURNS TRIGGER AS $$
 BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language plpgsql;
+
+CREATE TRIGGER user_modified_trigger
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_modified_column();
+
+CREATE TRIGGER user_modified_trigger
+BEFORE UPDATE ON linked_accounts
+FOR EACH ROW
+EXECUTE FUNCTION update_modified_column();

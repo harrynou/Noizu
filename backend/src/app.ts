@@ -10,7 +10,6 @@ import errorHandle from './middleware/errorHandle';
 import passport from 'passport';
 import { passportConfig } from './config/passport-config';
 
-
 const app: Application = express();
 
 passportConfig();

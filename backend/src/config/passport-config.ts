@@ -1,7 +1,5 @@
 import passport from 'passport';
 import { Profile, Strategy as SpotifyStrategy, VerifyCallback} from 'passport-spotify';
-
-
 export const passportConfig = ():void => {
   passport.use(
       new SpotifyStrategy(

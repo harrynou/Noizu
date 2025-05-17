@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: frontend
     platform: linux/amd64
     build:
       context: ./frontend
@@ -8,6 +9,7 @@ services:
       - "5173:5173"
 
   backend:
+    container_name: backend
     platform: linux/amd64
     build:
       context: ./backend
@@ -18,11 +20,13 @@ services:
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db
+      - redis
     env_file:
-      - .env
+      - ./backend/.env
 
   db:
     image: postgres
+    container_name: database
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}

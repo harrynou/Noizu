@@ -16,7 +16,7 @@ build/
 .env
 frontend/.env
 backend/.env
-
+backend/.dockerignore
 
 # Editor directories and files
 .vscode/*

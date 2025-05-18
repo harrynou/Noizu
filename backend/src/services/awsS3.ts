@@ -15,7 +15,7 @@ const uploadImageToS3 = async (file: Express.Multer.File, folder: string = 'play
             Key: key,
             Body: file.buffer,
             ContentType: file.mimetype,
-          };
+        };
         const command = new PutObjectCommand(params);
         const response = await s3.send(command);
         if (!response.ETag){

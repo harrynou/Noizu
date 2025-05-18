@@ -2,11 +2,11 @@ import { useNavigate } from 'react-router-dom';
 
 interface PlaylistCardProps {
   playlist: {
-    playlist_id: number;
+    playlistId: number;
     name: string;
-    image_url: string | null;
-    track_count?: number;
-    created_at?: string;
+    imageUrl: string | null;
+    trackCount?: number;
+    createdAt?: string;
   };
 }
 
@@ -14,10 +14,10 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const navigate = useNavigate();
   
   // Default image if none provided
-  const imageUrl = playlist.image_url || '/assets/default-playlist.jpg';
+  const imageUrl = playlist.imageUrl || '/assets/default-playlist.jpg';
   
   const handleClick = () => {
-    navigate(`/playlists/${playlist.playlist_id}`);
+    navigate(`/playlists/${playlist.playlistId}`);
   };
   
   // Format date to a readable string if available
@@ -48,7 +48,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-300">
-              {playlist.track_count !== undefined ? `${playlist.track_count} tracks` : ''}
+              {playlist.trackCount !== undefined ? `${playlist.trackCount} tracks` : ''}
             </span>
           </div>
         </div>
@@ -57,8 +57,8 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
       {/* Playlist name and creation date */}
       <div className="p-4">
         <h3 className="font-bold truncate">{playlist.name}</h3>
-        {playlist.created_at && (
-          <p className="text-xs text-gray-400 mt-1">Created {formatDate(playlist.created_at)}</p>
+        {playlist.createdAt && (
+          <p className="text-xs text-gray-400 mt-1">Created {formatDate(playlist.createdAt)}</p>
         )}
       </div>
     </div>

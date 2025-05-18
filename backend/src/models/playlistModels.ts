@@ -35,7 +35,18 @@ export const deletePlaylist = async (userId:number, playlistId:number):Promise<b
 export const retrievePlaylists = async (userId:number) => {
     try {
         const result = await pool.query('SELECT * FROM playlists WHERE user_id = $1', [userId]);
-        return result.rows;
+        const playlists = result.rows.map((playlist) => {
+            return {
+                playlistId: playlist.playlist_id,
+                imageUrl: playlist.image_url,
+                trackCount: playlist.track_count,
+                createdAt: playlist.created_at,
+                updatedAt: playlist.updated_at,
+                lastPlayedAt: playlist.last_played_at 
+            }
+        })
+        return playlists;
+        
     } catch (error) {
         throw error
     }

@@ -47,7 +47,7 @@ const PlaylistsPage = () => {
             setShowCreateModal(false);
             
             // Navigate to the new playlist
-            navigate(`/playlists/${newPlaylist.playlist_id}`);
+            navigate(`/playlists/${newPlaylist.playlistId}`);
         } catch (err) {
             console.error('Error creating playlist:', err);
             setError('Failed to create playlist. Please try again.');
@@ -59,7 +59,7 @@ const PlaylistsPage = () => {
     const handleDeletePlaylist = async (playlistId: number) => {
         try {
             await deletePlaylist(playlistId);
-            setPlaylists(prev => prev.filter(p => p.playlist_id !== playlistId));
+            setPlaylists(prev => prev.filter(p => p.playlistId !== playlistId));
             setShowDeleteConfirm(null);
         } catch (err) {
             console.error('Error deleting playlist:', err);
@@ -128,12 +128,12 @@ const PlaylistsPage = () => {
                 playlists.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {playlists.map((playlist) => (
-                            <div key={playlist.playlist_id} className="relative group">
+                            <div key={playlist.playlistId} className="relative group">
                                 <PlaylistCard 
                                     playlist={{
                                         ...playlist,
-                                        // Add track_count when available from API
-                                        track_count: undefined
+                                        // Add trackCount when available from API
+                                        trackCount: undefined
                                     }} 
                                 />
                                 
@@ -141,7 +141,7 @@ const PlaylistsPage = () => {
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        setShowDeleteConfirm(playlist.playlist_id);
+                                        setShowDeleteConfirm(playlist.playlistId);
                                     }}
                                     className="absolute top-2 right-2 p-2 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                                     aria-label="Delete playlist"
@@ -155,7 +155,7 @@ const PlaylistsPage = () => {
                                 </button>
                                 
                                 {/* Delete confirmation overlay */}
-                                {showDeleteConfirm === playlist.playlist_id && (
+                                {showDeleteConfirm === playlist.playlistId && (
                                     <div className="absolute inset-0 bg-black bg-opacity-75 rounded-lg flex flex-col items-center justify-center p-4">
                                         <p className="text-white text-center mb-4">Are you sure you want to delete "{playlist.name}"?</p>
                                         <div className="flex space-x-3">
@@ -171,7 +171,7 @@ const PlaylistsPage = () => {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleDeletePlaylist(playlist.playlist_id);
+                                                    handleDeletePlaylist(playlist.playlistId);
                                                 }}
                                                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
                                             >

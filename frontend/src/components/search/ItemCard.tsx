@@ -101,7 +101,6 @@ const ItemCard = memo(
     index,
     isCompact = false,
   }: ItemCardProps) => {
-    // Get only what we need from each context for better performance
     const { isPlaying, togglePlayPause, playTrack: playTrackState } = usePlayerState();
     const { queue, addToQueue } = useQueue();
     const queueState = useQueue();
@@ -192,8 +191,8 @@ const ItemCard = memo(
         if (
           optionsMenuRef.current &&
           optionsButtonRef.current &&
-          !optionsMenuRef.current.contains(event.target as Node) &&
-          !optionsButtonRef.current.contains(event.target as Node)
+          optionsMenuRef.current.contains(event.target as Node) &&
+          optionsButtonRef.current.contains(event.target as Node)
         ) {
           setShowOptions(false);
         }
@@ -201,8 +200,10 @@ const ItemCard = memo(
 
       // Only add listener when options menu is open
       if (showOptions) {
+        console.log('opening mouse listener')
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
+          console.log('removing listenrs')
           document.removeEventListener("mousedown", handleClickOutside);
         };
       }
@@ -347,7 +348,6 @@ const ItemCard = memo(
           ? itemCardRef.current.getBoundingClientRect().bottom + window.scrollY
           : 0,
       };
-
       return (
         <div
           ref={optionsMenuRef}

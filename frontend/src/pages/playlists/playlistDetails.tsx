@@ -35,10 +35,11 @@ const PlaylistDetailPage = () => {
       try {
         setLoading(true);
 
-        // etch playlist info
+        // fetch playlist info
         const playlists = await getPlaylists();
-        const currentPlaylist = playlists.find((p) => p.playlist_id === parseInt(id));
-
+        console.log(id);
+        const currentPlaylist = playlists.find((p) => p.playlistId === parseInt(id));
+        console.log(currentPlaylist)
         if (!currentPlaylist) {
           setError("Playlist not found");
           setLoading(false);
@@ -134,7 +135,7 @@ const PlaylistDetailPage = () => {
     }
   };
 
-  const playlistImage = playlist?.image_url || "https://via.placeholder.com/300?text=Playlist";
+  const playlistImage = playlist?.imageUrl || "https://via.placeholder.com/300?text=Playlist";
 
   // Loading state
   if (loading) {
@@ -211,8 +212,8 @@ const PlaylistDetailPage = () => {
             <span>
               {totalTrackCount} {totalTrackCount === 1 ? "track" : "tracks"}
             </span>
-            {playlist?.created_at && (
-              <span>Created {new Date(playlist.created_at).toLocaleDateString()}</span>
+            {playlist?.createdAt && (
+              <span>Created {new Date(playlist.createdAt).toLocaleDateString()}</span>
             )}
           </div>
 

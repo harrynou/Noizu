@@ -185,11 +185,11 @@ export const startSpotifyPlayback = async ({token, device_id, uris, position}:st
 // APIs for playlists
 
 export interface Playlist {
-    playlist_id: number;
+    playlistId: number;
     name: string;
-    image_url: string | null;
-    user_id: number;
-    created_at: string;
+    imageUrl: string | null;
+    userId: number;
+    createdAt: string;
   }
   
   export interface PlaylistTrack extends Track {
@@ -242,7 +242,7 @@ export const getPlaylistTracks = async (playlistId: number): Promise<PlaylistTra
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error('Error creating playlist:', error);

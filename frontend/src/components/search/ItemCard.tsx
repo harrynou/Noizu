@@ -120,7 +120,12 @@ const ItemCard = memo(
       remove: false,
     });
     const [isAddedToQueue, setIsAddedToQueue] = useState(false);
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [tooltipPosition, setTooltipPosition] = useState<{
+      x: number;
+      y: number;
+      showAbove?: boolean;
+      showLeft?: boolean;
+    }>({ x: 0, y: 0 });
 
     const itemCardRef = useRef<HTMLDivElement>(null);
     const optionsButtonRef = useRef<HTMLButtonElement>(null);
@@ -205,6 +210,44 @@ const ItemCard = memo(
         };
       }
     }, [showOptions]);
+
+    // Enhanced tooltip handling with immediate hide when moving between buttons
+    useEffect(() => {
+      // Create a global mouse move handler to detect when cursor is outside all relevant elements
+      const handleGlobalMouseMove = (e: MouseEvent) => {
+        // If no tooltips are shown, do nothing
+        if (!Object.values(showTooltip).some((shown) => shown)) return;
+
+        // Check if mouse is over any tooltip trigger buttons or the card itself
+        const isOverItemCard = itemCardRef.current?.contains(e.target as Node);
+
+        // Handle the case when moving between buttons - we need to check if the specific button is hovered
+        const hoveredElement = e.target as HTMLElement;
+
+        // Get the button type from data attribute or other means - we'll assume if it's a button
+        // and it's not the button that showed the current tooltip, we should hide the tooltip
+        const isOverActiveButton =
+          hoveredElement.tagName === "BUTTON" && hoveredElement.closest("[data-tooltip-type]");
+
+        // If mouse is not over item card or is over a different button, hide tooltips
+        if (!isOverItemCard || (isOverItemCard && !isOverActiveButton)) {
+          setShowTooltip({
+            favorite: false,
+            queue: false,
+            playlist: false,
+            remove: false,
+          });
+        }
+      };
+
+      // Add global handlers
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+
+      // Cleanup
+      return () => {
+        document.removeEventListener("mousemove", handleGlobalMouseMove);
+      };
+    }, [showTooltip]);
 
     // This is the playTrack function we'll use in the component
     // It wraps the playTrackState function from PlayerStateContext
@@ -293,16 +336,26 @@ const ItemCard = memo(
           tooltipTimeoutRef.current = null;
         }
 
+        // Get the position for the tooltip
         const rect = event.currentTarget.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const showAbove = rect.top > viewportHeight / 2;
+
+        // Update tooltip position
         setTooltipPosition({
           x: rect.left + rect.width / 2,
-          y: rect.top,
+          y: showAbove ? rect.top : rect.bottom,
+          showAbove,
         });
 
-        setShowTooltip((prev) => ({
-          ...prev,
+        // Hide all tooltips first, then show only the current one
+        setShowTooltip({
+          favorite: false,
+          queue: false,
+          playlist: false,
+          remove: false,
           [tooltipType]: true,
-        }));
+        });
       },
       []
     );
@@ -319,21 +372,50 @@ const ItemCard = memo(
 
     const handleOptionClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      // Simply toggle the menu visibility
+
+      // Calculate viewport dimensions
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Get the button position for the dropdown
+      const rect = e.currentTarget.getBoundingClientRect();
+
+      // Determine whether to show above or below based on available space
+      // If clicked in the lower half of the viewport, show above
+      const showAbove = rect.bottom > viewportHeight / 2;
+
+      // Determine whether to show left or right based on available space
+      // If clicked in the right half of the viewport, show to the left
+      const showLeft = rect.left > viewportWidth / 2;
+
+      setTooltipPosition({
+        x: rect.left + rect.width / 2,
+        y: showAbove ? rect.top : rect.bottom,
+        showAbove,
+        showLeft,
+      });
+
+      // Toggle the menu visibility
       setShowOptions(!showOptions);
     };
 
-    // Extract components for better readability
     const renderTooltips = () => {
-      return Object.entries(showTooltip).map(
-        ([type, isVisible]) =>
-          isVisible && (
+      return Object.entries(showTooltip)
+        .map(([type, isVisible]) => {
+          if (!isVisible) return null;
+
+          // Calculate vertical position based on available space
+          const verticalPosition = tooltipPosition.showAbove
+            ? { bottom: `${window.innerHeight - tooltipPosition.y + 8}px`, top: "auto" }
+            : { top: `${tooltipPosition.y + 8}px`, bottom: "auto" };
+
+          return (
             <div
               key={type}
-              className="fixed bg-black bg-opacity-80 text-white text-xs py-1 px-2 rounded pointer-events-none transform -translate-x-1/2 -translate-y-8 whitespace-nowrap"
+              className="fixed bg-black bg-opacity-80 text-white text-xs py-1 px-2 rounded pointer-events-none transform -translate-x-1/2 whitespace-nowrap z-50"
               style={{
                 left: `${tooltipPosition.x}px`,
-                top: `${tooltipPosition.y}px`,
+                ...verticalPosition,
               }}
               role="tooltip">
               {type === "favorite" &&
@@ -342,52 +424,60 @@ const ItemCard = memo(
               {type === "playlist" && "Add to playlist"}
               {type === "remove" && "Remove from playlist"}
             </div>
-          )
-      );
+          );
+        })
+        .filter(Boolean);
     };
 
     const renderOptionsMenu = () => {
+      if (!showOptions) return null;
+
+      // Calculate dropdown positioning
+      const menuWidth = 192; // w-48 = 12rem = 192px
+      const menuHeight = 160; // Approximate height based on menu content
+
+      // Determine horizontal position
+      let leftPosition;
+      if (tooltipPosition.showLeft) {
+        // Position to the left of the button
+        leftPosition = tooltipPosition.x - menuWidth - 10;
+      } else {
+        // Position to the right of the button
+        leftPosition = tooltipPosition.x + 10;
+      }
+
+      // Ensure menu stays within viewport horizontally
+      leftPosition = Math.max(10, Math.min(window.innerWidth - menuWidth - 10, leftPosition));
+
+      // Determine vertical position
+      let topPosition;
+      if (tooltipPosition.showAbove) {
+        // Position above the button
+        topPosition = tooltipPosition.y - menuHeight - 5;
+      } else {
+        // Position below the button
+        topPosition = tooltipPosition.y + 5;
+      }
+
+      // Ensure menu stays within viewport vertically
+      topPosition = Math.max(10, Math.min(window.innerHeight - menuHeight - 10, topPosition));
+
       return (
-        showOptions && (
-          <div
-            ref={optionsMenuRef}
-            className="absolute right-0 top-full mt-1 z-10 bg-gray-800 rounded-md shadow-lg overflow-hidden w-48"
-            role="menu">
-            <div className="py-1">
-              {/* Add to playlist option */}
-              {showAddToPlaylist && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Add to playlist functionality would go here
-                    setShowOptions(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
-                  role="menuitem">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-gray-400"
-                    aria-hidden="true">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                  Add to playlist
-                </button>
-              )}
-
-              {/* Go to artist */}
+        <div
+          ref={optionsMenuRef}
+          className="fixed z-50 bg-gray-800 rounded-md shadow-lg overflow-hidden w-48"
+          style={{
+            top: `${topPosition}px`,
+            left: `${leftPosition}px`,
+          }}
+          role="menu">
+          <div className="py-1">
+            {/* Add to playlist option */}
+            {showAddToPlaylist && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Navigate to artist page functionality
+                  // Add to playlist functionality would go here
                   setShowOptions(false);
                 }}
                 className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
@@ -404,68 +494,90 @@ const ItemCard = memo(
                   strokeLinejoin="round"
                   className="text-gray-400"
                   aria-hidden="true">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-                Go to artist
+                Add to playlist
               </button>
+            )}
 
-              {/* Share */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Share functionality
-                  if (item.uri) {
-                    navigator.clipboard
-                      .writeText(item.uri)
-                      .catch((err) => console.error("Failed to copy:", err));
-                  }
-                  setShowOptions(false);
-                }}
+            {/* Go to artist */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // Navigate to artist page functionality
+                setShowOptions(false);
+              }}
+              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
+              role="menuitem">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-gray-400"
+                aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Go to artist
+            </button>
+
+            {/* Share */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // Share functionality
+                if (item.uri) {
+                  navigator.clipboard
+                    .writeText(item.uri)
+                    .catch((err) => console.error("Failed to copy:", err));
+                }
+                setShowOptions(false);
+              }}
+              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
+              role="menuitem">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-gray-400"
+                aria-hidden="true">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              Copy link
+            </button>
+
+            {/* Open in original service */}
+            {item.uri && (
+              <a
+                href={item.uri}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
                 className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
                 role="menuitem">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-gray-400"
-                  aria-hidden="true">
-                  <circle cx="18" cy="5" r="3"></circle>
-                  <circle cx="6" cy="12" r="3"></circle>
-                  <circle cx="18" cy="19" r="3"></circle>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                </svg>
-                Copy link
-              </button>
-
-              {/* Open in original service */}
-              {item.uri && (
-                <a
-                  href={item.uri}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
-                  role="menuitem">
-                  <img
-                    src={getProviderDetails.icon}
-                    alt=""
-                    className="w-4 h-4"
-                    aria-hidden="true"
-                  />
-                  Open in {provider === "spotify" ? "Spotify" : "SoundCloud"}
-                </a>
-              )}
-            </div>
+                <img src={getProviderDetails.icon} alt="" className="w-4 h-4" aria-hidden="true" />
+                Open in {provider === "spotify" ? "Spotify" : "SoundCloud"}
+              </a>
+            )}
           </div>
-        )
+        </div>
       );
     };
 
@@ -584,6 +696,7 @@ const ItemCard = memo(
                 onMouseEnter={(e) => handleTooltipShow("favorite", e)}
                 onMouseLeave={() => handleTooltipHide("favorite")}
                 disabled={!isAuthenticated}
+                data-tooltip-type="favorite"
                 className={`p-2 rounded-full ${
                   isAuthenticated ? "hover:bg-gray-600" : "opacity-50 cursor-not-allowed"
                 } transition-colors focus:outline-none focus:ring-2 focus:ring-white`}
@@ -606,6 +719,7 @@ const ItemCard = memo(
                 onMouseEnter={(e) => handleTooltipShow("queue", e)}
                 onMouseLeave={() => handleTooltipHide("queue")}
                 disabled={isInQueue}
+                data-tooltip-type="queue"
                 className={`p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white ${
                   isInQueue ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600"
                 }`}
@@ -649,9 +763,6 @@ const ItemCard = memo(
                   <circle cx="12" cy="5" r="1"></circle>
                   <circle cx="12" cy="19" r="1"></circle>
                 </svg>
-
-                {/* Options menu - rendered as a child of the button for better positioning */}
-                {renderOptionsMenu()}
               </button>
 
               {/* Remove from playlist button (Only shown when in playlist view) */}
@@ -660,6 +771,7 @@ const ItemCard = memo(
                   onClick={handleRemoveFromPlaylist}
                   onMouseEnter={(e) => handleTooltipShow("remove", e)}
                   onMouseLeave={() => handleTooltipHide("remove")}
+                  data-tooltip-type="remove"
                   className="p-2 rounded-full hover:bg-red-600 transition-colors ml-1 focus:outline-none focus:ring-2 focus:ring-white"
                   aria-label="Remove from playlist"
                   type="button">
@@ -683,7 +795,10 @@ const ItemCard = memo(
           )}
         </div>
 
-        {/* Tooltips - render conditionally */}
+        {/* Render the options menu - Now moved to portal/fixed positioning */}
+        {renderOptionsMenu()}
+
+        {/* Tooltips - render at a fixed position */}
         {renderTooltips()}
       </div>
     );
@@ -691,9 +806,10 @@ const ItemCard = memo(
     // Compact layout - less details, more condensed
     const renderCompactLayout = () => (
       <div
+        ref={itemCardRef}
         className={`flex items-center p-2 rounded-md ${
           isCurrentTrack ? "bg-gray-700/60" : "hover:bg-gray-700/30"
-        } group transition-colors duration-150 cursor-pointer`}
+        } group transition-colors duration-150 cursor-pointer relative`}
         onClick={handleItemClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -770,6 +886,9 @@ const ItemCard = memo(
               {/* Like button */}
               <button
                 onClick={handleFavoriteToggle}
+                onMouseEnter={(e) => handleTooltipShow("favorite", e)}
+                onMouseLeave={() => handleTooltipHide("favorite")}
+                data-tooltip-type="favorite"
                 className="p-1 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white rounded-full"
                 aria-label={trackFavorited ? "Remove from favorites" : "Add to favorites"}
                 type="button">
@@ -783,9 +902,37 @@ const ItemCard = memo(
                   loading="lazy"
                 />
               </button>
+
+              {/* More options button for compact layout */}
+              <button
+                ref={optionsButtonRef}
+                onClick={handleOptionClick}
+                className="p-1 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white rounded-full ml-1"
+                aria-label="More options"
+                type="button">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </button>
             </div>
           )}
         </div>
+
+        {/* Options menu and tooltips rendered at the document body level */}
+        {renderOptionsMenu()}
+        {renderTooltips()}
       </div>
     );
 

@@ -1,10 +1,10 @@
-import React, {useState, useCallback, memo, useMemo, useRef, useEffect} from "react";
+import React, { useState, useCallback, memo, useMemo, useRef, useEffect } from "react";
 import { usePlayerState } from "../../contexts/playerStateContext";
 import { useQueue } from "../../contexts/queueContext";
-import {useFavoriteContext} from "../../contexts/favoriteContext";
-import {useAuth} from "../../contexts/authContext";
+import { useFavoriteContext } from "../../contexts/favoriteContext";
+import { useAuth } from "../../contexts/authContext";
 import formatDuration from "../../utils/formatDuration";
-import {smartFormatDate} from "../../utils/formatTime";
+import { smartFormatDate } from "../../utils/formatTime";
 
 import SpotifyIcon from "../../assets/spotify/Icon.svg";
 import SoundcloudIcon from "../../assets/soundcloud/Icon.svg";
@@ -33,7 +33,7 @@ interface LazyImageProps {
 }
 
 // Custom lazy image component using Intersection Observer
-const LazyImage = ({src, alt, className, onLoad}: LazyImageProps) => {
+const LazyImage = ({ src, alt, className, onLoad }: LazyImageProps) => {
   const imgRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -104,12 +104,12 @@ const ItemCard = memo(
     const { isPlaying, togglePlayPause, playTrack: playTrackState } = usePlayerState();
     const { queue, addToQueue } = useQueue();
     const queueState = useQueue();
-    const {isAuthenticated} = useAuth();
-    const {isFavorited, addFavorite, removeFavorite} = useFavoriteContext();
+    const { isAuthenticated } = useAuth();
+    const { isFavorited, addFavorite, removeFavorite } = useFavoriteContext();
 
     // Computed property - derive currentTrack from queue context
-    const currentTrack = queueState.currentTrackIndex !== null ? 
-      queueState.queue[queueState.currentTrackIndex] : null;
+    const currentTrack =
+      queueState.currentTrackIndex !== null ? queueState.queue[queueState.currentTrackIndex] : null;
 
     const [isHovered, setIsHovered] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
@@ -120,7 +120,8 @@ const ItemCard = memo(
       remove: false,
     });
     const [isAddedToQueue, setIsAddedToQueue] = useState(false);
-    const [tooltipPosition, setTooltipPosition] = useState({x: 0, y: 0});
+    const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
     const itemCardRef = useRef<HTMLDivElement>(null);
     const optionsButtonRef = useRef<HTMLButtonElement>(null);
@@ -189,21 +190,21 @@ const ItemCard = memo(
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (
-          optionsMenuRef.current &&
-          optionsButtonRef.current &&
-          optionsMenuRef.current.contains(event.target as Node) &&
-          optionsButtonRef.current.contains(event.target as Node)
+          (optionsMenuRef.current && optionsMenuRef.current.contains(event.target as Node)) ||
+          (optionsButtonRef.current && optionsButtonRef.current.contains(event.target as Node))
         ) {
-          setShowOptions(false);
+          return;
         }
+        setShowOptions(false);
       };
 
       // Only add listener when options menu is open
       if (showOptions) {
-        console.log('opening mouse listener')
+        console.log(menuPosition);
+        console.log("opening mouse listener");
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
-          console.log('removing listenrs')
+          console.log("removing listenrs");
           document.removeEventListener("mousedown", handleClickOutside);
         };
       }
@@ -211,12 +212,15 @@ const ItemCard = memo(
 
     // This is the playTrack function we'll use in the component
     // It wraps the playTrackState function from PlayerStateContext
-    const playTrack = useCallback((track: Track) => {
-      playTrackState(track);
-      if (onTrackSelect) {
-        onTrackSelect(track);
-      }
-    }, [playTrackState, onTrackSelect]);
+    const playTrack = useCallback(
+      (track: Track) => {
+        playTrackState(track);
+        if (onTrackSelect) {
+          onTrackSelect(track);
+        }
+      },
+      [playTrackState, onTrackSelect]
+    );
 
     const handlePlayClick = useCallback(
       (e: React.MouseEvent<HTMLElement>) => {
@@ -317,6 +321,17 @@ const ItemCard = memo(
       }, TOOLTIP_HIDE_DELAY);
     }, []);
 
+    const handleOptionClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      const rect = optionsButtonRef.current?.getBoundingClientRect();
+      console.log(rect);
+      // Adjust position to keep menu on screen
+      if (rect) {
+        setMenuPosition({ x: rect.left, y: rect.bottom });
+        setShowOptions(!showOptions);
+      }
+    };
+
     // Extract components for better readability
     const renderTooltips = () => {
       return Object.entries(showTooltip).map(
@@ -324,7 +339,7 @@ const ItemCard = memo(
           isVisible && (
             <div
               key={type}
-              className="fixed z-50 bg-black bg-opacity-80 text-white text-xs py-1 px-2 rounded pointer-events-none transform -translate-x-1/2 -translate-y-8 whitespace-nowrap"
+              className="fixed bg-black bg-opacity-80 text-white text-xs py-1 px-2 rounded pointer-events-none transform -translate-x-1/2 -translate-y-8 whitespace-nowrap"
               style={{
                 left: `${tooltipPosition.x}px`,
                 top: `${tooltipPosition.y}px`,
@@ -340,27 +355,63 @@ const ItemCard = memo(
       );
     };
 
-    const renderOptionsMenu = () => {
-      if (!showOptions) return null;
+    // useEffect(() => {
+    //   const handleMouseMove = (event: MouseEvent) => {
+    //     console.log(`X:${event.clientX}, Y:${event.clientY}`);
+    //   };
+    //   document.addEventListener("mousemove", handleMouseMove);
+    //   return () => {
+    //     document.removeEventListener("mousemove", handleMouseMove);
+    //   };
+    // }, []);
 
-      const menuPosition = {
-        top: itemCardRef.current
-          ? itemCardRef.current.getBoundingClientRect().bottom + window.scrollY
-          : 0,
-      };
+    const renderOptionsMenu = () => {
       return (
-        <div
-          ref={optionsMenuRef}
-          className="absolute right-8 mt-2 z-50 bg-gray-800 rounded-md shadow-lg overflow-hidden"
-          style={menuPosition}
-          role="menu">
-          <div className="py-1">
-            {/* Add to playlist option */}
-            {showAddToPlaylist && (
+        showOptions &&
+        menuPosition && (
+          <div
+            ref={optionsMenuRef}
+            className="absolute bg-gray-800 rounded-md shadow-lg overflow-hidden"
+            style={{
+              top: `${menuPosition.y}px`,
+              left: `${menuPosition.x}px`,
+            }}
+            role="menu">
+            <div className="py-1">
+              {/* Add to playlist option */}
+              {showAddToPlaylist && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Add to playlist functionality would go here
+                    setShowOptions(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
+                  role="menuitem">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-gray-400"
+                    aria-hidden="true">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  Add to playlist
+                </button>
+              )}
+
+              {/* Go to artist */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Add to playlist functionality would go here
+                  // Navigate to artist page functionality
                   setShowOptions(false);
                 }}
                 className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
@@ -377,90 +428,68 @@ const ItemCard = memo(
                   strokeLinejoin="round"
                   className="text-gray-400"
                   aria-hidden="true">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                Add to playlist
+                Go to artist
               </button>
-            )}
 
-            {/* Go to artist */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // Navigate to artist page functionality
-                setShowOptions(false);
-              }}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
-              role="menuitem">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-gray-400"
-                aria-hidden="true">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Go to artist
-            </button>
-
-            {/* Share */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // Share functionality
-                if (item.uri) {
-                  navigator.clipboard
-                    .writeText(item.uri)
-                    .catch((err) => console.error("Failed to copy:", err));
-                }
-                setShowOptions(false);
-              }}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
-              role="menuitem">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-gray-400"
-                aria-hidden="true">
-                <circle cx="18" cy="5" r="3"></circle>
-                <circle cx="6" cy="12" r="3"></circle>
-                <circle cx="18" cy="19" r="3"></circle>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-              </svg>
-              Copy link
-            </button>
-
-            {/* Open in original service */}
-            {item.uri && (
-              <a
-                href={item.uri}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
+              {/* Share */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Share functionality
+                  if (item.uri) {
+                    navigator.clipboard
+                      .writeText(item.uri)
+                      .catch((err) => console.error("Failed to copy:", err));
+                  }
+                  setShowOptions(false);
+                }}
                 className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
                 role="menuitem">
-                <img src={getProviderDetails.icon} alt="" className="w-4 h-4" aria-hidden="true" />
-                Open in {provider === "spotify" ? "Spotify" : "SoundCloud"}
-              </a>
-            )}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-gray-400"
+                  aria-hidden="true">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Copy link
+              </button>
+
+              {/* Open in original service */}
+              {item.uri && (
+                <a
+                  href={item.uri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
+                  role="menuitem">
+                  <img
+                    src={getProviderDetails.icon}
+                    alt=""
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                  />
+                  Open in {provider === "spotify" ? "Spotify" : "SoundCloud"}
+                </a>
+              )}
+            </div>
           </div>
-        </div>
+        )
       );
     };
 
@@ -623,10 +652,7 @@ const ItemCard = memo(
               {/* More options button */}
               <button
                 ref={optionsButtonRef}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowOptions(!showOptions);
-                }}
+                onClick={handleOptionClick}
                 className="p-2 rounded-full hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
                 aria-label="More options"
                 aria-expanded={showOptions}

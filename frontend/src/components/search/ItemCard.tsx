@@ -120,7 +120,6 @@ const ItemCard = memo(
       remove: false,
     });
     const [isAddedToQueue, setIsAddedToQueue] = useState(false);
-    const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
     const itemCardRef = useRef<HTMLDivElement>(null);
@@ -200,11 +199,8 @@ const ItemCard = memo(
 
       // Only add listener when options menu is open
       if (showOptions) {
-        console.log(menuPosition);
-        console.log("opening mouse listener");
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
-          console.log("removing listenrs");
           document.removeEventListener("mousedown", handleClickOutside);
         };
       }
@@ -323,13 +319,8 @@ const ItemCard = memo(
 
     const handleOptionClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      const rect = optionsButtonRef.current?.getBoundingClientRect();
-      console.log(rect);
-      // Adjust position to keep menu on screen
-      if (rect) {
-        setMenuPosition({ x: rect.left, y: rect.bottom });
-        setShowOptions(!showOptions);
-      }
+      // Simply toggle the menu visibility
+      setShowOptions(!showOptions);
     };
 
     // Extract components for better readability
@@ -355,27 +346,12 @@ const ItemCard = memo(
       );
     };
 
-    // useEffect(() => {
-    //   const handleMouseMove = (event: MouseEvent) => {
-    //     console.log(`X:${event.clientX}, Y:${event.clientY}`);
-    //   };
-    //   document.addEventListener("mousemove", handleMouseMove);
-    //   return () => {
-    //     document.removeEventListener("mousemove", handleMouseMove);
-    //   };
-    // }, []);
-
     const renderOptionsMenu = () => {
       return (
-        showOptions &&
-        menuPosition && (
+        showOptions && (
           <div
             ref={optionsMenuRef}
-            className="absolute bg-gray-800 rounded-md shadow-lg overflow-hidden"
-            style={{
-              top: `${menuPosition.y}px`,
-              left: `${menuPosition.x}px`,
-            }}
+            className="absolute right-0 top-full mt-1 z-10 bg-gray-800 rounded-md shadow-lg overflow-hidden w-48"
             role="menu">
             <div className="py-1">
               {/* Add to playlist option */}
@@ -499,7 +475,7 @@ const ItemCard = memo(
         ref={itemCardRef}
         className={`grid grid-cols-[16px_4fr_1fr_auto] gap-4 p-2 pr-4 rounded-md items-center ${
           isCurrentTrack ? "bg-gray-700/60" : "hover:bg-gray-700/30"
-        } group transition-colors duration-150 cursor-pointer`}
+        } group transition-colors duration-150 cursor-pointer relative`}
         onClick={handleItemClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -653,7 +629,7 @@ const ItemCard = memo(
               <button
                 ref={optionsButtonRef}
                 onClick={handleOptionClick}
-                className="p-2 rounded-full hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+                className="p-2 rounded-full hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-white relative"
                 aria-label="More options"
                 aria-expanded={showOptions}
                 aria-haspopup="menu"
@@ -673,6 +649,9 @@ const ItemCard = memo(
                   <circle cx="12" cy="5" r="1"></circle>
                   <circle cx="12" cy="19" r="1"></circle>
                 </svg>
+
+                {/* Options menu - rendered as a child of the button for better positioning */}
+                {renderOptionsMenu()}
               </button>
 
               {/* Remove from playlist button (Only shown when in playlist view) */}
@@ -703,9 +682,6 @@ const ItemCard = memo(
             </div>
           )}
         </div>
-
-        {/* Options menu - render conditionally */}
-        {renderOptionsMenu()}
 
         {/* Tooltips - render conditionally */}
         {renderTooltips()}

@@ -1,8 +1,8 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "../components/search/SearchBar";
-import {useSearchResult} from "../contexts/searchResultContext";
-import {useMusicPlayer} from "../contexts/musicPlayerContext";
-import {useAuth} from "../contexts/authContext";
+import { useSearchResult } from "../contexts/searchResultContext";
+import { useMusicPlayer } from "../contexts/musicPlayerContext";
+import { useAuth } from "../contexts/authContext";
 
 // Logo imports
 import SpotifyIcon from "../assets/spotify/Icon.svg";
@@ -10,9 +10,9 @@ import SoundcloudIcon from "../assets/soundcloud/Icon.svg";
 import ItemCard from "../components/search/ItemCard";
 
 const HomePage = (): JSX.Element => {
-  const {spotifyTracks, soundcloudTracks} = useSearchResult();
-  const {currentTrack, isPlaying, togglePlayPause} = useMusicPlayer();
-  const {isAuthenticated} = useAuth();
+  const { spotifyTracks, soundcloudTracks } = useSearchResult();
+  const { currentTrack, isPlaying, togglePlayPause } = useMusicPlayer();
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<"all" | "spotify" | "soundcloud">("all");
   const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
 
@@ -61,60 +61,60 @@ const HomePage = (): JSX.Element => {
       </div>
 
       {/* Main content section */}
-      <div className="flex flex-1 gap-4">
-        {/* Results area */}
-        <div className="w-full">
-          {/* Tabs */}
-          {(spotifyTracks.length > 0 || soundcloudTracks.length > 0) && (
-            <div className="mb-4 border-b border-gray-700">
-              <div className="flex">
-                <button
-                  onClick={() => setActiveTab("all")}
-                  className={`py-2 px-4 ${
-                    activeTab === "all"
-                      ? "border-b-2 border-accentPrimary text-white"
-                      : "text-gray-400"
-                  }`}>
-                  All Results
-                </button>
-                <button
-                  onClick={() => setActiveTab("spotify")}
-                  className={`py-2 px-4 flex items-center gap-2 ${
-                    activeTab === "spotify"
-                      ? "border-b-2 border-accentPrimary text-white"
-                      : "text-gray-400"
-                  }`}>
-                  <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
-                  Spotify {spotifyTracks.length > 0 && `(${spotifyTracks.length})`}
-                </button>
-                <button
-                  onClick={() => setActiveTab("soundcloud")}
-                  className={`py-2 px-4 flex items-center gap-2 ${
-                    activeTab === "soundcloud"
-                      ? "border-b-2 border-accentPrimary text-white"
-                      : "text-gray-400"
-                  }`}>
-                  <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
-                  SoundCloud {soundcloudTracks.length > 0 && `(${soundcloudTracks.length})`}
-                </button>
-              </div>
+      <div className="flex-1">
+        {/* Tabs */}
+        {(spotifyTracks.length > 0 || soundcloudTracks.length > 0) && (
+          <div className="mb-4 border-b border-gray-700">
+            <div className="flex">
+              <button
+                onClick={() => setActiveTab("all")}
+                className={`py-2 px-4 ${
+                  activeTab === "all"
+                    ? "border-b-2 border-accentPrimary text-white"
+                    : "text-gray-400"
+                }`}>
+                All Results
+              </button>
+              <button
+                onClick={() => setActiveTab("spotify")}
+                className={`py-2 px-4 flex items-center gap-2 ${
+                  activeTab === "spotify"
+                    ? "border-b-2 border-accentPrimary text-white"
+                    : "text-gray-400"
+                }`}>
+                <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
+                Spotify {spotifyTracks.length > 0 && `(${spotifyTracks.length})`}
+              </button>
+              <button
+                onClick={() => setActiveTab("soundcloud")}
+                className={`py-2 px-4 flex items-center gap-2 ${
+                  activeTab === "soundcloud"
+                    ? "border-b-2 border-accentPrimary text-white"
+                    : "text-gray-400"
+                }`}>
+                <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
+                SoundCloud {soundcloudTracks.length > 0 && `(${soundcloudTracks.length})`}
+              </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Results list */}
-          <div className="overflow-y-auto">
-            {spotifyTracks.length === 0 && soundcloudTracks.length === 0 ? (
-              renderEmptyState()
-            ) : (
-              <div>
-                {activeTab === "all" && (
-                  <>
-                    {spotifyTracks.length > 0 && (
-                      <div className="mb-6">
-                        <h2 className="text-xl font-medium mb-3 flex items-center gap-2">
-                          <img src={SpotifyIcon} alt="Spotify" className="w-5 h-5" />
-                          Spotify Results
-                        </h2>
+        {/* Results area */}
+        <div className="overflow-y-auto">
+          {spotifyTracks.length === 0 && soundcloudTracks.length === 0 ? (
+            renderEmptyState()
+          ) : (
+            <div>
+              {activeTab === "all" && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Spotify column */}
+                  {spotifyTracks.length > 0 && (
+                    <div className="mb-6 lg:mb-0">
+                      <h2 className="text-xl font-medium mb-3 flex items-center gap-2">
+                        <img src={SpotifyIcon} alt="Spotify" className="w-5 h-5" />
+                        Spotify Results
+                      </h2>
+                      <div className="space-y-2 bg-gray-800 bg-opacity-30 p-4 rounded-lg">
                         {spotifyTracks.slice(0, 5).map((track) => (
                           <ItemCard
                             key={track.id}
@@ -126,46 +126,55 @@ const HomePage = (): JSX.Element => {
                         {spotifyTracks.length > 5 && (
                           <button
                             onClick={() => setActiveTab("spotify")}
-                            className="text-accentPrimary hover:underline text-sm">
+                            className="text-accentPrimary hover:underline text-sm mt-2">
                             Show all {spotifyTracks.length} Spotify results
                           </button>
                         )}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {soundcloudTracks.length > 0 && (
-                      <div>
-                        <h2 className="text-xl font-medium mb-3 flex items-center gap-2">
-                          <img src={SoundcloudIcon} alt="SoundCloud" className="w-5 h-5" />
-                          SoundCloud Results
-                        </h2>
+                  {/* SoundCloud column */}
+                  {soundcloudTracks.length > 0 && (
+                    <div>
+                      <h2 className="text-xl font-medium mb-3 flex items-center gap-2">
+                        <img src={SoundcloudIcon} alt="SoundCloud" className="w-5 h-5" />
+                        SoundCloud Results
+                      </h2>
+                      <div className="space-y-2 bg-gray-800 bg-opacity-30 p-4 rounded-lg">
                         {soundcloudTracks.slice(0, 5).map((track) => (
                           <ItemCard key={track.id} item={track} provider={track.provider} />
                         ))}
                         {soundcloudTracks.length > 5 && (
                           <button
                             onClick={() => setActiveTab("soundcloud")}
-                            className="text-accentPrimary hover:underline text-sm">
+                            className="text-accentPrimary hover:underline text-sm mt-2">
                             Show all {soundcloudTracks.length} SoundCloud results
                           </button>
                         )}
                       </div>
-                    )}
-                  </>
-                )}
+                    </div>
+                  )}
+                </div>
+              )}
 
-                {activeTab === "spotify" &&
-                  spotifyTracks.map((track) => (
+              {activeTab === "spotify" && (
+                <div className="space-y-2">
+                  {spotifyTracks.map((track) => (
                     <ItemCard key={track.id} item={track} provider={track.provider} />
                   ))}
+                </div>
+              )}
 
-                {activeTab === "soundcloud" &&
-                  soundcloudTracks.map((track) => (
+              {activeTab === "soundcloud" && (
+                <div className="space-y-2">
+                  {soundcloudTracks.map((track) => (
                     <ItemCard key={track.id} item={track} provider={track.provider} />
                   ))}
-              </div>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

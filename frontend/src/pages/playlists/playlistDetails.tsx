@@ -1,5 +1,5 @@
-import {useEffect, useState, useCallback} from "react";
-import {useParams, useNavigate} from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   getPlaylistTracks,
   getPlaylists,
@@ -9,14 +9,14 @@ import {
 } from "../../services/api";
 import ItemCard from "../../components/search/ItemCard";
 import SearchFilter from "../../components/search/SearchFilter";
-import {useMusicPlayer} from "../../contexts/musicPlayerContext";
+import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 import SpotifyIcon from "../../assets/spotify/Icon.svg";
 import SoundcloudIcon from "../../assets/soundcloud/Icon.svg";
 
 const PlaylistDetailPage = () => {
-  const {id} = useParams<{id: string}>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const {playTrack, addToQueue} = useMusicPlayer();
+  const { playTrack, addToQueue } = useMusicPlayer();
 
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [spotifyTracks, setSpotifyTracks] = useState<PlaylistTrack[]>([]);
@@ -26,7 +26,7 @@ const PlaylistDetailPage = () => {
   const [activeProvider, setActiveProvider] = useState<"all" | "spotify" | "soundcloud">("all");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isRemoving, setIsRemoving] = useState<{[key: string]: boolean}>({});
+  const [isRemoving, setIsRemoving] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const fetchPlaylistData = async () => {
@@ -37,9 +37,7 @@ const PlaylistDetailPage = () => {
 
         // fetch playlist info
         const playlists = await getPlaylists();
-        console.log(id);
         const currentPlaylist = playlists.find((p) => p.playlistId === parseInt(id));
-        console.log(currentPlaylist)
         if (!currentPlaylist) {
           setError("Playlist not found");
           setLoading(false);
@@ -80,14 +78,14 @@ const PlaylistDetailPage = () => {
       setFilteredSpotifyTracks(newFilteredSpotifyTracks);
       setFilteredSoundcloudTracks(newFilteredSoundcloudTracks);
     },
-    [spotifyTracks, soundcloudTracks]
+    []
   );
 
   const handleRemoveTrack = async (trackId: string, provider: string) => {
     if (!id) return;
 
     try {
-      setIsRemoving({...isRemoving, [trackId]: true});
+      setIsRemoving({ ...isRemoving, [trackId]: true });
       await removeTrackFromPlaylist(parseInt(id), trackId, provider);
 
       // Update tracks list after removal based on provider
@@ -102,7 +100,7 @@ const PlaylistDetailPage = () => {
       console.error("Error removing track:", err);
       setError("Failed to remove track. Please try again.");
     } finally {
-      setIsRemoving({...isRemoving, [trackId]: false});
+      setIsRemoving({ ...isRemoving, [trackId]: false });
     }
   };
 
@@ -247,246 +245,60 @@ const PlaylistDetailPage = () => {
 
       {/* Provider tabs */}
       <div className="mb-6 border-b border-gray-700">
-        <div className="flex">
-          <button
-            onClick={() => setActiveProvider("all")}
-            className={`py-2 px-4 ${
-              activeProvider === "all"
-                ? "border-b-2 border-accentPrimary text-white"
-                : "text-gray-400"
-            }`}>
-            All Sources
-          </button>
-
-          {spotifyTrackCount > 0 && (
+        <div className="flex flex-wrap justify-between items-center">
+          <div className="flex">
             <button
-              onClick={() => setActiveProvider("spotify")}
-              className={`py-2 px-4 flex items-center gap-2 ${
-                activeProvider === "spotify"
+              onClick={() => setActiveProvider("all")}
+              className={`py-2 px-4 ${
+                activeProvider === "all"
                   ? "border-b-2 border-accentPrimary text-white"
                   : "text-gray-400"
               }`}>
-              <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
-              Spotify ({spotifyTrackCount})
+              All Sources
             </button>
-          )}
 
-          {soundcloudTrackCount > 0 && (
-            <button
-              onClick={() => setActiveProvider("soundcloud")}
-              className={`py-2 px-4 flex items-center gap-2 ${
-                activeProvider === "soundcloud"
-                  ? "border-b-2 border-accentPrimary text-white"
-                  : "text-gray-400"
-              }`}>
-              <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
-              SoundCloud ({soundcloudTrackCount})
-            </button>
-          )}
+            {spotifyTrackCount > 0 && (
+              <button
+                onClick={() => setActiveProvider("spotify")}
+                className={`py-2 px-4 flex items-center gap-2 ${
+                  activeProvider === "spotify"
+                    ? "border-b-2 border-accentPrimary text-white"
+                    : "text-gray-400"
+                }`}>
+                <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
+                Spotify ({spotifyTrackCount})
+              </button>
+            )}
 
-          {/* Spotify-specific filter */}
-          <div className="w-1/3">
+            {soundcloudTrackCount > 0 && (
+              <button
+                onClick={() => setActiveProvider("soundcloud")}
+                className={`py-2 px-4 flex items-center gap-2 ${
+                  activeProvider === "soundcloud"
+                    ? "border-b-2 border-accentPrimary text-white"
+                    : "text-gray-400"
+                }`}>
+                <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
+                SoundCloud ({soundcloudTrackCount})
+              </button>
+            )}
+          </div>
+
+          {/* Search filter component */}
+          <div className="mt-2 md:mt-0">
             <SearchFilter
               spotifyTracks={spotifyTracks}
               soundcloudTracks={soundcloudTracks}
               onFilterChange={handleFilterChange}
-              activeTab="spotify"
+              activeTab={activeProvider}
             />
           </div>
         </div>
       </div>
 
-      {/* Spotify section */}
-      {(activeProvider === "all" || activeProvider === "spotify") && spotifyTracks.length > 0 && (
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <img src={SpotifyIcon} alt="Spotify" className="w-5 h-5" />
-              <h2 className="text-xl font-medium">Spotify Tracks</h2>
-            </div>
-
-            {/* Spotify-specific play button */}
-            <button
-              onClick={() => handlePlayAll("spotify")}
-              disabled={filteredSpotifyTracks.length === 0}
-              className={`px-4 py-1.5 rounded-full text-sm flex items-center gap-1 ${
-                filteredSpotifyTracks.length > 0
-                  ? "bg-green-600 text-white hover:bg-green-700"
-                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
-              }`}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-              Play Spotify
-            </button>
-          </div>
-
-          {/* Spotify tracks list */}
-          <div className="space-y-2 mb-6">
-            {filteredSpotifyTracks.length > 0 ? (
-              filteredSpotifyTracks.map((track) => (
-                <div key={`spotify-${track.id}`} className="relative group">
-                  <ItemCard item={track} provider="spotify" />
-
-                  {/* Remove track button */}
-                  <button
-                    onClick={() => handleRemoveTrack(track.id, "spotify")}
-                    disabled={isRemoving[track.id]}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                    aria-label="Remove from playlist">
-                    {isRemoving[track.id] ? (
-                      <svg
-                        className="animate-spin h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              ))
-            ) : spotifyTracks.length > 0 ? (
-              <div className="text-center py-8 bg-gray-800 rounded-lg">
-                <p className="text-gray-400">
-                  No matching Spotify tracks. Try adjusting your filter.
-                </p>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      )}
-
-      {/* SoundCloud section */}
-      {(activeProvider === "all" || activeProvider === "soundcloud") &&
-        soundcloudTracks.length > 0 && (
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2">
-                <img src={SoundcloudIcon} alt="SoundCloud" className="w-5 h-5" />
-                <h2 className="text-xl font-medium">SoundCloud Tracks</h2>
-              </div>
-
-              {/* SoundCloud-specific play button */}
-              <button
-                onClick={() => handlePlayAll("soundcloud")}
-                disabled={filteredSoundcloudTracks.length === 0}
-                className={`px-4 py-1.5 rounded-full text-sm flex items-center gap-1 ${
-                  filteredSoundcloudTracks.length > 0
-                    ? "bg-orange-600 text-white hover:bg-orange-700"
-                    : "bg-gray-700 text-gray-400 cursor-not-allowed"
-                }`}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-                Play SoundCloud
-              </button>
-            </div>
-
-            {/* SoundCloud tracks list */}
-            <div className="space-y-2">
-              {filteredSoundcloudTracks.length > 0 ? (
-                filteredSoundcloudTracks.map((track) => (
-                  <div key={`soundcloud-${track.id}`} className="relative group">
-                    <ItemCard item={track} provider="soundcloud" />
-
-                    {/* Remove track button */}
-                    <button
-                      onClick={() => handleRemoveTrack(track.id, "soundcloud")}
-                      disabled={isRemoving[track.id]}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label="Remove from playlist">
-                      {isRemoving[track.id] ? (
-                        <svg
-                          className="animate-spin h-5 w-5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24">
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      )}
-                    </button>
-                  </div>
-                ))
-              ) : soundcloudTracks.length > 0 ? (
-                <div className="text-center py-8 bg-gray-800 rounded-lg">
-                  <p className="text-gray-400">
-                    No matching SoundCloud tracks. Try adjusting your filter.
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        )}
-
-      {/* Empty state - when no tracks at all or filtered to none */}
-      {(allTracks.length === 0 || (activeProvider === "all" && allFilteredTracks.length === 0)) && (
+      {/* Tracks content */}
+      {allTracks.length === 0 ? (
+        /* Empty playlist state */
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mb-4">
             <svg
@@ -506,34 +318,278 @@ const PlaylistDetailPage = () => {
           </div>
           <h2 className="text-xl font-bold mb-2">This playlist is empty</h2>
           <p className="text-gray-400 max-w-md mb-6">
-            {allTracks.length > 0
-              ? "No tracks match your search. Try adjusting your filter or switching to a different provider tab."
-              : 'Add tracks to this playlist by clicking the "Add to Playlist" button from any track.'}
+            Add tracks to this playlist by clicking the "Add to Playlist" button from any track.
           </p>
-          {allTracks.length > 0 && (
-            <button
-              onClick={() => {
-                setFilteredSpotifyTracks(spotifyTracks);
-                setFilteredSoundcloudTracks(soundcloudTracks);
-                setActiveProvider("all");
-              }}
-              className="px-6 py-2 bg-accentPrimary text-white rounded-full">
-              Clear All Filters
-            </button>
+        </div>
+      ) : activeProvider === "all" && allFilteredTracks.length > 0 ? (
+        /* Side-by-side layout when viewing all tracks */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Spotify column */}
+          {spotifyTrackCount > 0 && (
+            <div className="mb-6 lg:mb-0">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-medium flex items-center gap-2">
+                  <img src={SpotifyIcon} alt="Spotify" className="w-5 h-5" />
+                  Spotify Tracks
+                </h2>
+
+                {/* Spotify play button */}
+                <button
+                  onClick={() => handlePlayAll("spotify")}
+                  disabled={filteredSpotifyTracks.length === 0}
+                  className={`px-4 py-1.5 rounded-full text-sm flex items-center gap-1 ${
+                    filteredSpotifyTracks.length > 0
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-gray-700 text-gray-400 cursor-not-allowed"
+                  }`}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  Play Spotify
+                </button>
+              </div>
+
+              <div className="bg-gray-800 bg-opacity-30 rounded-lg overflow-hidden">
+                {filteredSpotifyTracks.length > 0 ? (
+                  <div className="space-y-2 p-4">
+                    {filteredSpotifyTracks.map((track) => (
+                      <div key={`spotify-${track.id}`} className="relative group">
+                        <ItemCard
+                          item={track}
+                          provider="spotify"
+                          isInPlaylist={true}
+                          onRemoveFromPlaylist={handleRemoveTrack}
+                        />
+
+                        {/* Remove track button - shown on hover */}
+                        <button
+                          onClick={() => handleRemoveTrack(track.id, "spotify")}
+                          disabled={isRemoving[track.id]}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-label="Remove from playlist">
+                          {isRemoving[track.id] ? (
+                            <svg
+                              className="animate-spin h-5 w-5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24">
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">
+                      No matching Spotify tracks. Try adjusting your filter.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* SoundCloud column */}
+          {soundcloudTrackCount > 0 && (
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-medium flex items-center gap-2">
+                  <img src={SoundcloudIcon} alt="SoundCloud" className="w-5 h-5" />
+                  SoundCloud Tracks
+                </h2>
+
+                {/* SoundCloud play button */}
+                <button
+                  onClick={() => handlePlayAll("soundcloud")}
+                  disabled={filteredSoundcloudTracks.length === 0}
+                  className={`px-4 py-1.5 rounded-full text-sm flex items-center gap-1 ${
+                    filteredSoundcloudTracks.length > 0
+                      ? "bg-orange-600 text-white hover:bg-orange-700"
+                      : "bg-gray-700 text-gray-400 cursor-not-allowed"
+                  }`}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  Play SoundCloud
+                </button>
+              </div>
+
+              <div className="bg-gray-800 bg-opacity-30 rounded-lg overflow-hidden">
+                {filteredSoundcloudTracks.length > 0 ? (
+                  <div className="space-y-2 p-4">
+                    {filteredSoundcloudTracks.map((track) => (
+                      <div key={`soundcloud-${track.id}`} className="relative group">
+                        <ItemCard
+                          item={track}
+                          provider="soundcloud"
+                          isInPlaylist={true}
+                          onRemoveFromPlaylist={handleRemoveTrack}
+                        />
+
+                        {/* Remove track button - shown on hover */}
+                        <button
+                          onClick={() => handleRemoveTrack(track.id, "soundcloud")}
+                          disabled={isRemoving[track.id]}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-label="Remove from playlist">
+                          {isRemoving[track.id] ? (
+                            <svg
+                              className="animate-spin h-5 w-5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24">
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">
+                      No matching SoundCloud tracks. Try adjusting your filter.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
-      )}
-
-      {/* Provider-specific empty states */}
-      {activeProvider === "spotify" && spotifyTrackCount === 0 && (
-        <div className="text-center py-16">
-          <p className="text-gray-400">No Spotify tracks in this playlist yet.</p>
+      ) : activeProvider === "spotify" ? (
+        /* Spotify-only view */
+        <div>
+          <div className="space-y-2">
+            {filteredSpotifyTracks.length > 0 ? (
+              filteredSpotifyTracks.map((track) => (
+                <div key={`spotify-${track.id}`} className="relative group">
+                  <ItemCard
+                    item={track}
+                    provider="spotify"
+                    isInPlaylist={true}
+                    onRemoveFromPlaylist={handleRemoveTrack}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-10 bg-gray-800 rounded-lg">
+                <p className="text-gray-400">
+                  {spotifyTrackCount > 0
+                    ? "No matching Spotify tracks. Try adjusting your filter."
+                    : "No Spotify tracks in this playlist yet."}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* SoundCloud-only view */
+        <div>
+          <div className="space-y-2">
+            {filteredSoundcloudTracks.length > 0 ? (
+              filteredSoundcloudTracks.map((track) => (
+                <div key={`soundcloud-${track.id}`} className="relative group">
+                  <ItemCard
+                    item={track}
+                    provider="soundcloud"
+                    isInPlaylist={true}
+                    onRemoveFromPlaylist={handleRemoveTrack}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-10 bg-gray-800 rounded-lg">
+                <p className="text-gray-400">
+                  {soundcloudTrackCount > 0
+                    ? "No matching SoundCloud tracks. Try adjusting your filter."
+                    : "No SoundCloud tracks in this playlist yet."}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {activeProvider === "soundcloud" && soundcloudTrackCount === 0 && (
-        <div className="text-center py-16">
-          <p className="text-gray-400">No SoundCloud tracks in this playlist yet.</p>
+      {/* "No matches" message when all tracks are filtered out */}
+      {allTracks.length > 0 && allFilteredTracks.length === 0 && (
+        <div className="text-center py-10 bg-gray-800 rounded-lg mt-6">
+          <p className="text-gray-400 mb-4">No tracks match your search criteria.</p>
+          <button
+            onClick={() => {
+              setFilteredSpotifyTracks(spotifyTracks);
+              setFilteredSoundcloudTracks(soundcloudTracks);
+            }}
+            className="px-4 py-2 bg-accentPrimary text-white rounded-lg">
+            Clear Filters
+          </button>
         </div>
       )}
     </div>

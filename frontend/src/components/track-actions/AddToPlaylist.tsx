@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { getPlaylists, addTrackToPlaylist } from '../../services/api';
-import { useAuth } from '../../contexts/authContext';
+import { useState, useEffect, useRef } from "react";
+import { getPlaylists, addTrackToPlaylist } from "../../services/api";
+import { useAuth } from "../../contexts/authContext";
 
 interface AddToPlaylistProps {
   track: Track;
@@ -31,24 +31,24 @@ const AddToPlaylist = ({ track }: AddToPlaylistProps) => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   // Reset success messages after a delay
   useEffect(() => {
-    const successKeys = Object.keys(success).filter(key => success[parseInt(key)]);
+    const successKeys = Object.keys(success).filter((key) => success[parseInt(key)]);
     if (successKeys.length > 0) {
       const timer = setTimeout(() => {
         const newSuccess = { ...success };
-        successKeys.forEach(key => {
+        successKeys.forEach((key) => {
           newSuccess[parseInt(key)] = false;
         });
         setSuccess(newSuccess);
       }, 3000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [success]);
@@ -60,8 +60,8 @@ const AddToPlaylist = ({ track }: AddToPlaylistProps) => {
       setPlaylists(fetchedPlaylists);
       setError(null);
     } catch (err) {
-      console.error('Error fetching playlists:', err);
-      setError('Failed to load playlists');
+      console.error("Error fetching playlists:", err);
+      setError("Failed to load playlists");
     } finally {
       setLoading(false);
     }
@@ -71,15 +71,15 @@ const AddToPlaylist = ({ track }: AddToPlaylistProps) => {
     try {
       setAddingToPlaylist({ ...addingToPlaylist, [playlistId]: true });
       await addTrackToPlaylist(playlistId, track.id, track.provider);
-      
+
       // Show success message
       setSuccess({ ...success, [playlistId]: true });
-      
+
       // Hide error if any
       setError(null);
     } catch (err) {
-      console.error('Error adding to playlist:', err);
-      setError('Failed to add to playlist');
+      console.error("Error adding to playlist:", err);
+      setError("Failed to add to playlist");
     } finally {
       setAddingToPlaylist({ ...addingToPlaylist, [playlistId]: false });
     }
@@ -96,27 +96,31 @@ const AddToPlaylist = ({ track }: AddToPlaylistProps) => {
         onClick={() => setShowDropdown(!showDropdown)}
         className="p-1 hover:bg-gray-700 rounded-full transition-colors"
         aria-label="Add to playlist"
-        title="Add to playlist"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        title="Add to playlist">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
       </button>
-      
+
       {showDropdown && (
         <div className="absolute right-0 bottom-full mb-2 w-64 bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10">
           <div className="px-4 py-3 border-b border-gray-700">
             <h3 className="font-medium">Add to playlist</h3>
           </div>
-          
+
           {/* Error message */}
-          {error && (
-            <div className="p-3 bg-red-900 bg-opacity-30 text-sm">
-              {error}
-            </div>
-          )}
-          
+          {error && <div className="p-3 bg-red-900 bg-opacity-30 text-sm">{error}</div>}
+
           {/* Playlists list */}
           <div className="max-h-48 overflow-y-auto">
             {loading ? (
@@ -129,26 +133,58 @@ const AddToPlaylist = ({ track }: AddToPlaylistProps) => {
                   <li key={playlist.playlistId} className="border-b border-gray-700 last:border-0">
                     <button
                       onClick={() => handleAddToPlaylist(playlist.playlistId)}
-                      disabled={addingToPlaylist[playlist.playlistId] || success[playlist.playlistId]}
-                      className="w-full px-4 py-2 flex items-center justify-between text-left hover:bg-gray-700 transition-colors"
-                    >
+                      disabled={
+                        addingToPlaylist[playlist.playlistId] || success[playlist.playlistId]
+                      }
+                      className="w-full px-4 py-2 flex items-center justify-between text-left hover:bg-gray-700 transition-colors">
                       <span className="truncate pr-2">{playlist.name}</span>
                       {addingToPlaylist[playlist.playlistId] ? (
                         <span className="flex-shrink-0">
-                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24">
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                         </span>
                       ) : success[playlist.playlistId] ? (
                         <span className="text-green-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round">
                             <polyline points="20 6 9 17 4 12"></polyline>
                           </svg>
                         </span>
                       ) : (
                         <span className="text-gray-400">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                           </svg>
@@ -164,15 +200,23 @@ const AddToPlaylist = ({ track }: AddToPlaylistProps) => {
               </div>
             )}
           </div>
-          
+
           {/* Create new playlist link */}
           <div className="px-4 py-2 border-t border-gray-700">
             <a
               href="/playlists"
               className="flex items-center gap-2 text-accentPrimary hover:underline text-sm"
-              onClick={() => setShowDropdown(false)}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              onClick={() => setShowDropdown(false)}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>

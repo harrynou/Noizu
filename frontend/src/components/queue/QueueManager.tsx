@@ -1,7 +1,20 @@
-import { useState, useRef, useEffect } from "react";
-import { closestCorners, DndContext, DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
+import { useState } from "react";
+import {
+  closestCenter, // More responsive than closestCorners
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  UniqueIdentifier,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 import { Column } from "./Column";
+import ItemCard from "./ItemCard";
 
 /**
  * QueueManager component displays the current playback queue with drag-and-drop functionality
@@ -11,22 +24,27 @@ const QueueManager = (): JSX.Element => {
   const { queue, currentTrackIndex, toggleQueueManager, reorderQueue, clearQueue } =
     useMusicPlayer();
 
-  const getTrackId = (id: UniqueIdentifier) =>
-    queue.findIndex((track) => {
-      track.id === id;
-    });
+  // FIXED: Configure sensors for more responsive drag experience
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3, // Reduced distance for more responsive dragging
+      },
+    })
+  );
 
-  // Handle track reordering after drag and drop
+  // FIXED: Handle drag end - now just cleanup since swapping happens in dragOver
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const startIndex = getTrackId(active.id);
-    const endIndex = getTrackId(over.id);
+    if (!over) return;
+
+    const startIndex = active.id as number;
+    const endIndex = over.id as number;
     reorderQueue(startIndex, endIndex);
   };
 
   return (
-    <div className="w-80 md:w-96 h-full bg-gray-800 border-l border-gray-700 flex flex-col overflow-hidden shadow-lg transform transition-transform duration-300 ease-in-out">
+    <div className="w-80 md:w-96 h-full bg-gray-800 border-l border-gray-700 flex flex-col overflow-hidden shadow-lg transform transition-transform ease-in-out">
       {/* Header */}
       <div className="p-4 border-b border-gray-700 flex items-center justify-between">
         <h2 className="font-bold text-lg text-white">Queue</h2>
@@ -34,14 +52,14 @@ const QueueManager = (): JSX.Element => {
           {queue.length > 0 && (
             <button
               onClick={clearQueue}
-              className="text-gray-400 hover:text-white text-sm p-2 transition-colors"
+              className="text-gray-400 hover:text-white text-sm p-2 transition-colors rounded-md hover:bg-gray-700"
               title="Clear queue">
               Clear
             </button>
           )}
           <button
             onClick={toggleQueueManager}
-            className="p-2 text-gray-400 hover:text-white transition-colors"
+            className="p-2 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-700"
             aria-label="Close queue"
             title="Close queue">
             <svg
@@ -86,15 +104,21 @@ const QueueManager = (): JSX.Element => {
             </p>
           </div>
         ) : (
-          <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-            <Column queue={queue}></Column>
-          </DndContext>
+          <div className="p-2">
+            <DndContext
+              sensors={sensors}
+              onDragEnd={handleDragEnd}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis]}>
+              <Column queue={queue} />
+            </DndContext>
+          </div>
         )}
       </div>
 
       {/* Footer with keyboard shortcuts */}
       <div className="p-3 border-t border-gray-700 text-xs text-gray-500">
-        <p className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4">
           <span className="flex items-center">
             <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-gray-300 mr-1">Ctrl + Q</kbd>
             Toggle Queue
@@ -103,7 +127,7 @@ const QueueManager = (): JSX.Element => {
             <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-gray-300 mr-1">Space</kbd>
             Play/Pause
           </span>
-        </p>
+        </div>
       </div>
     </div>
   );

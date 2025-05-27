@@ -1,12 +1,7 @@
-import { useState } from "react";
 import {
   closestCenter, // More responsive than closestCorners
   DndContext,
   DragEndEvent,
-  DragOverEvent,
-  DragOverlay,
-  DragStartEvent,
-  UniqueIdentifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -14,15 +9,13 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
 import { Column } from "./Column";
-import ItemCard from "./ItemCard";
 
 /**
  * QueueManager component displays the current playback queue with drag-and-drop functionality
  * and dropdown options for track actions like favoriting and adding to playlists.
  */
 const QueueManager = (): JSX.Element => {
-  const { queue, currentTrackIndex, toggleQueueManager, reorderQueue, clearQueue } =
-    useMusicPlayer();
+  const { queue, toggleQueueManager, reorderQueue, clearQueue } = useMusicPlayer();
 
   // FIXED: Configure sensors for more responsive drag experience
   const sensors = useSensors(

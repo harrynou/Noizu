@@ -15,16 +15,15 @@ import formatDuration from "../../utils/formatDuration";
 
 interface ItemCardProps {
   track: Track;
-  id: number; // This should be the index for drag and drop
+  id: number; // index for drag and drop
 }
 
 const ItemCard = ({ track, id }: ItemCardProps) => {
   const { removeFromQueue, selectTrackToPlay, currentTrackIndex } = useMusicPlayer();
 
-  // FIXED: Use the track index as the unique identifier for drag and drop
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({
-      id: id, // Use the index as the sortable ID
+      id: id, // index as the sortable ID
     });
 
   const style = {
@@ -92,7 +91,6 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
     setActiveDropdownId(null);
   };
 
-  // FIXED: Handle remove from queue using track ID instead of index
   const handleRemoveFromQueue = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent drag when clicking remove button
     removeFromQueue(track.id);
@@ -103,7 +101,7 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className={`flex items-center p-3 rounded-lg cursor-grab active:cursor-grabbing touch-manipulation transition-all duration-150 ${
+      className={`flex items-center py-2 px-1 rounded-lg cursor-grab active:cursor-grabbing touch-manipulation transition-all duration-150 ${
         currentTrackIndex === id
           ? "bg-gray-700 ring-1 ring-accentPrimary/30"
           : "bg-gray-800 hover:bg-gray-700"
@@ -112,32 +110,21 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
       }`}
       style={{
         ...style,
-        touchAction: "none", // Important for mobile drag and drop
+        touchAction: "none",
       }}>
-      {/* Drag handle icon - now just visual indicator */}
-      <div className="px-2 flex-shrink-0 text-gray-500 transition-colors">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round">
-          <circle cx="9" cy="12" r="1"></circle>
-          <circle cx="9" cy="5" r="1"></circle>
-          <circle cx="9" cy="19" r="1"></circle>
-          <circle cx="15" cy="12" r="1"></circle>
-          <circle cx="15" cy="5" r="1"></circle>
-          <circle cx="15" cy="19" r="1"></circle>
-        </svg>
+      {/* Drag handle icon */}
+      {/* Track source icon */}
+      <div className="flex items-center mx-1">
+        <img
+          src={track.provider === "spotify" ? SpotifyIcon : SoundCloudIcon}
+          alt={track.provider}
+          className="w-4 h-4"
+        />
       </div>
 
       {/* Track info - clickable area */}
       <div
-        className="flex items-center flex-1 ml-3 overflow-hidden"
+        className="flex items-center flex-1 ml-1 overflow-hidden"
         onClick={(e) => {
           // Prevent drag when clicking on track info
           e.stopPropagation();
@@ -174,17 +161,8 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
         </div>
       </div>
 
-      {/* Track source icon */}
-      <div className="flex items-center mx-3 opacity-60">
-        <img
-          src={track.provider === "spotify" ? SpotifyIcon : SoundCloudIcon}
-          alt={track.provider}
-          className="w-4 h-4"
-        />
-      </div>
-
       {/* Track duration */}
-      <div className="text-xs text-gray-400 w-12 text-right mr-3">
+      <div className="text-xs text-gray-400 w-12 text-right mr-1">
         {formatDuration(track.duration)}
       </div>
 
@@ -193,7 +171,7 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
         {/* More actions button */}
         <button
           onClick={(e) => {
-            e.stopPropagation(); // Prevent drag when clicking button
+            e.stopPropagation();
             toggleDropdown(`${track.id}-${track.provider}`);
           }}
           className="p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-600 cursor-pointer"
@@ -211,30 +189,6 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
             <circle cx="12" cy="12" r="1"></circle>
             <circle cx="12" cy="5" r="1"></circle>
             <circle cx="12" cy="19" r="1"></circle>
-          </svg>
-        </button>
-
-        {/* Remove from queue button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent drag when clicking button
-            handleRemoveFromQueue(e);
-          }}
-          className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-600 cursor-pointer"
-          aria-label="Remove from queue"
-          title="Remove from queue">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
 
@@ -260,7 +214,29 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
                     : "Add to favorites"}
                 </button>
               )}
-
+              {/* Remove from queue button */}
+              <button
+                onClick={(e) => {
+                  handleRemoveFromQueue(e);
+                }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
+                aria-label="Remove from queue"
+                title="Remove from queue">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Remove from queue
+              </button>
               {/* Add to playlist option */}
               {isAuthenticated && (
                 <div className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2">

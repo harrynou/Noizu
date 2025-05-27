@@ -3,6 +3,7 @@ import SearchBar from "../components/search/SearchBar";
 import { useSearchResult } from "../contexts/searchResultContext";
 import { useMusicPlayer } from "../contexts/musicPlayerContext";
 import { useAuth } from "../contexts/authContext";
+import { useInView } from "react-intersection-observer";
 
 // Logo imports
 import SpotifyIcon from "../assets/spotify/Icon.svg";

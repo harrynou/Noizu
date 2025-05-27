@@ -6,8 +6,6 @@ interface ColumnProps {
 }
 
 export const Column = ({ queue }: ColumnProps) => {
-  // FIXED: Create array of indices for sortable context
-  // This ensures each item has a unique, stable identifier
   const sortableIds = queue.map((_, index) => index);
 
   return (

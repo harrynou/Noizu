@@ -74,8 +74,8 @@ export const spotifySearchQuery = async (
       params: { q: query, limit, offset, type: "track", market: "US" },
     });
     const trackData = response.data.tracks.items;
-    const last = response.data.tracks.next ? false : true;
-    return { trackData, last };
+    const hasMore = response.data.tracks.next ? true : false;
+    return { trackData, hasMore };
   } catch (error) {
     throw error;
   }

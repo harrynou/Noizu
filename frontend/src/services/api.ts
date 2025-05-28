@@ -77,7 +77,7 @@ export const searchQuery = async (
   provider: string,
   limit: number,
   offset: number
-): Promise<any> => {
+): Promise<{queryData: Track[],hasMore: boolean}> => {
   try {
     const response = await axiosInstance.get(`/api/search/${query}/${provider}/${limit}/${offset}`);
     return response.data;

@@ -14,7 +14,15 @@ const SearchBar = ({ onSearch }: SearchBarProps): JSX.Element => {
   const [showRecent, setShowRecent] = useState<boolean>(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const { setTrackResults } = useSearchResult();
+  const {
+    setTrackResults,
+    setSpotifyHasMore,
+    setSoundcloudHasMore,
+    setSoundcloudOffset,
+    setSpotifyOffset,
+    setSearchString,
+    limit,
+  } = useSearchResult();
 
   // Load recent searches from localStorage on component mount
   useEffect(() => {
@@ -64,6 +72,7 @@ const SearchBar = ({ onSearch }: SearchBarProps): JSX.Element => {
 
   // Update debounced search when query changes
   useEffect(() => {
+    setSearchString(query);
     debouncedSearch(query);
     return () => {
       debouncedSearch.cancel();
@@ -85,13 +94,15 @@ const SearchBar = ({ onSearch }: SearchBarProps): JSX.Element => {
 
       // Call the API for both providers
       const [soundcloudResponse, spotifyResponse] = await Promise.allSettled([
-        searchQuery(searchTerm, "soundcloud", 20, 0),
-        searchQuery(searchTerm, "spotify", 20, 0),
+        searchQuery(searchTerm, "soundcloud", limit, 0),
+        searchQuery(searchTerm, "spotify", limit, 0),
       ]);
 
       // Process SoundCloud results
       if (soundcloudResponse.status === "fulfilled") {
         setTrackResults(soundcloudResponse.value.queryData, "soundcloud");
+        setSoundcloudHasMore(soundcloudResponse.value.hasMore);
+        setSoundcloudOffset(limit);
       } else {
         console.error("SoundCloud search error:", soundcloudResponse.reason);
         setTrackResults([], "soundcloud");
@@ -100,6 +111,8 @@ const SearchBar = ({ onSearch }: SearchBarProps): JSX.Element => {
       // Process Spotify results
       if (spotifyResponse.status === "fulfilled") {
         setTrackResults(spotifyResponse.value.queryData, "spotify");
+        setSpotifyHasMore(spotifyResponse.value.hasMore);
+        setSpotifyOffset(limit);
       } else {
         console.error("Spotify search error:", spotifyResponse.reason);
         setTrackResults([], "spotify");

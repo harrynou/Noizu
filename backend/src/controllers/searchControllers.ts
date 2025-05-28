@@ -27,9 +27,9 @@ export const searchQuery = async (req: Request, res: Response, next: NextFunctio
     } else if (provider === "soundcloud") {
       rawQueryData = await soundcloudQuery(query, limit, offset, accessToken);
     }
-    const { trackData, last } = rawQueryData;
+    const { trackData, hasMore } = rawQueryData;
     const queryData = await normalizeTrackData(provider, trackData, userId);
-    return res.status(200).json({ queryData, last });
+    return res.status(200).json({ queryData, hasMore });
   } catch (error) {
     next(error);
   }

@@ -107,8 +107,8 @@ export const soundcloudQuery = async (
       },
     });
     const trackData = response.data.collection;
-    const last = response.data.next_href && response.data.collection ? false : true;
-    return { trackData, last };
+    const hasMore = response.data.next_href && response.data.collection ? true : false;
+    return { trackData, hasMore };
   } catch (error) {
     throw error;
   }

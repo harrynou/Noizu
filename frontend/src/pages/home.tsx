@@ -11,12 +11,14 @@ import SoundcloudIcon from "../assets/soundcloud/Icon.svg";
 import ItemCard from "../components/search/ItemCard";
 
 const HomePage = (): JSX.Element => {
-  const { spotifyTracks, soundcloudTracks } = useSearchResult();
+  const { spotifyTracks, soundcloudTracks, loadMoreTracks } = useSearchResult();
   const { currentTrack, isPlaying, togglePlayPause } = useMusicPlayer();
   const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<"all" | "spotify" | "soundcloud">("all");
   const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
-
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
   // Set search performed flag based on tracks
   useEffect(() => {
     if (spotifyTracks.length > 0 || soundcloudTracks.length > 0) {

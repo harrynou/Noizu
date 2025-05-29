@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import SearchBar from "../components/search/SearchBar";
 import { useSearchResult } from "../contexts/searchResultContext";
-import { useMusicPlayer } from "../contexts/musicPlayerContext";
 import { useAuth } from "../contexts/authContext";
 import { useInView } from "react-intersection-observer";
 
@@ -12,13 +11,32 @@ import ItemCard from "../components/search/ItemCard";
 
 const HomePage = (): JSX.Element => {
   const { spotifyTracks, soundcloudTracks, loadMoreTracks } = useSearchResult();
-  const { currentTrack, isPlaying, togglePlayPause } = useMusicPlayer();
   const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<"all" | "spotify" | "soundcloud">("all");
   const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
-  const { ref, inView } = useInView({
+
+  // Spotify Intersection-Observer
+  const { ref: spotifyRef, inView: spotifyInView } = useInView({
     threshold: 0,
   });
+
+  // Soundcloud Intersection-Observer
+  const { ref: soundcloudRef, inView: soundcloudInView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (spotifyInView) {
+      loadMoreTracks("spotify");
+    }
+  }, [spotifyInView]);
+
+  useEffect(() => {
+    if (soundcloudInView) {
+      loadMoreTracks("soundcloud");
+    }
+  }, [soundcloudInView]);
+
   // Set search performed flag based on tracks
   useEffect(() => {
     if (spotifyTracks.length > 0 || soundcloudTracks.length > 0) {
@@ -56,10 +74,10 @@ const HomePage = (): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col p-4 md:p-6 flex-grow text-textPrimary">
+    <div className="flex flex-col p-2 md:p-3 flex-grow text-textPrimary">
       {/* Hero section with search bar */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Find Your Perfect Song</h1>
+      <div className="mb-4">
+        <h1 className="text-3xl font-bold mb-3 text-center">Find Your Perfect Song</h1>
         <SearchBar onSearch={() => setSearchPerformed(true)} />
       </div>
 
@@ -67,7 +85,7 @@ const HomePage = (): JSX.Element => {
       <div className="flex-1">
         {/* Tabs */}
         {(spotifyTracks.length > 0 || soundcloudTracks.length > 0) && (
-          <div className="mb-4 border-b border-gray-700">
+          <div className="mb-2 border-b border-gray-700">
             <div className="flex">
               <button
                 onClick={() => setActiveTab("all")}
@@ -117,8 +135,8 @@ const HomePage = (): JSX.Element => {
                         <img src={SpotifyIcon} alt="Spotify" className="w-5 h-5" />
                         Spotify Results
                       </h2>
-                      <div className="space-y-2 bg-gray-800 bg-opacity-30 p-4 rounded-lg">
-                        {spotifyTracks.slice(0, 5).map((track) => (
+                      <div className="space-y-2 bg-gray-800 bg-opacity-30 p-4 rounded-lg max-h-96 overflow-scroll">
+                        {spotifyTracks.map((track) => (
                           <ItemCard
                             key={track.id}
                             item={track}
@@ -126,13 +144,7 @@ const HomePage = (): JSX.Element => {
                             isCompact={false}
                           />
                         ))}
-                        {spotifyTracks.length > 5 && (
-                          <button
-                            onClick={() => setActiveTab("spotify")}
-                            className="text-accentPrimary hover:underline text-sm mt-2">
-                            Show all {spotifyTracks.length} Spotify results
-                          </button>
-                        )}
+                        <div ref={spotifyRef}></div>
                       </div>
                     </div>
                   )}
@@ -144,17 +156,11 @@ const HomePage = (): JSX.Element => {
                         <img src={SoundcloudIcon} alt="SoundCloud" className="w-5 h-5" />
                         SoundCloud Results
                       </h2>
-                      <div className="space-y-2 bg-gray-800 bg-opacity-30 p-4 rounded-lg">
-                        {soundcloudTracks.slice(0, 5).map((track) => (
+                      <div className="space-y-2 bg-gray-800 bg-opacity-30 p-4 rounded-lg max-h-96 overflow-scroll">
+                        {soundcloudTracks.map((track) => (
                           <ItemCard key={track.id} item={track} provider={track.provider} />
                         ))}
-                        {soundcloudTracks.length > 5 && (
-                          <button
-                            onClick={() => setActiveTab("soundcloud")}
-                            className="text-accentPrimary hover:underline text-sm mt-2">
-                            Show all {soundcloudTracks.length} SoundCloud results
-                          </button>
-                        )}
+                        <div ref={soundcloudRef}></div>
                       </div>
                     </div>
                   )}
@@ -180,44 +186,6 @@ const HomePage = (): JSX.Element => {
           )}
         </div>
       </div>
-
-      {currentTrack && (
-        <div className="fixed bottom-20 left-0 right-0 bg-gray-900 p-3 flex items-center justify-between md:hidden">
-          <div className="flex items-center gap-3">
-            <img
-              src={currentTrack.imageUrl || "/default-album-art.jpg"}
-              alt={currentTrack.title}
-              className="w-10 h-10 object-cover rounded"
-            />
-            <div className="truncate">
-              <p className="font-medium text-sm truncate">{currentTrack.title}</p>
-              <p className="text-xs text-gray-400 truncate">{currentTrack.artistInfo[0]?.name}</p>
-            </div>
-          </div>
-          <button onClick={togglePlayPause} className="bg-accentPrimary rounded-full p-2">
-            {isPlaying ? (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 4H6V20H10V4Z" fill="currentColor" />
-                <path d="M18 4H14V20H18V4Z" fill="currentColor" />
-              </svg>
-            ) : (
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 4L19 12L5 20V4Z" fill="currentColor" />
-              </svg>
-            )}
-          </button>
-        </div>
-      )}
     </div>
   );
 };

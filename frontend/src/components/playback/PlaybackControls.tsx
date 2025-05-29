@@ -119,7 +119,7 @@ const PlaybackControls = () => {
 
             {isPlaybackExpanded ? (
                 // Full player view
-                <div className="p-4 md:p-4 text-textPrimary">
+                <div className="p-2 md:p-2 text-textPrimary">
                     <div className="max-w-7xl mx-auto relative flex items-center">
                         {/* Left Side Track Info */}
                         <div className="w-1/4 hidden md:block overflow-hidden">

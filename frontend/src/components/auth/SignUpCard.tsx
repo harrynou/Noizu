@@ -1,11 +1,11 @@
-import React, {useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import SpotifyLogo from "../../assets/spotify/Icon.svg";
 import SoundCloudLogo from "../../assets/soundcloud/Icon.svg";
-import spotifyAuth from "../../services/spotifyAuth";
-import SoundCloudAuth from "../../services/soundcloudAuth";
-import {registerUser} from "../../services/api";
-import {useAuth} from "../../contexts/authContext";
+import {spotifyLoginAuth} from "../../services/spotifyAuth";
+import {soundcloudLoginAuth} from "../../services/soundcloudAuth";
+import { registerUser } from "../../services/api";
+import { useAuth } from "../../contexts/authContext";
 
 const SignUpCard = (): JSX.Element => {
   interface errors {
@@ -19,7 +19,7 @@ const SignUpCard = (): JSX.Element => {
   const [confirm, setConfirm] = useState<string>("");
   const [errors, setErrors] = useState<errors>({});
   const navigate = useNavigate();
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   {
     /* 
@@ -62,14 +62,13 @@ const SignUpCard = (): JSX.Element => {
       return;
     }
     try {
-      const {userInfo, userHasPassword} = await registerUser(email, password);
+      const { userInfo, userHasPassword } = await registerUser(email, password);
       login(userInfo, userHasPassword);
       navigate("/home");
     } catch (error: any) {
       if (error.error === "Email Already in Use.") {
         setErrors({
-          email:
-            "Email is already in use. If you already have an account, try logging in another way. in use.",
+          email: "Email is already in use. If you already have an account, try logging in another way. in use.",
         });
       } else {
         console.error("Error during registration:", error);
@@ -137,13 +136,13 @@ const SignUpCard = (): JSX.Element => {
         </div>
         <div className="flex justify-center items-center w-full gap-5">
           <button
-            onClick={spotifyAuth}
+            onClick={spotifyLoginAuth}
             className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
             <img src={SpotifyLogo} alt="Spotify Logo" className="w-6 h-6" />
             <span className="text-sm">Spotify</span>
           </button>
           <button
-            onClick={SoundCloudAuth}
+            onClick={soundcloudLoginAuth}
             className="flex justify-center items-center border py-2 w-2/5 shadow gap-2 hover:bg-gray-100">
             <img src={SoundCloudLogo} alt="SoundCloud Logo" className="w-6 h-6" />
             <span className="text-sm">SoundCloud</span>

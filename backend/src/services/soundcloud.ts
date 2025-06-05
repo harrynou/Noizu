@@ -11,7 +11,7 @@ export const AuthSoundcloudToken = async (
     params.append("grant_type", "authorization_code");
     params.append("client_id", process.env.SOUNDCLOUD_CLIENT_ID || "");
     params.append("client_secret", process.env.SOUNDCLOUD_CLIENT_SECRET || "");
-    params.append("redirect_uri", process.env.SOUNDCLOUD_REDIRECT_URI || "");
+    params.append("redirect_uri", process.env.SOUNDCLOUD_LOGIN_REDIRECT_URI || "");
     params.append("code_verifier", codeVerifier);
     params.append("code", code);
     const response = await axios.post("https://secure.soundcloud.com/oauth/token", params, {
@@ -27,10 +27,7 @@ export const AuthSoundcloudToken = async (
   }
 };
 
-export const refreshSoundcloudToken = async (
-  userId: number,
-  refresh_token: string
-): Promise<string> => {
+export const refreshSoundcloudToken = async (userId: number, refresh_token: string): Promise<string> => {
   try {
     const response = await axios.post(
       "https://secure.soundcloud.com/oauth/token",

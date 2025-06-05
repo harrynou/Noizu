@@ -17,7 +17,7 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// APIs dealing with authentification
+// APIs dealing with Authentication
 
 export const checkAuth = async (): Promise<any> => {
   try {
@@ -48,7 +48,7 @@ export const signInUser = async (email: string, password: string): Promise<any> 
 
 export const changePassword = async (password: string): Promise<any> => {
   try {
-    const response = await axiosInstance.post("/api/auth/changePassword", { password });
+    const response = await axiosInstance.post("/api/settings/changePassword", { password });
     return response.data;
   } catch (error) {
     throw error;
@@ -57,7 +57,7 @@ export const changePassword = async (password: string): Promise<any> => {
 
 export const setUpAccount = async (email: string, password: string): Promise<any> => {
   try {
-    const response = await axiosInstance.post("/api/auth/setupAccount", { email, password });
+    const response = await axiosInstance.post("/api/settings/setupAccount", { email, password });
     return response.data;
   } catch (error) {
     throw error;
@@ -77,7 +77,7 @@ export const searchQuery = async (
   provider: string,
   limit: number,
   offset: number
-): Promise<{queryData: Track[],hasMore: boolean}> => {
+): Promise<{ queryData: Track[]; hasMore: boolean }> => {
   try {
     const response = await axiosInstance.get(`/api/search/${query}/${provider}/${limit}/${offset}`);
     return response.data;
@@ -141,10 +141,7 @@ interface TransferPlaybackOptions {
   device_id: string;
 }
 
-export const transferSpotifyPlayback = async ({
-  token,
-  device_id,
-}: TransferPlaybackOptions): Promise<void> => {
+export const transferSpotifyPlayback = async ({ token, device_id }: TransferPlaybackOptions): Promise<void> => {
   const requestBody = { device_ids: [device_id], play: false };
   try {
     await axios.put("https://api.spotify.com/v1/me/player", requestBody, {
@@ -174,16 +171,12 @@ export const startSpotifyPlayback = async ({
 }: startPlaybackOptions): Promise<void> => {
   const requestBody = { uris, position_ms: position };
   try {
-    await axios.put(
-      `https://api.spotify.com/v1/me/player/play/?device_id=${device_id}`,
-      requestBody,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    await axios.put(`https://api.spotify.com/v1/me/player/play/?device_id=${device_id}`, requestBody, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error: any) {
     console.error("Error in starting playback:", error);
   }
@@ -268,11 +261,7 @@ export const deletePlaylist = async (playlistId: number): Promise<void> => {
 };
 
 // Add a track to a playlist
-export const addTrackToPlaylist = async (
-  playlistId: number,
-  trackId: string,
-  provider: string
-): Promise<void> => {
+export const addTrackToPlaylist = async (playlistId: number, trackId: string, provider: string): Promise<void> => {
   try {
     await axiosInstance.put("/api/playlists/track", {
       playlistId,
@@ -286,11 +275,7 @@ export const addTrackToPlaylist = async (
 };
 
 // Remove a track from a playlist
-export const removeTrackFromPlaylist = async (
-  playlistId: number,
-  trackId: string,
-  provider: string
-): Promise<void> => {
+export const removeTrackFromPlaylist = async (playlistId: number, trackId: string, provider: string): Promise<void> => {
   try {
     await axiosInstance.delete("/api/playlists/track", {
       data: {

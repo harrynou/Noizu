@@ -98,3 +98,9 @@ export class getPlaylistTracksDTO {
   @Type(() => Number)
   playlistId: number;
 }
+
+export class disconnectProviderDto {
+  @IsString()
+  @IsAlpha()
+  provider: string;
+}

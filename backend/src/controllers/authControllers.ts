@@ -94,10 +94,11 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
     if (typeof code !== "string" || typeof state !== "string") {
       return res.status(400).json({ error: "Invalid or missing parameters" });
     }
-    const { codeVerifier } = await getToken(`authState:${state}`);
-    if (!codeVerifier) {
+    const storedData = await getToken(`authState:${state}`);
+    if (!storedData) {
       return res.status(400).json({ error: "Invalid or expired state parameter" });
     }
+    const codeVerifier = storedData.codeVerifier || storedData; 
 
     const { access_token, refresh_token } = await AuthSoundcloudToken(code, codeVerifier);
     const userInfo = await getSoundcloudUserInfo(access_token);

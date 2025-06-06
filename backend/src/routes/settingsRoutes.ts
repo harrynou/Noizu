@@ -13,14 +13,16 @@ router.post(
   validateRequest(userCredentialsDto, "body"),
   settingsController.setupAccount
 );
+
 router.post(
   "/changePassword",
   authenticateJWT,
-  validateRequest(userPasswordChangeDto, "params"),
+  validateRequest(userPasswordChangeDto, "body"),
   settingsController.changePassword
 );
 
-router.get("/spotify", authenticateJWT, settingsController.connectSpotifyInit, (req, res, next) => {
+// Spotify connection with state management
+router.get("/connect/spotify", authenticateJWT, settingsController.connectSpotifyInit, (req, res, next) => {
   const state = (req as any).oauthState;
   passport.authenticate("spotify-settings", {
     session: false,
@@ -29,13 +31,21 @@ router.get("/spotify", authenticateJWT, settingsController.connectSpotifyInit, (
   })(req, res, next);
 });
 
+// SoundCloud connection
+router.get("/connect/soundcloud", authenticateJWT, settingsController.connectSoundcloud);
+
 router.get(
   "/spotify/callback",
-  passport.authenticate("spotify-settings", { session: false }),
+  passport.authenticate("spotify-settings", {
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_BASE_URL}/settings?error=spotify_callback_failed`,
+  }),
   settingsController.spotifyConnect
 );
 
-router.get("/soundcloud", authenticateJWT, settingsController.soundcloudSettingsRedirect);
 router.get("/soundcloud/callback", settingsController.soundcloudConnect);
+
+// Disconnect provider
+router.delete("/disconnect", authenticateJWT, settingsController.disconnectProvider);
 
 export default router;

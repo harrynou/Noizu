@@ -4,6 +4,8 @@ import { hashString } from "../utils/encryption";
 import { updateEmailandPassword, updatePassword, removeProvider, insertProvider } from "../models/settingsModels";
 import { soundcloudRedirectHelper } from "../utils/helper";
 import { handleOAuth } from "../models/authModels";
+import crypto from "crypto";
+import { getToken, setToken } from "../utils/redis";
 
 const cookieExpiration = parseInt(process.env.COOKIE_EXPIRATION_MS ?? "86400000");
 
@@ -52,15 +54,36 @@ export const disconnectProvider = async (req: Request, res: Response, next: Next
   }
 };
 
+export const connectSpotifyInit = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user as User;
+    const state = crypto.randomBytes(32).toString("hex");
+
+    // Store user ID in Redis with state as key for 10 minutes
+    await setToken(`oauth_state:${state}`, { userId: user.userId, provider: "spotify" }, 600);
+
+    // Pass state to next middleware (Passport)
+    (req as any).oauthState = state;
+    next(); // Continue to Passport authentication
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Callback after spotify auth in settings page
 export const spotifyConnect = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user: any = req.user;
-    const provider = user.provider;
-    const providerUserId = user.id;
-    const premium = user.product === "premium";
+    const spotifyUser: any = req.user;
+    const provider = spotifyUser.provider;
+    const providerUserId = spotifyUser.id;
+    const premium = spotifyUser.product === "premium";
     const { accessToken, refreshToken } = req.authInfo as any;
-    const token = await handleOAuth(provider, providerUserId, premium, refreshToken, accessToken);
+    const { state } = req.query;
+    if (!state) {
+      console.log("State does not exist");
+    }
+    const { userId } = await getToken(`oauth_state:${state}`);
+    const token = await handleOAuth(provider, providerUserId, premium, refreshToken, accessToken, userId);
     res.cookie("authToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -79,7 +102,9 @@ export const soundcloudConnect = async (req: Request, res: Response, next: NextF
 
 export const soundcloudSettingsRedirect = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const url = await soundcloudRedirectHelper(process.env.SOUNDCLOUD_SETTINGS_REDIRECT_URI);
+    const user = req.user as User;
+    const userId = user.userId;
+    const url = await soundcloudRedirectHelper(process.env.SOUNDCLOUD_SETTINGS_REDIRECT_URI, userId);
     res.redirect(url);
   } catch (error) {
     next(error);

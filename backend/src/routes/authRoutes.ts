@@ -11,12 +11,12 @@ router.post("/token", authenticateJWT, authController.token);
 router.post("/registerUser", validateRequest(userCredentialsDto, "body"), authController.registerUser);
 router.get(
   "/spotify",
-  passport.authenticate("spotify", {
+  passport.authenticate("spotify-login", {
     session: false,
     failureRedirect: `${process.env.FRONTEND_URL}/login`,
   })
 );
-router.get("/spotify/callback", passport.authenticate("spotify", { session: false }), authController.spotifyAuth);
+router.get("/spotify/callback", passport.authenticate("spotify-login", { session: false }), authController.spotifyAuth);
 router.get("/soundcloud", authController.soundcloudLoginRedirect);
 router.get("/soundcloud/callback", authController.soundcloudAuth);
 router.post("/signIn", validateRequest(userCredentialsDto, "body"), authController.signInUser);

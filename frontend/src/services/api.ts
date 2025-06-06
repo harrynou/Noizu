@@ -72,20 +72,6 @@ export const logoutUser = async (): Promise<void> => {
   }
 };
 
-export const searchQuery = async (
-  query: string,
-  provider: string,
-  limit: number,
-  offset: number
-): Promise<{ queryData: Track[]; hasMore: boolean }> => {
-  try {
-    const response = await axiosInstance.get(`/api/search/${query}/${provider}/${limit}/${offset}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
 export const getAccessToken = async (provider: string): Promise<string> => {
   try {
     const response = await axiosInstance.post("/api/auth/token", { provider: provider });
@@ -99,6 +85,22 @@ export const getAccessToken = async (provider: string): Promise<string> => {
 export const setUserVolume = async (newVolume: number): Promise<void> => {
   try {
     await axiosInstance.put("/api/playback/volume", { newVolume });
+  } catch (error) {
+    throw error;
+  }
+};
+
+// APIs
+
+export const searchQuery = async (
+  query: string,
+  provider: string,
+  limit: number,
+  offset: number
+): Promise<{ queryData: Track[]; hasMore: boolean }> => {
+  try {
+    const response = await axiosInstance.get(`/api/search/${query}/${provider}/${limit}/${offset}`);
+    return response.data;
   } catch (error) {
     throw error;
   }

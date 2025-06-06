@@ -12,12 +12,12 @@ export const grabTrackIds = (tracks: any[], provider?: string) => {
   }
 };
 // Creates url for soundcloud redirect for OAuth
-export const soundcloudRedirectHelper = async (callback: string | undefined) => {
+export const soundcloudRedirectHelper = async (callback: string | undefined, userId?: number) => {
   try {
     const state = crypto.randomBytes(32).toString("hex");
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
-    await setToken(`authState:${state}`, codeVerifier, 600);
+    await setToken(`authState:${state}`, { codeVerifier, userId }, 600);
     return `https://secure.soundcloud.com/authorize?client_id=${process.env.SOUNDCLOUD_CLIENT_ID}&redirect_uri=${callback}&response_type=code&code_challenge=${codeChallenge}&code_challenge_method=S256&state=${state}`;
   } catch (error) {
     throw error;

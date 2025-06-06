@@ -20,21 +20,22 @@ router.post(
   settingsController.changePassword
 );
 
-router.get(
-  "/spotify",
-  passport.authenticate("spotify", {
+router.get("/spotify", authenticateJWT, settingsController.connectSpotifyInit, (req, res, next) => {
+  const state = (req as any).oauthState;
+  passport.authenticate("spotify-settings", {
     session: false,
-    failureRedirect: `${process.env.FRONTEND_URL}/settings`,
-  })
-);
+    state: state,
+    failureRedirect: `${process.env.FRONTEND_BASE_URL}/settings?error=spotify_auth_failed`,
+  })(req, res, next);
+});
 
 router.get(
   "/spotify/callback",
-  passport.authenticate("spotify", { session: false }),
+  passport.authenticate("spotify-settings", { session: false }),
   settingsController.spotifyConnect
 );
 
-router.get("/soundcloud", settingsController.soundcloudSettingsRedirect);
+router.get("/soundcloud", authenticateJWT, settingsController.soundcloudSettingsRedirect);
 router.get("/soundcloud/callback", settingsController.soundcloudConnect);
 
 export default router;

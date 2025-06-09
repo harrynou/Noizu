@@ -71,7 +71,6 @@ export class favoriteTrackDto {
 // Playlist DTO's
 export class createPlaylistDTO {
   @IsString()
-  @IsAlphanumeric()
   name: string;
 }
 

@@ -7,8 +7,9 @@ export default {
       colors:{
         primary: '#121212',
         secondary: '#F8F9FA',
+        oxfordBlue: "#070C31",
         accentPrimary: '#61A0AF',
-        accentSecondary: '#9600CC',
+        accentSecondary: '#9600CC', // Used in subheaders on terms page
         textPrimary: '#FFFFFF',
         textSecondary: '#121212',
         blue: '#0ea5e9',

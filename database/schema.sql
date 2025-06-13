@@ -15,6 +15,7 @@ CREATE TABLE linked_accounts (
     premium BOOLEAN DEFAULT FALSE,
     provider VARCHAR(50) NOT NULL,
     provider_user_id VARCHAR(50) NOT NULL,
+    provider_username VARCHAR(50) NOT NULL,
     refresh_token TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),

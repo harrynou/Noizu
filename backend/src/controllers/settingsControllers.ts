@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { User } from "../utils/types";
 import { hashString } from "../utils/encryption";
-import { updateEmailandPassword, updatePassword, removeProvider } from "../models/settingsModels";
+import { updateEmailandPassword, updatePassword, removeProvider, retrieveConnections } from "../models/settingsModels";
 import { soundcloudRedirectHelperForSettings } from "../utils/helper";
 import { handleOAuth } from "../models/authModels";
 import { AuthSoundcloudToken, getSoundcloudUserInfo } from "../services/soundcloud";
@@ -73,10 +73,19 @@ export const spotifyConnect = async (req: Request, res: Response, next: NextFunc
     const userId = storedData.userId;
     const provider = "spotify";
     const providerUserId = spotifyUser.id;
+    const providerUsername = spotifyUser.username;
     const premium = spotifyUser.product === "premium";
 
     // Connect the provider to the existing user account
-    const result = await handleOAuth(provider, providerUserId, premium, refreshToken, accessToken, userId);
+    const result = await handleOAuth(
+      provider,
+      providerUserId,
+      providerUsername,
+      premium,
+      refreshToken,
+      accessToken,
+      userId
+    );
 
     // Clean up state from Redis
     await setToken(`oauth_state:${state}`, null, 1);
@@ -136,10 +145,19 @@ export const soundcloudConnect = async (req: Request, res: Response, next: NextF
     // Get user info to extract SoundCloud user ID
     const userInfo = await getSoundcloudUserInfo(access_token);
     const providerUserId = userInfo.urn.split(":")[2];
+    const providerUsername = userInfo.username;
     const premium = false;
 
     // Connect the provider to the existing user account
-    const result = await handleOAuth("soundcloud", providerUserId, premium, refresh_token, access_token, userId);
+    const result = await handleOAuth(
+      "soundcloud",
+      providerUserId,
+      providerUsername,
+      premium,
+      refresh_token,
+      access_token,
+      userId
+    );
 
     // Clean up state from Redis
     await setToken(`oauth_state:${state}`, null, 1);
@@ -163,6 +181,17 @@ export const disconnectProvider = async (req: Request, res: Response, next: Next
     const { provider } = req.body;
     await removeProvider(provider, userId);
     return res.status(200).json({ message: "Provider disconnected successfully." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getConnections = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user as User;
+    const userId = user.userId;
+    const connections = await retrieveConnections(userId);
+    res.status(200).json(connections);
   } catch (error) {
     next(error);
   }

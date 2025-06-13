@@ -291,3 +291,119 @@ export const removeTrackFromPlaylist = async (playlistId: number, trackId: strin
     throw error;
   }
 };
+
+// Types for user profile and connections
+export interface UserProfile {
+  email: string;
+  createdAt: string;
+  lastLogin: string;
+  passwordLastChanged: string;
+}
+
+export interface UserConnections {
+  spotify?: {
+    connected: boolean;
+    displayName: string;
+    premiumAccount: boolean;
+    lastConnected: string;
+  };
+  soundcloud?: {
+    connected: boolean;
+    displayName: string;
+    premium: number;
+    lastConnected: string;
+  };
+}
+
+// User Profile APIs
+export const getUserProfile = async (): Promise<UserProfile> => {
+  try {
+    const response = await axiosInstance.get("/api/user/profile");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (updates: {
+  email?: string;
+  currentPassword?: string;
+  newPassword?: string;
+}): Promise<void> => {
+  try {
+    await axiosInstance.put("/api/user/profile", updates);
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    throw error;
+  }
+};
+
+// Connections APIs
+export const getConnections = async (): Promise<UserConnections> => {
+  try {
+    const response = await axiosInstance.get("/api/settings/connections");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching connections:", error);
+    throw error;
+  }
+};
+
+export const disconnectProvider = async (provider: "spotify" | "soundcloud"): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/api/user/connections/${provider}`);
+  } catch (error) {
+    console.error(`Error disconnecting ${provider}:`, error);
+    throw error;
+  }
+};
+
+// Account management APIs
+export const deleteAccount = async (password: string): Promise<void> => {
+  try {
+    await axiosInstance.delete("/api/user/account", {
+      data: { password },
+    });
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    throw error;
+  }
+};
+
+// Session management APIs
+export const getSessions = async (): Promise<
+  Array<{
+    id: string;
+    device: string;
+    location: string;
+    lastActive: string;
+    current: boolean;
+  }>
+> => {
+  try {
+    const response = await axiosInstance.get("/api/user/sessions");
+    return response.data.sessions;
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
+    throw error;
+  }
+};
+
+export const revokeSession = async (sessionId: string): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/api/user/sessions/${sessionId}`);
+  } catch (error) {
+    console.error("Error revoking session:", error);
+    throw error;
+  }
+};
+
+export const revokeAllSessions = async (): Promise<void> => {
+  try {
+    await axiosInstance.delete("/api/user/sessions/all");
+  } catch (error) {
+    console.error("Error revoking all sessions:", error);
+    throw error;
+  }
+};

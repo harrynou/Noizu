@@ -1,6 +1,13 @@
 import pool from "../config/db";
 import { NotFoundError } from "../utils/errors";
 
+interface connectionType {
+  connected: boolean;
+  displayName: string;
+  premiumAccount: boolean;
+  lastConnected: string;
+}
+
 export const updateEmailandPassword = async (userId: number, email: string, hashed_password: string): Promise<void> => {
   try {
     await pool.query("UPDATE users SET email = $1, hashed_password = $2 WHERE user_id = $3", [
@@ -28,12 +35,34 @@ export const updatePassword = async (userId: number, hashed_password: string): P
   }
 };
 
+export const retrieveConnections = async (userId: number): Promise<Record<string, connectionType>> => {
+  try {
+    const response = await pool.query(
+      "SELECT provider, provider_username, premium, created_at FROM linked_accounts WHERE user_id = $1;",
+      [userId]
+    );
+    const connections: Record<string, connectionType> = {};
+    response.rows.forEach((connection) => {
+      connections[connection.provider] = {
+        connected: true,
+        displayName: connection.provider_username,
+        premiumAccount: connection.premium,
+        lastConnected: connection.created_at,
+      };
+    });
+    return connections;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const insertProvider = async (
   user_id: number,
   provider: string,
   providerUserId: string,
   refresh_token: string,
-  premium: boolean
+  premium: boolean,
+  providerUsername: string
 ): Promise<void> => {
   try {
     let provider_column: string;
@@ -45,8 +74,8 @@ export const insertProvider = async (
       throw new Error(`Unsupported provider: ${provider}`);
     }
     const results = await pool.query(
-      "INSERT INTO linked_accounts (user_id,provider,provider_user_id,refresh_token, premium) VALUES ($1,$2,$3,$4,$5) RETURNING account_id",
-      [user_id, provider, providerUserId, refresh_token, premium]
+      "INSERT INTO linked_accounts (user_id,provider,provider_user_id, provider_username, refresh_token, premium) VALUES ($1,$2,$3,$4,$5,$6) RETURNING account_id",
+      [user_id, provider, providerUserId, providerUsername, refresh_token, premium]
     );
     const provider_account_id = results.rows[0].account_id;
     await pool.query(`UPDATE users SET ${provider_column} = $1 WHERE user_id = $2`, [provider_account_id, user_id]);

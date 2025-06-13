@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { insertUser, getUserInfo, hasSpotifyPremium, handleOAuth } from "../models/authModels";
+import { insertUser, retrieveUserInfo, hasSpotifyPremium, handleOAuth } from "../models/authModels";
 import { hashString, compareHash, generateCodeVerifier, generateCodeChallenge } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import { getToken } from "../utils/redis";
@@ -13,7 +13,7 @@ const cookieExpiration = parseInt(process.env.COOKIE_EXPIRATION_MS ?? "86400000"
 export const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user as User;
-    const userInfo = await getUserInfo(user.userId);
+    const userInfo = await retrieveUserInfo(user.userId);
     const userHasPassword = userInfo.hashed_password !== null;
     const userHasSpotifyPremium = await hasSpotifyPremium(user.userId); // TODO: Test this using non-premium account
     return res.status(200).json({
@@ -65,8 +65,9 @@ export const spotifyAuth = async (req: Request, res: Response, next: NextFunctio
     const provider = user.provider;
     const providerUserId = user.id;
     const premium = user.product === "premium";
+    const providerUsername = user.username;
     const { accessToken, refreshToken } = req.authInfo as any;
-    const token = await handleOAuth(provider, providerUserId, premium, refreshToken, accessToken);
+    const token = await handleOAuth(provider, providerUserId, providerUsername, premium, refreshToken, accessToken);
     res.cookie("authToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -98,14 +99,15 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
     if (!storedData) {
       return res.status(400).json({ error: "Invalid or expired state parameter" });
     }
-    const codeVerifier = storedData.codeVerifier || storedData; 
+    const codeVerifier = storedData.codeVerifier || storedData;
 
     const { access_token, refresh_token } = await AuthSoundcloudToken(code, codeVerifier);
     const userInfo = await getSoundcloudUserInfo(access_token);
     const provider = "soundcloud";
     const providerUserId = userInfo.urn.split(":")[2];
+    const providerUsername = userInfo.username;
     const premium = false;
-    const token = await handleOAuth(provider, providerUserId, premium, refresh_token, access_token);
+    const token = await handleOAuth(provider, providerUserId, providerUsername, premium, refresh_token, access_token);
     res.cookie("authToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -120,7 +122,7 @@ export const soundcloudAuth = async (req: Request, res: Response, next: NextFunc
 export const signInUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
-    const userInfo = await getUserInfo(email);
+    const userInfo = await retrieveUserInfo(email);
     if (!userInfo || !userInfo.hashed_password) {
       return res.status(401).json({
         error: "Email does not exist or account may not be properly setup with Spotify/SoundCloud account.",

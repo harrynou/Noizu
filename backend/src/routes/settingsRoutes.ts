@@ -48,4 +48,6 @@ router.get("/soundcloud/callback", settingsController.soundcloudConnect);
 // Disconnect provider
 router.delete("/disconnect", authenticateJWT, settingsController.disconnectProvider);
 
+router.get("/connections", authenticateJWT, settingsController.getConnections);
+
 export default router;

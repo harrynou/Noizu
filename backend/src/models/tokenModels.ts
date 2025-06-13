@@ -5,7 +5,12 @@ import { refreshSoundcloudClientCredentials, refreshSoundcloudToken } from "../s
 
 // Functions to set, get, and remove User Access Tokens from redis
 
-export const setAccessToken = async (userId: number, provider: string, accessToken: string, ttl: number): Promise<void> => {
+export const setAccessToken = async (
+  userId: number,
+  provider: string,
+  accessToken: string,
+  ttl: number
+): Promise<void> => {
   const key = `${userId}:${provider}`;
   await setToken(key, accessToken, ttl);
 };
@@ -47,10 +52,17 @@ export const delClientCredentials = async (provider: string): Promise<void> => {
 
 // Retrieves refresh token from db
 
-export const getRefreshToken = async (userId: number, provider: string): Promise<string> => {
+export const getRefreshToken = async (userId: number, provider: string): Promise<string | null> => {
   try {
-    const response = await pool.query("SELECT refresh_token FROM linked_accounts WHERE user_id = $1 AND provider = $2", [userId, provider]);
-    return response.rows[0].refresh_token;
+    const response = await pool.query(
+      "SELECT refresh_token FROM linked_accounts WHERE user_id = $1 AND provider = $2",
+      [userId, provider]
+    );
+    if (response.rows.length > 0) {
+      return response.rows[0].refresh_token;
+    } else {
+      return null;
+    }
   } catch (error) {
     throw error;
   }
@@ -58,9 +70,10 @@ export const getRefreshToken = async (userId: number, provider: string): Promise
 
 // Gets a new user access token
 
-export const getNewAccessToken = async (userId: number, provider: string): Promise<string> => {
+export const getNewAccessToken = async (userId: number, provider: string): Promise<string | null> => {
   try {
     const refresh_token = await getRefreshToken(userId, provider);
+    if (!refresh_token) return null;
     if (provider === "spotify") {
       return await refreshSpotifyToken(userId, refresh_token);
     } else if (provider === "soundcloud") {

@@ -46,13 +46,14 @@ export const isProviderConnected = async (
 export const registerByProvider = async (
   provider: string,
   providerUserId: string,
+  providerUsername: string,
   refresh_token: string,
   access_token: string,
   premium: boolean
 ): Promise<number> => {
   try {
     const user_id = await insertUser();
-    await insertProvider(user_id, provider, providerUserId, refresh_token, premium);
+    await insertProvider(user_id, provider, providerUserId, refresh_token, premium, providerUsername);
     await setAccessToken(user_id, provider, access_token, 3600);
     return user_id;
   } catch (error) {
@@ -60,7 +61,7 @@ export const registerByProvider = async (
   }
 };
 
-export const getUserInfo = async (userKey: string | number): Promise<any | null> => {
+export const retrieveUserInfo = async (userKey: string | number): Promise<any | null> => {
   // Password returned is hashed
   try {
     let column: string;
@@ -102,6 +103,7 @@ export const hasSpotifyPremium = async (userId: number): Promise<boolean> => {
 export const handleOAuth = async (
   provider: string,
   providerUserId: string,
+  providerUsername: string,
   premium: boolean,
   refreshToken: string,
   accessToken: string,
@@ -112,7 +114,7 @@ export const handleOAuth = async (
     // Settings Auth Logic
     if (userId === null) {
       // If provider is not connected, connect to app acct
-      await insertProvider(loggedInUserId, provider, providerUserId, refreshToken, premium);
+      await insertProvider(loggedInUserId, provider, providerUserId, refreshToken, premium, providerUsername);
       return "True";
     } else {
       // Else when account is provider is already linked, return response back to frontend
@@ -122,7 +124,7 @@ export const handleOAuth = async (
     // Login Auth Logic
     if (userId === null) {
       // Create an app acct if app acct does not exist
-      userId = await registerByProvider(provider, providerUserId, refreshToken, accessToken, premium);
+      userId = await registerByProvider(provider, providerUserId, providerUsername, refreshToken, accessToken, premium);
     }
   }
   const token = generateToken({ userId });

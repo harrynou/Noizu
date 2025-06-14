@@ -1,16 +1,16 @@
-export type Providers = 'spotify' | 'soundcloud'
+export type Providers = "spotify" | "soundcloud";
 
 export interface User {
-    userId: number
+  userId: number;
 }
 
 export interface FavoriteDataType {
-    trackId: string;
-    favoritedAt: string; 
+  trackId: string;
+  favoritedAt: string;
 }
 
 export interface SearchItemType {
-    id: string;
-    name: string;
-    imageUrl: string | null;  
+  id: string;
+  name: string;
+  imageUrl: string | null;
 }

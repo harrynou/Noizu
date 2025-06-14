@@ -5,10 +5,6 @@ import { searchQueryDto } from "../dtos/dtos";
 import { authenticateJWT } from "../middleware/jwtAutenticate";
 const router = Router();
 
-router.get(
-  "/:query/:provider/:limit/:offset",
-  validateRequest(searchQueryDto, "params"),
-  searchController.searchQuery
-);
+router.get("/:query/:provider/:limit/:offset", validateRequest(searchQueryDto, "params"), searchController.searchQuery);
 
 export default router;

@@ -30,9 +30,7 @@ export const createPlaylist = async (req: Request, res: Response, next: NextFunc
       }
     }
     const playlistId = await insertPlaylist(userId, name, imageUrl);
-    return res
-      .status(201)
-      .json({ playlistId, imageUrl, message: "Playlist successfully created." });
+    return res.status(201).json({ playlistId, imageUrl, message: "Playlist successfully created." });
   } catch (error) {
     next(error);
   }
@@ -114,12 +112,10 @@ export const getPlaylistTracks = async (req: Request, res: Response, next: NextF
       soundcloudPlaylistTracks = await normalizeTrackData("soundcloud", trackData, userId);
     }
 
-    return res
-      .status(200)
-      .json({
-        playlistTracks: { spotifyPlaylistTracks, soundcloudPlaylistTracks },
-        message: "Playlist tracks successfully retrieved.",
-      });
+    return res.status(200).json({
+      playlistTracks: { spotifyPlaylistTracks, soundcloudPlaylistTracks },
+      message: "Playlist tracks successfully retrieved.",
+    });
   } catch (error) {
     next(error);
   }

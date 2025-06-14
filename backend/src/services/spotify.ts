@@ -3,10 +3,7 @@ import qs from "qs";
 import { setAccessToken, setClientCredenitals } from "../models/tokenModels";
 import { verifyToken } from "../utils/jwt";
 
-export const refreshSpotifyToken = async (
-  userId: number,
-  refresh_token: string
-): Promise<string> => {
+export const refreshSpotifyToken = async (userId: number, refresh_token: string): Promise<string> => {
   try {
     const response = await axios.post(
       "https://accounts.spotify.com/api/token",
@@ -52,10 +49,7 @@ export const refreshSpotifyClientCredentials = async (): Promise<string> => {
     await setClientCredenitals("spotify", access_token, expires_in);
     return access_token;
   } catch (error: any) {
-    console.error(
-      "Error refreshing Spotify client credentials:",
-      error.response?.data || error.message
-    );
+    console.error("Error refreshing Spotify client credentials:", error.response?.data || error.message);
     throw error;
   }
 };

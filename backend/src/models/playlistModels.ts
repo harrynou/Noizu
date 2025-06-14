@@ -22,7 +22,10 @@ export const insertPlaylist = async (userId: number, name: string, imageUrl: str
 // Deletes Playlist, returns success boolean
 export const deletePlaylist = async (userId: number, playlistId: number): Promise<boolean> => {
   try {
-    const result = await pool.query("DELETE FROM playlists WHERE user_id = $1 AND playlist_id = $2", [userId, playlistId]);
+    const result = await pool.query("DELETE FROM playlists WHERE user_id = $1 AND playlist_id = $2", [
+      userId,
+      playlistId,
+    ]);
     return result.rowCount !== null && result.rowCount > 0;
   } catch (error) {
     throw error;
@@ -78,7 +81,9 @@ export const deletePlaylistTrack = async (userId: number, playlistId: number, tr
 // Retrieves all tracks within a playlist, returns array of track from most recently added
 export const retrievePlaylistTracks = async (playlistId: number) => {
   try {
-    const results = await pool.query("SELECT * FROM playlist_tracks WHERE playlist_id = $1 ORDER BY added_at DESC", [playlistId]);
+    const results = await pool.query("SELECT * FROM playlist_tracks WHERE playlist_id = $1 ORDER BY added_at DESC", [
+      playlistId,
+    ]);
     return results.rows;
   } catch (error) {
     throw error;

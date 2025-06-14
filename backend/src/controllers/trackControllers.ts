@@ -40,7 +40,7 @@ export const getFavorites = async (req: Request, res: Response, next: NextFuncti
     let trackIds = FavoriteData.map((item) => item.trackId);
     let accessToken = await getAccessToken(userId, "spotify");
     let spotifyFavoriteTracks = null;
-    if (accessToken){
+    if (accessToken) {
       let tracksData = (await getSpotifyTracks(trackIds, accessToken)).tracks;
       spotifyFavoriteTracks = await normalizeTrackData("spotify", tracksData, userId);
     }
@@ -50,7 +50,7 @@ export const getFavorites = async (req: Request, res: Response, next: NextFuncti
     trackIds = FavoriteData.map((item) => item.trackId);
     let tracksData = await getSoundcloudTracks(trackIds);
     let soundcloudFavoriteTracks = await normalizeTrackData("soundcloud", tracksData, userId);
-    res.status(200).json({ spotifyFavoriteTracks, soundcloudFavoriteTracks});
+    res.status(200).json({ spotifyFavoriteTracks, soundcloudFavoriteTracks });
   } catch (error) {
     next(error);
   }

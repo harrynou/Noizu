@@ -296,8 +296,8 @@ export const removeTrackFromPlaylist = async (playlistId: number, trackId: strin
 export interface UserProfile {
   email: string;
   createdAt: string;
-  lastLogin: string;
-  passwordLastChanged: string;
+  lastUpdatedPassword: Date;
+  lastUpdated: Date;
 }
 
 export interface UserConnections {
@@ -305,20 +305,21 @@ export interface UserConnections {
     connected: boolean;
     displayName: string;
     premiumAccount: boolean;
-    lastConnected: string;
+    lastConnected: Date;
   };
   soundcloud?: {
     connected: boolean;
     displayName: string;
     premium: number;
-    lastConnected: string;
+    lastConnected: Date;
   };
 }
 
 // User Profile APIs
 export const getUserProfile = async (): Promise<UserProfile> => {
   try {
-    const response = await axiosInstance.get("/api/user/profile");
+    const response = await axiosInstance.get("/api/settings/profile");
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -352,7 +353,7 @@ export const getConnections = async (): Promise<UserConnections> => {
 
 export const disconnectProvider = async (provider: "spotify" | "soundcloud"): Promise<void> => {
   try {
-    await axiosInstance.delete(`/api/user/connections/${provider}`);
+    await axiosInstance.delete(`/api/settings/disconnect/${provider}`);
   } catch (error) {
     console.error(`Error disconnecting ${provider}:`, error);
     throw error;
@@ -367,43 +368,6 @@ export const deleteAccount = async (password: string): Promise<void> => {
     });
   } catch (error) {
     console.error("Error deleting account:", error);
-    throw error;
-  }
-};
-
-// Session management APIs
-export const getSessions = async (): Promise<
-  Array<{
-    id: string;
-    device: string;
-    location: string;
-    lastActive: string;
-    current: boolean;
-  }>
-> => {
-  try {
-    const response = await axiosInstance.get("/api/user/sessions");
-    return response.data.sessions;
-  } catch (error) {
-    console.error("Error fetching sessions:", error);
-    throw error;
-  }
-};
-
-export const revokeSession = async (sessionId: string): Promise<void> => {
-  try {
-    await axiosInstance.delete(`/api/user/sessions/${sessionId}`);
-  } catch (error) {
-    console.error("Error revoking session:", error);
-    throw error;
-  }
-};
-
-export const revokeAllSessions = async (): Promise<void> => {
-  try {
-    await axiosInstance.delete("/api/user/sessions/all");
-  } catch (error) {
-    console.error("Error revoking all sessions:", error);
     throw error;
   }
 };

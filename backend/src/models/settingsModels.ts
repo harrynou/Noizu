@@ -1,11 +1,18 @@
 import pool from "../config/db";
 import { NotFoundError } from "../utils/errors";
 
-interface connectionType {
+export interface UserProfile {
+  email: string;
+  createdAt: string;
+  lastUpdatedPassword: Date;
+  lastUpdated: Date;
+}
+
+interface Connection {
   connected: boolean;
   displayName: string;
   premiumAccount: boolean;
-  lastConnected: string;
+  lastConnected: Date;
 }
 
 export const updateEmailandPassword = async (userId: number, email: string, hashed_password: string): Promise<void> => {
@@ -35,13 +42,35 @@ export const updatePassword = async (userId: number, hashed_password: string): P
   }
 };
 
-export const retrieveConnections = async (userId: number): Promise<Record<string, connectionType>> => {
+export const retrieveProfile = async (userId: number): Promise<UserProfile> => {
+  try {
+    const response = await pool.query(
+      "SELECT email, created_at, password_updated_at, updated_at FROM users WHERE user_id = $1",
+      [userId]
+    );
+    if (response.rows.length === 0) {
+      throw NotFoundError;
+    }
+    const user = response.rows[0];
+    const profile: UserProfile = {
+      email: user.email,
+      createdAt: user.created_at,
+      lastUpdatedPassword: user.password_updated_at,
+      lastUpdated: user.updated_at,
+    };
+    return profile;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const retrieveConnections = async (userId: number): Promise<Record<string, Connection>> => {
   try {
     const response = await pool.query(
       "SELECT provider, provider_username, premium, created_at FROM linked_accounts WHERE user_id = $1;",
       [userId]
     );
-    const connections: Record<string, connectionType> = {};
+    const connections: Record<string, Connection> = {};
     response.rows.forEach((connection) => {
       connections[connection.provider] = {
         connected: true,

@@ -62,7 +62,6 @@ export const registerByProvider = async (
 };
 
 export const retrieveUserInfo = async (userKey: string | number): Promise<any | null> => {
-  // Password returned is hashed
   try {
     let column: string;
     // Search by email or ID key
@@ -74,7 +73,7 @@ export const retrieveUserInfo = async (userKey: string | number): Promise<any | 
     const results = await pool.query(`SELECT user_id, email, hashed_password, volume FROM users WHERE ${column} = $1`, [
       userKey,
     ]);
-    if (results && results.rowCount && results.rowCount > 0) {
+    if (results.rowCount && results.rowCount > 0) {
       return results.rows[0]; // object with userInfo
     }
     return null;

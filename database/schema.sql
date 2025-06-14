@@ -6,6 +6,7 @@ CREATE TABLE users (
     soundcloud_account_id INTEGER DEFAULT NULL,
     volume FLOAT DEFAULT 0.5,
     created_at TIMESTAMP DEFAULT NOW(),
+    password_updated_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -64,20 +65,56 @@ ALTER TABLE users
     REFERENCES linked_accounts(account_id)
     ON DELETE SET NULL;
 
-CREATE OR REPLACE FUNCTION update_modified_column()
+CREATE OR REPLACE FUNCTION user_modified()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = NOW();
+    IF (
+        NEW IS DISTINCT FROM OLD 
+        AND (
+            NEW.volume IS NOT DISTINCT FROM OLD.volume
+        )
+    ) THEN
+        NEW.updated_at = NOW();
+    END IF;
     RETURN NEW;
 END;
 $$ language plpgsql;
 
+CREATE OR REPLACE FUNCTION linked_accounts_modified()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (
+        NEW IS DISTINCT FROM OLD
+    ) THEN 
+        NEW.updated_at = NOW();
+    END IF;
+    RETURN NEW;
+
+END;
+$$ language plpgsql;
+
+CREATE OR REPLACE FUNCTION user_password_modified()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.hashed_password IS DISTINCT FROM OLD.hashed_password THEN
+        NEW.password_updated_at = NOW();
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE TRIGGER user_modified_trigger
 BEFORE UPDATE ON users
 FOR EACH ROW
-EXECUTE FUNCTION update_modified_column();
+EXECUTE FUNCTION user_modified();
 
-CREATE TRIGGER user_modified_trigger
+CREATE TRIGGER linked_accounts_modified_trigger
 BEFORE UPDATE ON linked_accounts
 FOR EACH ROW
-EXECUTE FUNCTION update_modified_column();
+EXECUTE FUNCTION linked_accounts_modified();
+
+CREATE TRIGGER user_modified_password_trigger
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION user_password_modified();

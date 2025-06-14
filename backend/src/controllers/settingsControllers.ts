@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { User } from "../utils/types";
 import { hashString } from "../utils/encryption";
-import { updateEmailandPassword, updatePassword, removeProvider, retrieveConnections } from "../models/settingsModels";
+import {
+  updateEmailandPassword,
+  updatePassword,
+  removeProvider,
+  retrieveConnections,
+  retrieveProfile,
+} from "../models/settingsModels";
 import { soundcloudRedirectHelperForSettings } from "../utils/helper";
 import { handleOAuth } from "../models/authModels";
 import { AuthSoundcloudToken, getSoundcloudUserInfo } from "../services/soundcloud";
@@ -61,13 +67,13 @@ export const spotifyConnect = async (req: Request, res: Response, next: NextFunc
     const { state } = req.query;
 
     if (!state) {
-      return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=missing_state`);
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=missing_state`);
     }
 
     // Retrieve user context from Redis using state
     const storedData = await getToken(`oauth_state:${state}`);
     if (!storedData || storedData.provider !== "spotify") {
-      return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=invalid_state`);
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=invalid_state`);
     }
 
     const userId = storedData.userId;
@@ -91,13 +97,13 @@ export const spotifyConnect = async (req: Request, res: Response, next: NextFunc
     await setToken(`oauth_state:${state}`, null, 1);
 
     if (result === null) {
-      return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=account_already_linked`);
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=account_already_linked`);
     }
 
-    return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?success=spotify_connected`);
+    return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?success=spotify_connected`);
   } catch (error) {
     console.error("Spotify connect error:", error);
-    return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=connection_failed`);
+    return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=connection_failed`);
   }
 };
 
@@ -123,17 +129,17 @@ export const soundcloudConnect = async (req: Request, res: Response, next: NextF
     const { code, state, error } = req.query;
 
     if (error) {
-      return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=oauth_denied`);
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=oauth_denied`);
     }
 
     if (!code || !state) {
-      return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=missing_params`);
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=missing_params`);
     }
 
     // Retrieve user context and code verifier from Redis
     const storedData = await getToken(`oauth_state:${state}`);
     if (!storedData || storedData.provider !== "soundcloud") {
-      return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=invalid_state`);
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=invalid_state`);
     }
 
     const userId = storedData.userId;
@@ -163,13 +169,13 @@ export const soundcloudConnect = async (req: Request, res: Response, next: NextF
     await setToken(`oauth_state:${state}`, null, 1);
 
     if (result === null) {
-      return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=account_already_linked`);
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=account_already_linked`);
     }
 
-    return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?success=soundcloud_connected`);
+    return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?success=soundcloud_connected`);
   } catch (error) {
     console.error("SoundCloud connect error:", error);
-    return res.redirect(`${process.env.FRONTEND_BASE_URL}/settings?error=connection_failed`);
+    return res.redirect(`${process.env.FRONTEND_BASE_URL}/account-settings?error=connection_failed`);
   }
 };
 
@@ -178,7 +184,8 @@ export const disconnectProvider = async (req: Request, res: Response, next: Next
   try {
     const user = req.user as User;
     const userId = user.userId;
-    const { provider } = req.body;
+    const { provider } = req.params;
+    console.log(userId, provider);
     await removeProvider(provider, userId);
     return res.status(200).json({ message: "Provider disconnected successfully." });
   } catch (error) {
@@ -192,6 +199,17 @@ export const getConnections = async (req: Request, res: Response, next: NextFunc
     const userId = user.userId;
     const connections = await retrieveConnections(userId);
     res.status(200).json(connections);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user as User;
+    const userId = user.userId;
+    const profile = await retrieveProfile(userId);
+    res.status(200).json(profile);
   } catch (error) {
     next(error);
   }

@@ -342,8 +342,8 @@ const PersonalInfoTab = () => {
         ) : (
           <p className="text-gray-400 text-sm">
             Last updated:{" "}
-            {userProfile?.passwordLastChanged
-              ? new Date(userProfile.passwordLastChanged).toLocaleDateString()
+            {userProfile?.lastUpdatedPassword
+              ? new Date(userProfile.lastUpdatedPassword).toLocaleDateString()
               : "Never"}
           </p>
         )}
@@ -360,9 +360,9 @@ const PersonalInfoTab = () => {
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-between">
-            <span className="text-gray-400">Last login:</span>
+            <span className="text-gray-400">Last updated:</span>
             <span className="text-white">
-              {userProfile?.lastLogin ? new Date(userProfile.lastLogin).toLocaleDateString() : "Unknown"}
+              {userProfile?.lastUpdated ? new Date(userProfile.lastUpdated).toLocaleDateString() : "Unknown"}
             </span>
           </div>
         </div>
@@ -390,7 +390,6 @@ const ConnectionsTab = () => {
       setLoading(true);
       const connectionsData = await getConnections();
       setConnections(connectionsData);
-      console.log(connectionsData);
     } catch (error) {
       console.error("Error fetching connections:", error);
       setStatusMessage({ type: "error", message: "Failed to load connections" });

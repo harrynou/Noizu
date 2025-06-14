@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticateJWT } from "../middleware/jwtAutenticate";
 import { validateRequest } from "../middleware/validateRequest";
-import { userCredentialsDto, userPasswordChangeDto } from "../dtos/dtos";
+import { disconnectProviderDto, userCredentialsDto, userPasswordChangeDto } from "../dtos/dtos";
 import * as settingsController from "../controllers/settingsControllers";
 import passport from "passport";
 
@@ -46,8 +46,15 @@ router.get(
 router.get("/soundcloud/callback", settingsController.soundcloudConnect);
 
 // Disconnect provider
-router.delete("/disconnect", authenticateJWT, settingsController.disconnectProvider);
+router.delete(
+  "/disconnect/:provider",
+  authenticateJWT,
+  validateRequest(disconnectProviderDto, "params"),
+  settingsController.disconnectProvider
+);
 
 router.get("/connections", authenticateJWT, settingsController.getConnections);
+
+router.get("/profile", authenticateJWT, settingsController.getProfile);
 
 export default router;

@@ -17,6 +17,7 @@ passportConfig();
 
 const allowedOrigins = [process.env.FRONTEND_BASE_URL, "https://accounts.spotify.com"];
 
+
 app.use(
   cors({
     origin: (origin, callback) => {

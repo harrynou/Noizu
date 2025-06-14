@@ -43,8 +43,8 @@ export const SearchResultProvider = ({ children }: ContextProvider) => {
   const [soundcloudHasMore, setSoundcloudHasMore] = useState<boolean>(false);
   const [spotifyOffset, setSpotifyOffset] = useState<number>(0);
   const [soundcloudOffset, setSoundcloudOffset] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(20);
   const [searchString, setSearchString] = useState<string>("");
+  const limit: number = 20;
   const setTrackResults = (results: any[], provider: string) => {
     if (provider === "spotify") {
       setSpotifyTracks(results);
@@ -57,8 +57,7 @@ export const SearchResultProvider = ({ children }: ContextProvider) => {
 
   // Updates track to be favorited in tracks object
   const toggleFavorite = (trackId: string, provider: string) => {
-    const toggle = (track: any) =>
-      track.id === trackId ? { ...track, isFavorited: !track.isFavorited } : track;
+    const toggle = (track: any) => (track.id === trackId ? { ...track, isFavorited: !track.isFavorited } : track);
     if (provider === "spotify") {
       setSpotifyTracks((prevTracks) => prevTracks.map(toggle));
     } else if (provider === "soundcloud") {
@@ -123,9 +122,5 @@ export const SearchResultProvider = ({ children }: ContextProvider) => {
     [spotifyTracks, soundcloudTracks]
   );
 
-  return (
-    <SearchResultContext.Provider
-      value={contextValue}
-      children={children}></SearchResultContext.Provider>
-  );
+  return <SearchResultContext.Provider value={contextValue} children={children}></SearchResultContext.Provider>;
 };

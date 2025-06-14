@@ -501,11 +501,6 @@ const ConnectionsTab = () => {
                     "Disconnect"
                   )}
                 </button>
-                <button
-                  onClick={() => handleConnect("spotify")}
-                  className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600">
-                  Reconnect
-                </button>
               </>
             ) : (
               <button

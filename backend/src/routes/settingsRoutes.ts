@@ -21,7 +21,6 @@ router.post(
   settingsController.changePassword
 );
 
-// Spotify connection with state management
 router.get("/connect/spotify", authenticateJWT, settingsController.connectSpotifyInit, (req, res, next) => {
   const state = (req as any).oauthState;
   passport.authenticate("spotify-settings", {

@@ -13,8 +13,8 @@ RUN npm ci
 # Copy the rest of the application files
 COPY . .
 
-# Expose the port the backend listens on
-EXPOSE 5000
+# Expose the port the backend listens on (5000 for local, 8080 for prod)
+EXPOSE 8080
 
 # Start the Node.js application
 CMD ["npm", "run", "dev"]

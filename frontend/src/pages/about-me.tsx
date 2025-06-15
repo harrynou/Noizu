@@ -21,12 +21,12 @@ const AboutMePage = (): JSX.Element => {
 
   // Tech stack used in the project
   const technologies = [
-    {name: "React", icon: reactLogo},
-    {name: "TypeScript", icon: tsLogo},
-    {name: "TailwindCSS", icon: tailwindLogo},
-    {name: "Node.js", icon: jsLogo},
-    {name: "Express", icon: expressLogo},
-    {name: "PostgresSQL", icon: postgresSQLLogo},
+    { name: "React", icon: reactLogo },
+    { name: "TypeScript", icon: tsLogo },
+    { name: "TailwindCSS", icon: tailwindLogo },
+    { name: "Node.js", icon: jsLogo },
+    { name: "Express", icon: expressLogo },
+    { name: "PostgresSQL", icon: postgresSQLLogo },
   ];
 
   return (
@@ -35,8 +35,7 @@ const AboutMePage = (): JSX.Element => {
       <section className="text-center mb-12 pt-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">About Noizu</h1>
         <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-          A unified platform designed to help you discover and enjoy music from multiple streaming
-          services
+          A unified platform designed to help you discover and enjoy music from multiple streaming services
         </p>
       </section>
 
@@ -45,11 +44,11 @@ const AboutMePage = (): JSX.Element => {
         <div className="bg-gray-800 rounded-lg p-6 md:p-8">
           <h2 className="text-2xl font-bold mb-4">How Noizu Started</h2>
           <p className="text-gray-300 leading-relaxed">
-            I created Noizu out of a recurring frustration in my music listening experience. Many of
-            my favorite artists release certain tracks exclusively on Spotify while putting their
-            remixes or collaborations only on SoundCloud. I just wanted one place where I could
-            search, queue up tracks, and build playlists across both platforms without having to
-            limit myself to one. Just something I made because I was tired of the back and forth.
+            I created Noizu out of a recurring frustration in my music listening experience. Many of my favorite artists
+            release certain tracks exclusively on Spotify while putting their remixes or collaborations only on
+            SoundCloud. I wanted one place where I could search, queue up tracks, and build playlists across both
+            platforms without having to limit myself to one. Just something I made because I was tired of the back and
+            forth.
           </p>
         </div>
       </section>
@@ -77,8 +76,8 @@ const AboutMePage = (): JSX.Element => {
             </div>
             <h3 className="text-lg font-semibold mb-2">Unified Search</h3>
             <p className="text-gray-400">
-              Search for your favorite music across multiple platforms with a single query and see
-              results from Spotify and SoundCloud side by side.
+              Search for your favorite music across multiple platforms with a single query and see results from Spotify
+              and SoundCloud side by side.
             </p>
           </div>
 
@@ -100,8 +99,7 @@ const AboutMePage = (): JSX.Element => {
             </div>
             <h3 className="text-lg font-semibold mb-2">Cross-Platform Favorites</h3>
             <p className="text-gray-400">
-              Save tracks from any platform to your favorites list and access them all in one
-              centralized collection.
+              Save tracks from any platform to your favorites list and access them all in one centralized collection.
             </p>
           </div>
 
@@ -181,8 +179,7 @@ const AboutMePage = (): JSX.Element => {
             <div>
               <h3 className="text-lg font-semibold mb-1">Spotify</h3>
               <p className="text-gray-400">
-                Access your Spotify library, playlists, and enjoy playback with your premium
-                account.
+                Access your Spotify library, playlists, and enjoy playback with your premium account.
               </p>
             </div>
           </div>
@@ -246,9 +243,7 @@ const AboutMePage = (): JSX.Element => {
         <div className="bg-gray-800 rounded-lg p-6">
           <div className="flex flex-wrap gap-4 justify-center">
             {technologies.map((tech, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full">
+              <div key={index} className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full">
                 <img className="w-6" src={tech.icon} />
                 <span>{tech.name}</span>
               </div>

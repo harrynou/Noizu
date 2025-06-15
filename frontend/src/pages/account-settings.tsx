@@ -11,6 +11,7 @@ import {
   UserConnections,
 } from "../services/api";
 
+
 // Loading spinner component
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center py-8">

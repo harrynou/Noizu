@@ -1,12 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  getPlaylistTracks,
-  getPlaylists,
-  removeTrackFromPlaylist,
-  Playlist,
-  PlaylistTrack,
-} from "../../services/api";
+import { getPlaylistTracks, getPlaylists, removeTrackFromPlaylist, Playlist, PlaylistTrack } from "../../services/api";
 import ItemCard from "../../components/search/ItemCard";
 import SearchFilter from "../../components/search/SearchFilter";
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
@@ -73,13 +67,10 @@ const PlaylistDetailPage = () => {
   const allFilteredTracks = [...filteredSpotifyTracks, ...filteredSoundcloudTracks];
 
   // Handle filter changes from the SearchFilter component
-  const handleFilterChange = useCallback(
-    (newFilteredSpotifyTracks: Track[], newFilteredSoundcloudTracks: Track[]) => {
-      setFilteredSpotifyTracks(newFilteredSpotifyTracks);
-      setFilteredSoundcloudTracks(newFilteredSoundcloudTracks);
-    },
-    []
-  );
+  const handleFilterChange = useCallback((newFilteredSpotifyTracks: Track[], newFilteredSoundcloudTracks: Track[]) => {
+    setFilteredSpotifyTracks(newFilteredSpotifyTracks);
+    setFilteredSoundcloudTracks(newFilteredSoundcloudTracks);
+  }, []);
 
   const handleRemoveTrack = async (trackId: string, provider: string) => {
     if (!id) return;
@@ -110,10 +101,7 @@ const PlaylistDetailPage = () => {
     // Determine which tracks to play based on provider or active tab
     if (provider === "spotify" || (provider === undefined && activeProvider === "spotify")) {
       tracksToPlay = filteredSpotifyTracks;
-    } else if (
-      provider === "soundcloud" ||
-      (provider === undefined && activeProvider === "soundcloud")
-    ) {
+    } else if (provider === "soundcloud" || (provider === undefined && activeProvider === "soundcloud")) {
       tracksToPlay = filteredSoundcloudTracks;
     } else {
       // When "all" is selected, play spotify tracks first, then soundcloud
@@ -133,7 +121,9 @@ const PlaylistDetailPage = () => {
     }
   };
 
-  const playlistImage = playlist?.imageUrl || "https://via.placeholder.com/300?text=Playlist";
+  const playlistImage =
+    playlist?.imageUrl ||
+    "https://noizu-dev-us-west-1-playlist-covers.s3.us-west-1.amazonaws.com/playlist-covers/cover-placeholder.png";
 
   // Loading state
   if (loading) {
@@ -198,7 +188,8 @@ const PlaylistDetailPage = () => {
             alt={playlist?.name || "Playlist"}
             className="w-full h-full object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://via.placeholder.com/300?text=Playlist";
+              (e.target as HTMLImageElement).src =
+                "https://noizu-dev-us-west-1-playlist-covers.s3.us-west-1.amazonaws.com/playlist-covers/cover-placeholder.png";
             }}
           />
         </div>
@@ -210,9 +201,7 @@ const PlaylistDetailPage = () => {
             <span>
               {totalTrackCount} {totalTrackCount === 1 ? "track" : "tracks"}
             </span>
-            {playlist?.createdAt && (
-              <span>Created {new Date(playlist.createdAt).toLocaleDateString()}</span>
-            )}
+            {playlist?.createdAt && <span>Created {new Date(playlist.createdAt).toLocaleDateString()}</span>}
           </div>
 
           {/* Action buttons */}
@@ -250,9 +239,7 @@ const PlaylistDetailPage = () => {
             <button
               onClick={() => setActiveProvider("all")}
               className={`py-2 px-4 ${
-                activeProvider === "all"
-                  ? "border-b-2 border-accentPrimary text-white"
-                  : "text-gray-400"
+                activeProvider === "all" ? "border-b-2 border-accentPrimary text-white" : "text-gray-400"
               }`}>
               All Sources
             </button>
@@ -261,9 +248,7 @@ const PlaylistDetailPage = () => {
               <button
                 onClick={() => setActiveProvider("spotify")}
                 className={`py-2 px-4 flex items-center gap-2 ${
-                  activeProvider === "spotify"
-                    ? "border-b-2 border-accentPrimary text-white"
-                    : "text-gray-400"
+                  activeProvider === "spotify" ? "border-b-2 border-accentPrimary text-white" : "text-gray-400"
                 }`}>
                 <img src={SpotifyIcon} alt="Spotify" className="w-4 h-4" />
                 Spotify ({spotifyTrackCount})
@@ -274,9 +259,7 @@ const PlaylistDetailPage = () => {
               <button
                 onClick={() => setActiveProvider("soundcloud")}
                 className={`py-2 px-4 flex items-center gap-2 ${
-                  activeProvider === "soundcloud"
-                    ? "border-b-2 border-accentPrimary text-white"
-                    : "text-gray-400"
+                  activeProvider === "soundcloud" ? "border-b-2 border-accentPrimary text-white" : "text-gray-400"
                 }`}>
                 <img src={SoundcloudIcon} alt="SoundCloud" className="w-4 h-4" />
                 SoundCloud ({soundcloudTrackCount})
@@ -415,9 +398,7 @@ const PlaylistDetailPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-400">
-                      No matching Spotify tracks. Try adjusting your filter.
-                    </p>
+                    <p className="text-gray-400">No matching Spotify tracks. Try adjusting your filter.</p>
                   </div>
                 )}
               </div>
@@ -515,9 +496,7 @@ const PlaylistDetailPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-400">
-                      No matching SoundCloud tracks. Try adjusting your filter.
-                    </p>
+                    <p className="text-gray-400">No matching SoundCloud tracks. Try adjusting your filter.</p>
                   </div>
                 )}
               </div>

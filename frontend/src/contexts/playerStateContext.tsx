@@ -1,9 +1,9 @@
-import {createContext, useContext, useState, useEffect, useRef, useCallback} from "react";
-import {usePlaybackDevices} from "./playbackDevicesContext";
-import {usePlaybackSettings} from "./playbackSettingsContext";
-import {useQueue} from "./queueContext";
-import {useAuth} from "./authContext";
-import {startSpotifyPlayback} from "../services/api";
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import { usePlaybackDevices } from "./playbackDevicesContext";
+import { usePlaybackSettings } from "./playbackSettingsContext";
+import { useQueue } from "./queueContext";
+import { useAuth } from "./authContext";
+import { startSpotifyPlayback } from "../services/api";
 
 interface PlayerStateContextProps {
   isPlaying: boolean;
@@ -32,12 +32,11 @@ interface ProviderProps {
   children: React.ReactNode;
 }
 
-export const PlayerStateProvider = ({children}: ProviderProps) => {
-  const {spotifyPlayerRef, soundCloudPlayerRef, deviceId, isPlayerInitialized} =
-    usePlaybackDevices();
-  const {currentVolumeRef} = usePlaybackSettings();
-  const {queue, currentTrackIndex, setCurrentTrackIndex} = useQueue();
-  const {getSpotifyToken} = useAuth();
+export const PlayerStateProvider = ({ children }: ProviderProps) => {
+  const { spotifyPlayerRef, soundCloudPlayerRef, deviceId, isPlayerInitialized } = usePlaybackDevices();
+  const { currentVolumeRef } = usePlaybackSettings();
+  const { queue, currentTrackIndex, setCurrentTrackIndex, addToQueue } = useQueue();
+  const { getSpotifyToken } = useAuth();
 
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false);
@@ -76,6 +75,9 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
     if (currentTrackIndex !== null && queue.length > 0) {
       setCurrentProvider(queue[currentTrackIndex].provider);
       currentProviderRef.current = queue[currentTrackIndex].provider;
+    }
+    if (queue.length === 0) {
+      togglePause();
     }
   }, [currentTrackIndex, queue]);
 
@@ -194,9 +196,7 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
   const playTrack = useCallback(
     (track: Track) => {
       // Find if track already exists in queue
-      const existingIndex = queue.findIndex(
-        (t) => t.id === track.id && t.provider === track.provider
-      );
+      const existingIndex = queue.findIndex((t) => t.id === track.id && t.provider === track.provider);
 
       if (existingIndex >= 0) {
         // Track exists, just play it
@@ -204,7 +204,7 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
       } else {
         // Add to beginning of queue and play
         setCurrentTrackIndex(0);
-        useQueue().addToQueue(track);
+        addToQueue(track);
       }
     },
     [queue, setCurrentTrackIndex]
@@ -232,7 +232,7 @@ export const PlayerStateProvider = ({children}: ProviderProps) => {
         spotifyPlayerRef.current.setVolume(currentVolumeRef.current);
       }
     } else if (currentTrack.provider === "soundcloud" && soundCloudPlayerRef.current) {
-      soundCloudPlayerRef.current.load(currentTrack.uri, {auto_play: true});
+      soundCloudPlayerRef.current.load(currentTrack.uri, { auto_play: true });
       // Set volume for SoundCloud
       if (currentVolumeRef.current !== null && soundCloudPlayerRef.current) {
         soundCloudPlayerRef.current.setVolume(currentVolumeRef.current * 100);

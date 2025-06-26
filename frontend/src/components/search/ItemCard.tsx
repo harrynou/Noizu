@@ -108,8 +108,7 @@ const ItemCard = memo(
     const { isFavorited, addFavorite, removeFavorite } = useFavoriteContext();
 
     // Computed property - derive currentTrack from queue context
-    const currentTrack =
-      queueState.currentTrackIndex !== null ? queueState.queue[queueState.currentTrackIndex] : null;
+    const currentTrack = queueState.currentTrackIndex !== null ? queueState.queue[queueState.currentTrackIndex] : null;
 
     const [isHovered, setIsHovered] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
@@ -142,10 +141,7 @@ const ItemCard = memo(
       [queue, item.id, provider]
     );
 
-    const trackFavorited = useMemo(
-      () => isFavorited(item.id, provider),
-      [isFavorited, item.id, provider]
-    );
+    const trackFavorited = useMemo(() => isFavorited(item.id, provider), [isFavorited, item.id, provider]);
 
     const formattedDuration = useMemo(() => formatDuration(item.duration), [item.duration]);
 
@@ -160,6 +156,7 @@ const ItemCard = memo(
         title: item.title,
         artistInfo: item.artistInfo,
         imageUrl: item?.imageUrl ?? "",
+        trackUrl: item.trackUrl,
         provider,
         uri: item.uri,
         duration: item.duration,
@@ -173,11 +170,7 @@ const ItemCard = memo(
       return {
         icon: provider === "spotify" ? SpotifyIcon : SoundcloudIcon,
         hoverBg: provider === "spotify" ? "bg-green-600" : "bg-orange-600",
-        textColor: isCurrentTrack
-          ? provider === "spotify"
-            ? "text-green-500"
-            : "text-orange-500"
-          : "text-white",
+        textColor: isCurrentTrack ? (provider === "spotify" ? "text-green-500" : "text-orange-500") : "text-white",
       };
     }, [provider, isCurrentTrack]);
 
@@ -211,9 +204,7 @@ const ItemCard = memo(
       }
     }, [showOptions]);
 
-    // Enhanced tooltip handling with immediate hide when moving between buttons
     useEffect(() => {
-      // Create a global mouse move handler to detect when cursor is outside all relevant elements
       const handleGlobalMouseMove = (e: MouseEvent) => {
         // If no tooltips are shown, do nothing
         if (!Object.values(showTooltip).some((shown) => shown)) return;
@@ -224,10 +215,7 @@ const ItemCard = memo(
         // Handle the case when moving between buttons - we need to check if the specific button is hovered
         const hoveredElement = e.target as HTMLElement;
 
-        // Get the button type from data attribute or other means - we'll assume if it's a button
-        // and it's not the button that showed the current tooltip, we should hide the tooltip
-        const isOverActiveButton =
-          hoveredElement.tagName === "BUTTON" && hoveredElement.closest("[data-tooltip-type]");
+        const isOverActiveButton = hoveredElement.tagName === "BUTTON" && hoveredElement.closest("[data-tooltip-type]");
 
         // If mouse is not over item card or is over a different button, hide tooltips
         if (!isOverItemCard || (isOverItemCard && !isOverActiveButton)) {
@@ -240,10 +228,8 @@ const ItemCard = memo(
         }
       };
 
-      // Add global handlers
       document.addEventListener("mousemove", handleGlobalMouseMove);
 
-      // Cleanup
       return () => {
         document.removeEventListener("mousemove", handleGlobalMouseMove);
       };
@@ -328,37 +314,34 @@ const ItemCard = memo(
       }
     }, [isCurrentTrack, togglePlayPause, playTrack, trackData]);
 
-    const handleTooltipShow = useCallback(
-      (tooltipType: TooltipType, event: React.MouseEvent<HTMLElement>) => {
-        // Clear any pending hide timeouts
-        if (tooltipTimeoutRef.current) {
-          clearTimeout(tooltipTimeoutRef.current);
-          tooltipTimeoutRef.current = null;
-        }
+    const handleTooltipShow = useCallback((tooltipType: TooltipType, event: React.MouseEvent<HTMLElement>) => {
+      // Clear any pending hide timeouts
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+        tooltipTimeoutRef.current = null;
+      }
 
-        // Get the position for the tooltip
-        const rect = event.currentTarget.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const showAbove = rect.top > viewportHeight / 2;
+      // Get the position for the tooltip
+      const rect = event.currentTarget.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const showAbove = rect.top > viewportHeight / 2;
 
-        // Update tooltip position
-        setTooltipPosition({
-          x: rect.left + rect.width / 2,
-          y: showAbove ? rect.top : rect.bottom,
-          showAbove,
-        });
+      // Update tooltip position
+      setTooltipPosition({
+        x: rect.left + rect.width / 2,
+        y: showAbove ? rect.top : rect.bottom,
+        showAbove,
+      });
 
-        // Hide all tooltips first, then show only the current one
-        setShowTooltip({
-          favorite: false,
-          queue: false,
-          playlist: false,
-          remove: false,
-          [tooltipType]: true,
-        });
-      },
-      []
-    );
+      // Hide all tooltips first, then show only the current one
+      setShowTooltip({
+        favorite: false,
+        queue: false,
+        playlist: false,
+        remove: false,
+        [tooltipType]: true,
+      });
+    }, []);
 
     const handleTooltipHide = useCallback((tooltipType: TooltipType) => {
       // Add a small delay to prevent flickering
@@ -418,8 +401,7 @@ const ItemCard = memo(
                 ...verticalPosition,
               }}
               role="tooltip">
-              {type === "favorite" &&
-                (trackFavorited ? "Remove from favorites" : "Add to favorites")}
+              {type === "favorite" && (trackFavorited ? "Remove from favorites" : "Add to favorites")}
               {type === "queue" && (isInQueue ? "Already in queue" : "Add to queue")}
               {type === "playlist" && "Add to playlist"}
               {type === "remove" && "Remove from playlist"}
@@ -477,7 +459,6 @@ const ItemCard = memo(
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Add to playlist functionality would go here
                   setShowOptions(false);
                 }}
                 className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
@@ -506,6 +487,7 @@ const ItemCard = memo(
               onClick={(e) => {
                 e.stopPropagation();
                 // Navigate to artist page functionality
+                window.open(trackData.artistInfo[0].profileUrl, "_blank");
                 setShowOptions(false);
               }}
               className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition-colors flex items-center gap-2"
@@ -534,9 +516,7 @@ const ItemCard = memo(
                 e.stopPropagation();
                 // Share functionality
                 if (item.uri) {
-                  navigator.clipboard
-                    .writeText(item.uri)
-                    .catch((err) => console.error("Failed to copy:", err));
+                  navigator.clipboard.writeText(item.uri).catch((err) => console.error("Failed to copy:", err));
                 }
                 setShowOptions(false);
               }}
@@ -649,17 +629,13 @@ const ItemCard = memo(
 
           {/* Title and artist */}
           <div className="flex flex-col min-w-0">
-            <div className={`text-sm font-medium truncate ${getProviderDetails.textColor}`}>
-              {item.title}
-            </div>
+            <div className={`text-sm font-medium truncate ${getProviderDetails.textColor}`}>{item.title}</div>
 
             <div className="text-xs text-gray-400 truncate">
               {item.artistInfo.map((artist, idx) => (
                 <React.Fragment key={artist.id || `artist-${idx}`}>
                   {idx > 0 && ", "}
-                  <span className="hover:text-white hover:underline cursor-pointer">
-                    {artist.name}
-                  </span>
+                  <span className="hover:text-white hover:underline cursor-pointer">{artist.name}</span>
                 </React.Fragment>
               ))}
             </div>
@@ -668,14 +644,7 @@ const ItemCard = memo(
 
         {/* Provider icon */}
         <div className="flex justify-center items-center opacity-60 group-hover:opacity-100">
-          <img
-            src={getProviderDetails.icon}
-            alt={provider}
-            className="w-4 h-4"
-            width="16"
-            height="16"
-            loading="lazy"
-          />
+          <img src={getProviderDetails.icon} alt={provider} className="w-4 h-4" width="16" height="16" loading="lazy" />
         </div>
 
         {/* Right side actions */}
@@ -864,9 +833,7 @@ const ItemCard = memo(
 
         {/* Title and artist */}
         <div className="flex-1 min-w-0">
-          <div className={`text-sm font-medium truncate ${getProviderDetails.textColor}`}>
-            {item.title}
-          </div>
+          <div className={`text-sm font-medium truncate ${getProviderDetails.textColor}`}>{item.title}</div>
           <div className="text-xs text-gray-400 truncate">
             {item.artistInfo.map((artist, idx) => (
               <React.Fragment key={artist.id || `artist-${idx}`}>

@@ -39,6 +39,7 @@ export const retrievePlaylists = async (userId: number) => {
     const playlists = result.rows.map((playlist) => {
       return {
         playlistId: playlist.playlist_id,
+        name: playlist.name,
         imageUrl: playlist.image_url,
         trackCount: playlist.track_count,
         createdAt: playlist.created_at,
@@ -55,11 +56,18 @@ export const retrievePlaylists = async (userId: number) => {
 // Inserts a track into a playlist, returns playlist_track_id
 export const insertPlaylistTrack = async (userId: number, playlistId: number, trackId: number, provider: string) => {
   try {
+    const exists = await pool.query(
+      "SELECT 1 FROM playlist_tracks WHERE user_id = $1 AND playlist_id = $2 AND track_id = $3 AND provider = $4",
+      [userId, playlistId, trackId, provider]
+    );
+    if (exists.rows.length === 1) {
+      return 1;
+    }
     const result = await pool.query(
       "INSERT INTO playlist_tracks (user_id, playlist_id, track_id, provider) VALUES($1,$2,$3,$4) RETURNING playlist_track_id",
       [userId, playlistId, trackId, provider]
     );
-    return result.rows[0].playlist_track_id;
+    return 1;
   } catch (error) {
     throw error;
   }

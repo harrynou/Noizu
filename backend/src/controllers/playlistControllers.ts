@@ -68,7 +68,7 @@ export const addTrack = async (req: Request, res: Response, next: NextFunction) 
     const { playlistId, trackId, provider } = req.body;
 
     const playlistTrackId = insertPlaylistTrack(userId, playlistId, trackId, provider);
-    return res.status(201).json({ message: "Track successfully added.", playlistTrackId });
+    return res.status(201).json({ message: "Track successfully added." });
   } catch (error) {
     next(error);
   }

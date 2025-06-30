@@ -186,19 +186,6 @@ export const startSpotifyPlayback = async ({
 
 // APIs for playlists
 
-export interface Playlist {
-  playlistId: number;
-  name: string;
-  imageUrl: string | null;
-  userId: number;
-  createdAt: string;
-}
-
-export interface PlaylistTrack extends Track {
-  playlist_track_id?: number;
-  added_at?: string;
-}
-
 export interface PlaylistTracksResponse {
   spotifyPlaylistTracks: PlaylistTrack[];
   soundcloudPlaylistTracks: PlaylistTrack[];
@@ -258,6 +245,15 @@ export const deletePlaylist = async (playlistId: number): Promise<void> => {
     await axiosInstance.delete("/api/playlists", { data: { playlistId } });
   } catch (error) {
     console.error("Error deleting playlist:", error);
+    throw error;
+  }
+};
+
+// Edit Playlist
+export const modifyPlaylist = async (playlistId: number, name?: string, playlistCover?: File): Promise<void> => {
+  try {
+    await axiosInstance.post("/api/playlists");
+  } catch (error) {
     throw error;
   }
 };

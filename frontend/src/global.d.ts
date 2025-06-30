@@ -38,7 +38,6 @@ declare global {
     title: string;
     artistInfo: Artist[];
     imageUrl?: string;
-    trackUrl: string;
     provider: string;
     duration: number;
     isFavorited: boolean;
@@ -53,5 +52,21 @@ declare global {
 
   interface UserType {
     volume: number;
+  }
+
+  interface Playlist {
+    playlistId: number;
+    name: string;
+    imageUrl: string | null;
+    userId: number;
+    createdAt: string;
+    trackCount: number;
+    updatedAt: Date;
+    lastPlayedAt: Date;
+  }
+
+  interface PlaylistTrack extends Track {
+    playlist_track_id?: number;
+    added_at?: string;
   }
 }

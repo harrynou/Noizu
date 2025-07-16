@@ -218,9 +218,9 @@ const PlaybackControls = () => {
                 </div>
             ) : (
                 // Mini player (collapsed view)
-                <div className="h-12 px-4 flex items-center justify-between">
-                    {/* Track info - left side */}
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="h-12 px-4 flex items-center justify-center relative">
+                    {/* Track info - absolute positioned left */}
+                    <div className="absolute left-4 flex items-center gap-2 max-w-[200px]">
                         <img 
                             src={currentTrack.imageUrl} 
                             alt={currentTrack.title}
@@ -232,7 +232,7 @@ const PlaybackControls = () => {
                         </div>
                     </div>
                     
-                    {/* Mini controls - right side */}
+                    {/* Centered controls with queue button */}
                     <div className="flex items-center gap-3">
                         <button
                             onClick={playPreviousTrack}

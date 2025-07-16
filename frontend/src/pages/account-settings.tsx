@@ -10,6 +10,7 @@ import {
   UserProfile,
   UserConnections,
 } from "../services/api";
+import { formatLocalDate } from "../utils/formatTime";
 
 
 // Loading spinner component
@@ -344,7 +345,7 @@ const PersonalInfoTab = () => {
           <p className="text-gray-400 text-sm">
             Last updated:{" "}
             {userProfile?.lastUpdatedPassword
-              ? new Date(userProfile.lastUpdatedPassword).toLocaleDateString()
+              ? formatLocalDate(userProfile.lastUpdatedPassword)
               : "Never"}
           </p>
         )}
@@ -357,13 +358,13 @@ const PersonalInfoTab = () => {
           <div className="flex flex-col sm:flex-row sm:justify-between">
             <span className="text-gray-400">Account created:</span>
             <span className="text-white">
-              {userProfile?.createdAt ? new Date(userProfile.createdAt).toLocaleDateString() : "Unknown"}
+              {userProfile?.createdAt ? formatLocalDate(userProfile.createdAt) : "Unknown"}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-between">
             <span className="text-gray-400">Last updated:</span>
             <span className="text-white">
-              {userProfile?.lastUpdated ? new Date(userProfile.lastUpdated).toLocaleDateString() : "Unknown"}
+              {userProfile?.lastUpdated ? formatLocalDate(userProfile.lastUpdated) : "Unknown"}
             </span>
           </div>
         </div>
@@ -520,7 +521,7 @@ const ConnectionsTab = () => {
                 <span className="text-gray-400">Last connected:</span>
                 <p className="text-white">
                   {connections.spotify.lastConnected
-                    ? new Date(connections.spotify.lastConnected).toLocaleDateString()
+                    ? formatLocalDate(connections.spotify.lastConnected)
                     : "Unknown"}
                 </p>
               </div>
@@ -607,7 +608,7 @@ const ConnectionsTab = () => {
                 <span className="text-gray-400">Last connected:</span>
                 <p className="text-white">
                   {connections.soundcloud.lastConnected
-                    ? new Date(connections.soundcloud.lastConnected).toLocaleDateString()
+                    ? formatLocalDate(connections.soundcloud.lastConnected)
                     : "Unknown"}
                 </p>
               </div>

@@ -1,5 +1,6 @@
-import { useContext, createContext, useState, useMemo } from "react";
+import { useContext, createContext, useState, useMemo, useCallback } from "react";
 import { searchQuery } from "../services/api";
+import { SearchCache, FrontendCache } from "../utils/cache";
 
 interface SearchResultContextType {
   spotifyTracks: any[];
@@ -18,6 +19,8 @@ interface SearchResultContextType {
   toggleFavorite: (trackId: string, provider: string) => void;
   getTrack: (trackId: string, provider: string) => Track | null;
   loadMoreTracks: (provider: string) => void;
+  clearCache: () => void;
+  getCacheStats: () => { memory: number; local: number };
 }
 
 interface ContextProvider {
@@ -45,15 +48,16 @@ export const SearchResultProvider = ({ children }: ContextProvider) => {
   const [soundcloudOffset, setSoundcloudOffset] = useState<number>(0);
   const [searchString, setSearchString] = useState<string>("");
   const limit: number = 20;
-  const setTrackResults = (results: any[], provider: string) => {
-    if (provider === "spotify") {
-      setSpotifyTracks(results);
-    } else if (provider === "soundcloud") {
-      setSoundcloudTracks(results);
-    } else {
-      console.error("Unknown Provider");
-    }
-  };
+  // This function is replaced by setTrackResultsWithCache but kept for compatibility
+  // const setTrackResults = (results: any[], provider: string) => {
+  //   if (provider === "spotify") {
+  //     setSpotifyTracks(results);
+  //   } else if (provider === "soundcloud") {
+  //     setSoundcloudTracks(results);
+  //   } else {
+  //     console.error("Unknown Provider");
+  //   }
+  // };
 
   // Updates track to be favorited in tracks object
   const toggleFavorite = (trackId: string, provider: string) => {
@@ -78,27 +82,95 @@ export const SearchResultProvider = ({ children }: ContextProvider) => {
     }
   };
 
-  const loadMoreTracks = async (provider: string) => {
+  const loadMoreTracks = useCallback(async (provider: string) => {
     if (provider === "spotify") {
       if (isLoadingSpotify || !spotifyHasMore) return;
+      
+      // Check cache first for the next batch
+      const cachedResults = SearchCache.get(searchString, provider, limit, spotifyOffset);
+      if (cachedResults) {
+        setSpotifyOffset((prev) => prev + limit);
+        setSpotifyTracks((prev) => [...prev, ...cachedResults]);
+        // Assume hasMore is true if we got a full batch from cache
+        setSpotifyHasMore(cachedResults.length === limit);
+        return;
+      }
+
       setIsLoadingSpotify(true);
-      let data = await searchQuery(searchString, provider, limit, spotifyOffset);
-      setSpotifyHasMore(data.hasMore);
-      setSpotifyOffset((prev) => prev + limit);
-      setIsLoadingSpotify(false);
-      setSpotifyTracks((prev) => [...prev, ...data.queryData]);
+      try {
+        let data = await searchQuery(searchString, provider, limit, spotifyOffset);
+        
+        // Cache the results
+        SearchCache.set(searchString, provider, limit, spotifyOffset, data.queryData);
+        
+        setSpotifyHasMore(data.hasMore);
+        setSpotifyOffset((prev) => prev + limit);
+        setSpotifyTracks((prev) => [...prev, ...data.queryData]);
+      } catch (error) {
+        console.error('Error loading more Spotify tracks:', error);
+      } finally {
+        setIsLoadingSpotify(false);
+      }
     } else if (provider === "soundcloud") {
       if (isLoadingSoundcloud || !soundcloudHasMore) return;
+      
+      // Check cache first for the next batch
+      const cachedResults = SearchCache.get(searchString, provider, limit, soundcloudOffset);
+      if (cachedResults) {
+        setSoundcloudOffset((prev) => prev + limit);
+        setSoundcloudTracks((prev) => [...prev, ...cachedResults]);
+        // Assume hasMore is true if we got a full batch from cache
+        setSoundcloudHasMore(cachedResults.length === limit);
+        return;
+      }
+
       setIsLoadingSoundcloud(true);
-      let data = await searchQuery(searchString, provider, limit, soundcloudOffset);
-      setSoundcloudHasMore(data.hasMore);
-      setSoundcloudOffset((prev) => prev + limit);
-      setIsLoadingSoundcloud(false);
-      setSoundcloudTracks((prev) => [...prev, ...data.queryData]);
+      try {
+        let data = await searchQuery(searchString, provider, limit, soundcloudOffset);
+        
+        // Cache the results
+        SearchCache.set(searchString, provider, limit, soundcloudOffset, data.queryData);
+        
+        setSoundcloudHasMore(data.hasMore);
+        setSoundcloudOffset((prev) => prev + limit);
+        setSoundcloudTracks((prev) => [...prev, ...data.queryData]);
+      } catch (error) {
+        console.error('Error loading more SoundCloud tracks:', error);
+      } finally {
+        setIsLoadingSoundcloud(false);
+      }
     } else {
       console.error("Unknown Provider");
     }
-  };
+  }, [searchString, limit, spotifyOffset, soundcloudOffset, isLoadingSpotify, isLoadingSoundcloud, spotifyHasMore, soundcloudHasMore]);
+
+  // Cache management functions
+  const clearCache = useCallback(() => {
+    SearchCache.clear();
+  }, []);
+
+  const getCacheStats = useCallback(() => {
+    return FrontendCache.getStats();
+  }, []);
+
+  // Enhanced setTrackResults to use caching
+  const setTrackResultsWithCache = useCallback((results: any[], provider: string) => {
+    if (provider === "spotify") {
+      setSpotifyTracks(results);
+      // Cache the initial search results (offset 0)
+      if (searchString) {
+        SearchCache.set(searchString, provider, limit, 0, results);
+      }
+    } else if (provider === "soundcloud") {
+      setSoundcloudTracks(results);
+      // Cache the initial search results (offset 0)
+      if (searchString) {
+        SearchCache.set(searchString, provider, limit, 0, results);
+      }
+    } else {
+      console.error("Unknown Provider");
+    }
+  }, [searchString, limit]);
 
   const contextValue = useMemo(
     () => ({
@@ -114,12 +186,25 @@ export const SearchResultProvider = ({ children }: ContextProvider) => {
       setSoundcloudOffset,
       setSpotifyOffset,
       limit,
-      setTrackResults,
+      setTrackResults: setTrackResultsWithCache,
       toggleFavorite,
       getTrack,
       loadMoreTracks,
+      clearCache,
+      getCacheStats,
     }),
-    [spotifyTracks, soundcloudTracks]
+    [
+      spotifyTracks, 
+      soundcloudTracks, 
+      isLoadingSoundcloud, 
+      isLoadingSpotify, 
+      spotifyHasMore, 
+      soundcloudHasMore,
+      setTrackResultsWithCache,
+      loadMoreTracks,
+      clearCache,
+      getCacheStats
+    ]
   );
 
   return <SearchResultContext.Provider value={contextValue} children={children}></SearchResultContext.Provider>;

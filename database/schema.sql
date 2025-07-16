@@ -5,9 +5,9 @@ CREATE TABLE users (
     spotify_account_id INTEGER DEFAULT NULL,
     soundcloud_account_id INTEGER DEFAULT NULL,
     volume FLOAT DEFAULT 0.5,
-    created_at TIMESTAMP DEFAULT NOW(),
-    password_updated_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC'),
+    password_updated_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC'),
+    updated_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC')
 );
 
 CREATE TABLE linked_accounts (
@@ -18,8 +18,8 @@ CREATE TABLE linked_accounts (
     provider_user_id VARCHAR(50) NOT NULL,
     provider_username VARCHAR(50) NOT NULL,
     refresh_token TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC'),
+    updated_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC'),
     UNIQUE (provider, provider_user_id)
 );
 
@@ -28,7 +28,7 @@ CREATE TABLE favorites (
     user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
     provider VARCHAR(50) NOT NULL,
     track_id VARCHAR(100) NOT NULL,
-    favorited_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    favorited_at TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
     UNIQUE (user_id, provider, track_id)
 );
 
@@ -38,8 +38,8 @@ CREATE TABLE playlists (
 	name VARCHAR(256) NOT NULL,
 	track_count INTEGER DEFAULT 0,
     image_url TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC'),
+    updated_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC'),
     last_played_at TIMESTAMP DEFAULT NULL
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE playlist_tracks (
 	track_id VARCHAR(100) NOT NULL,
     user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     provider VARCHAR(50) NOT NULL,
-	added_at TIMESTAMP DEFAULT NOW(),
+	added_at TIMESTAMP DEFAULT (NOW() AT TIME ZONE 'UTC'),
 	UNIQUE (playlist_id, track_id, provider)
 );
 
@@ -74,7 +74,7 @@ BEGIN
             NEW.volume IS NOT DISTINCT FROM OLD.volume
         )
     ) THEN
-        NEW.updated_at = NOW();
+        NEW.updated_at = NOW() AT TIME ZONE 'UTC';
     END IF;
     RETURN NEW;
 END;
@@ -86,7 +86,7 @@ BEGIN
     IF (
         NEW IS DISTINCT FROM OLD
     ) THEN 
-        NEW.updated_at = NOW();
+        NEW.updated_at = NOW() AT TIME ZONE 'UTC';
     END IF;
     RETURN NEW;
 
@@ -97,7 +97,7 @@ CREATE OR REPLACE FUNCTION user_password_modified()
 RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.hashed_password IS DISTINCT FROM OLD.hashed_password THEN
-        NEW.password_updated_at = NOW();
+        NEW.password_updated_at = NOW() AT TIME ZONE 'UTC';
     END IF;
     RETURN NEW;
 END;

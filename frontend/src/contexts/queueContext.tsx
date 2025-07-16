@@ -1,10 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { useSnackbar } from "./snackbarContext";
 
 interface QueueContextProps {
   queue: Track[];
   currentTrackIndex: number | null;
   showQueueManager: boolean;
   addToQueue: (track: Track) => void;
+  addMultipleToQueue: (tracks: Track[]) => void;
   removeFromQueue: (trackId: string) => void;
   clearQueue: () => void;
   reorderQueue: (startIndex: number, endIndex: number) => void;
@@ -32,6 +34,7 @@ export const QueueProvider = ({ children }: ProviderProps) => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
   const [showQueueManager, setShowQueueManager] = useState<boolean>(false);
   const [loadingSessionState, setLoadingSessionState] = useState<boolean>(true);
+  const { showSuccess, showBatchSuccess } = useSnackbar();
 
   // Load previous states from session storage
   useEffect(() => {
@@ -65,18 +68,31 @@ export const QueueProvider = ({ children }: ProviderProps) => {
 
   const addToQueue = (track: Track) => {
     setQueue((prevQueue) => {
+      // Check if track is already in queue
+      const isDuplicate = prevQueue.some(t => t.id === track.id && t.provider === track.provider);
+      if (isDuplicate) {
+        return prevQueue;
+      }
+      
       const updatedQueue = [...prevQueue, track];
       // Start playback if no track is currently playing
       if (currentTrackIndex === null) {
         setCurrentTrackIndex(0);
       }
+      showSuccess(`"${track.title}" added to queue`);
       return updatedQueue;
     });
   };
 
   const removeFromQueue = (trackId: string) => {
     setQueue((prevQueue) => {
+      const trackToRemove = prevQueue.find(track => track.id === trackId);
       const updatedQueue = prevQueue.filter((track) => track.id !== trackId);
+
+      // Show success message with track name
+      if (trackToRemove) {
+        showSuccess(`"${trackToRemove.title}" removed from queue`);
+      }
 
       // Handle the case where the removed track is currently playing
       if (currentTrackIndex !== null && queue[currentTrackIndex]?.id === trackId) {
@@ -101,9 +117,35 @@ export const QueueProvider = ({ children }: ProviderProps) => {
     });
   };
 
+  const addMultipleToQueue = (tracks: Track[]) => {
+    if (tracks.length === 0) return;
+    
+    setQueue((prevQueue) => {
+      // Filter out duplicates
+      const newTracks = tracks.filter(track => 
+        !prevQueue.some(existing => existing.id === track.id && existing.provider === track.provider)
+      );
+      
+      if (newTracks.length === 0) return prevQueue;
+      
+      const updatedQueue = [...prevQueue, ...newTracks];
+      
+      // Start playback if no track is currently playing
+      if (currentTrackIndex === null && updatedQueue.length > 0) {
+        setCurrentTrackIndex(0);
+      }
+      
+      // Show batch notification
+      showBatchSuccess(newTracks.length, "added to queue");
+      
+      return updatedQueue;
+    });
+  };
+
   const clearQueue = () => {
     setQueue([]);
     setCurrentTrackIndex(null);
+    showSuccess('Queue cleared');
   };
 
   const reorderQueue = (startIndex: number, endIndex: number) => {
@@ -174,6 +216,7 @@ export const QueueProvider = ({ children }: ProviderProps) => {
         currentTrackIndex,
         showQueueManager,
         addToQueue,
+        addMultipleToQueue,
         removeFromQueue,
         clearQueue,
         reorderQueue,

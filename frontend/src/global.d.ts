@@ -61,8 +61,8 @@ declare global {
     userId: number;
     createdAt: string;
     trackCount: number;
-    updatedAt: Date;
-    lastPlayedAt: Date;
+    updatedAt: string;
+    lastPlayedAt: string;
   }
 
   interface PlaylistTrack extends Track {

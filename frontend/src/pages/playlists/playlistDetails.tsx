@@ -4,13 +4,14 @@ import { getPlaylistTracks, getPlaylists, removeTrackFromPlaylist, Playlist, Pla
 import ItemCard from "../../components/search/ItemCard";
 import SearchFilter from "../../components/search/SearchFilter";
 import { useMusicPlayer } from "../../contexts/musicPlayerContext";
+import { formatLocalDate } from "../../utils/formatTime";
 import SpotifyIcon from "../../assets/spotify/Icon.svg";
 import SoundcloudIcon from "../../assets/soundcloud/Icon.svg";
 
 const PlaylistDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { playTrack, addToQueue } = useMusicPlayer();
+  const { playTrack, addToQueue, addMultipleToQueue } = useMusicPlayer();
 
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [spotifyTracks, setSpotifyTracks] = useState<PlaylistTrack[]>([]);
@@ -115,9 +116,7 @@ const PlaylistDetailPage = () => {
 
     // Add the rest to the queue
     if (tracksToPlay.length > 1) {
-      tracksToPlay.slice(1).forEach((track) => {
-        addToQueue(track);
-      });
+      addMultipleToQueue(tracksToPlay.slice(1));
     }
   };
 
@@ -201,7 +200,7 @@ const PlaylistDetailPage = () => {
             <span>
               {totalTrackCount} {totalTrackCount === 1 ? "track" : "tracks"}
             </span>
-            {playlist?.createdAt && <span>Created {new Date(playlist.createdAt).toLocaleDateString()}</span>}
+            {playlist?.createdAt && <span>Created {formatLocalDate(playlist.createdAt)}</span>}
           </div>
 
           {/* Action buttons */}
@@ -345,55 +344,13 @@ const PlaylistDetailPage = () => {
                 {filteredSpotifyTracks.length > 0 ? (
                   <div className="space-y-2 p-4">
                     {filteredSpotifyTracks.map((track) => (
-                      <div key={`spotify-${track.id}`} className="relative group">
-                        <ItemCard
-                          item={track}
-                          provider="spotify"
-                          isInPlaylist={true}
-                          onRemoveFromPlaylist={handleRemoveTrack}
-                        />
-
-                        {/* Remove track button - shown on hover */}
-                        <button
-                          onClick={() => handleRemoveTrack(track.id, "spotify")}
-                          disabled={isRemoving[track.id]}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          aria-label="Remove from playlist">
-                          {isRemoving[track.id] ? (
-                            <svg
-                              className="animate-spin h-5 w-5"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24">
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round">
-                              <line x1="18" y1="6" x2="6" y2="18"></line>
-                              <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                          )}
-                        </button>
-                      </div>
+                      <ItemCard
+                        key={`spotify-${track.id}`}
+                        item={track}
+                        provider="spotify"
+                        isInPlaylist={true}
+                        onRemoveFromPlaylist={handleRemoveTrack}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -443,55 +400,13 @@ const PlaylistDetailPage = () => {
                 {filteredSoundcloudTracks.length > 0 ? (
                   <div className="space-y-2 p-4">
                     {filteredSoundcloudTracks.map((track) => (
-                      <div key={`soundcloud-${track.id}`} className="relative group">
-                        <ItemCard
-                          item={track}
-                          provider="soundcloud"
-                          isInPlaylist={true}
-                          onRemoveFromPlaylist={handleRemoveTrack}
-                        />
-
-                        {/* Remove track button - shown on hover */}
-                        <button
-                          onClick={() => handleRemoveTrack(track.id, "soundcloud")}
-                          disabled={isRemoving[track.id]}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          aria-label="Remove from playlist">
-                          {isRemoving[track.id] ? (
-                            <svg
-                              className="animate-spin h-5 w-5"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24">
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round">
-                              <line x1="18" y1="6" x2="6" y2="18"></line>
-                              <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                          )}
-                        </button>
-                      </div>
+                      <ItemCard
+                        key={`soundcloud-${track.id}`}
+                        item={track}
+                        provider="soundcloud"
+                        isInPlaylist={true}
+                        onRemoveFromPlaylist={handleRemoveTrack}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -509,14 +424,13 @@ const PlaylistDetailPage = () => {
           <div className="space-y-2">
             {filteredSpotifyTracks.length > 0 ? (
               filteredSpotifyTracks.map((track) => (
-                <div key={`spotify-${track.id}`} className="relative group">
-                  <ItemCard
-                    item={track}
-                    provider="spotify"
-                    isInPlaylist={true}
-                    onRemoveFromPlaylist={handleRemoveTrack}
-                  />
-                </div>
+                <ItemCard
+                  key={`spotify-${track.id}`}
+                  item={track}
+                  provider="spotify"
+                  isInPlaylist={true}
+                  onRemoveFromPlaylist={handleRemoveTrack}
+                />
               ))
             ) : (
               <div className="text-center py-10 bg-gray-800 rounded-lg">
@@ -535,14 +449,13 @@ const PlaylistDetailPage = () => {
           <div className="space-y-2">
             {filteredSoundcloudTracks.length > 0 ? (
               filteredSoundcloudTracks.map((track) => (
-                <div key={`soundcloud-${track.id}`} className="relative group">
-                  <ItemCard
-                    item={track}
-                    provider="soundcloud"
-                    isInPlaylist={true}
-                    onRemoveFromPlaylist={handleRemoveTrack}
-                  />
-                </div>
+                <ItemCard
+                  key={`soundcloud-${track.id}`}
+                  item={track}
+                  provider="soundcloud"
+                  isInPlaylist={true}
+                  onRemoveFromPlaylist={handleRemoveTrack}
+                />
               ))
             ) : (
               <div className="text-center py-10 bg-gray-800 rounded-lg">

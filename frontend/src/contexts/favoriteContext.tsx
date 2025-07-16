@@ -1,6 +1,7 @@
 import {createContext, useContext, useState, useEffect} from "react";
 import {getFavoriteTracks, unfavoriteTrack} from "../services/api";
 import {favoriteTrack} from "../services/api";
+import { useSnackbar } from "./snackbarContext";
 
 interface FavoriteContextType {
   spotifyFavoriteTracks: Track[];
@@ -27,6 +28,7 @@ export const useFavoriteContext = () => {
 export const FavoriteProvider = ({children}: ContextProp) => {
   const [spotifyFavoriteTracks, setSpotifyFavoriteTracks] = useState<Track[]>([]);
   const [soundcloudFavoriteTracks, setSoundcloudFavoriteTracks] = useState<Track[]>([]);
+  const { showSuccess, showError } = useSnackbar();
 
   useEffect(() => {
     const tracks = async () => {
@@ -46,26 +48,39 @@ export const FavoriteProvider = ({children}: ContextProp) => {
         setSoundcloudFavoriteTracks((prevTracks) => [...prevTracks, track]);
       } else {
         console.error("Unknown Provider");
+        showError("Unknown provider");
+        return;
       }
-    } catch (error) {
+      showSuccess(`Added "${track.title}" to favorites`);
+    } catch (error: any) {
       console.error(error);
+      showError(error?.message || 'Failed to add track to favorites');
     }
   };
 
   const removeFavorite = async (trackId: string, provider: string) => {
     try {
+      let trackTitle = "";
       if (provider === "spotify") {
+        const track = spotifyFavoriteTracks.find(t => t.id === trackId);
+        trackTitle = track?.title || "Track";
         setSpotifyFavoriteTracks((prevTrack) => prevTrack.filter((track) => track.id !== trackId));
       } else if (provider === "soundcloud") {
+        const track = soundcloudFavoriteTracks.find(t => t.id === trackId);
+        trackTitle = track?.title || "Track";
         setSoundcloudFavoriteTracks((prevTrack) =>
           prevTrack.filter((track) => track.id !== trackId)
         );
       } else {
         console.error("Unknown Provider");
+        showError("Unknown provider");
+        return;
       }
       await unfavoriteTrack(trackId, provider);
-    } catch (error) {
+      showSuccess(`Removed "${trackTitle}" from favorites`);
+    } catch (error: any) {
       console.error(error);
+      showError(error?.message || 'Failed to remove track from favorites');
     }
   };
 

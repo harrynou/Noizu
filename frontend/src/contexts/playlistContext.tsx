@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { addTrackToPlaylist, getPlaylists, modifyPlaylist, removeTrackFromPlaylist } from "../services/api";
+import { useSnackbar } from "./snackbarContext";
 
 interface PlaylistContextProps {
   playlists: Playlist[];
@@ -24,6 +25,7 @@ interface ProviderProps {
 
 export const PlaylistProvider = ({ children }: ProviderProps) => {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const { showSuccess, showError, showBatchSuccess } = useSnackbar();
 
   useEffect(() => {
     try {
@@ -40,24 +42,31 @@ export const PlaylistProvider = ({ children }: ProviderProps) => {
   const addToPlaylist = async (playlistId: number, trackId: string, provider: string) => {
     try {
       await addTrackToPlaylist(playlistId, trackId, provider);
-    } catch (error) {
+      const playlist = playlists.find(p => p.playlistId === playlistId);
+      showSuccess(`Track added to ${playlist?.name || 'playlist'}`);
+    } catch (error: any) {
       console.error(error);
+      showError(error?.message || 'Failed to add track to playlist');
     }
   };
 
   const removeFromPlaylist = async (playlistId: number, trackId: string, provider: string) => {
     try {
       await removeTrackFromPlaylist(playlistId, trackId, provider);
-    } catch (error) {
+      showSuccess('Track removed from playlist');
+    } catch (error: any) {
       console.error(error);
+      showError(error?.message || 'Failed to remove track from playlist');
     }
   };
 
   const editPlaylist = async (playlistId: number, name?: string, playlistCover?: File) => {
     try {
       await modifyPlaylist(playlistId, name, playlistCover);
-    } catch (error) {
+      showSuccess('Playlist updated successfully');
+    } catch (error: any) {
       console.error(error);
+      showError(error?.message || 'Failed to update playlist');
     }
   };
 

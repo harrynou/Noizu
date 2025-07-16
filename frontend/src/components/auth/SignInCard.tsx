@@ -5,6 +5,7 @@ import {spotifyLoginAuth} from "../../services/spotifyAuth";
 import { signInUser } from "../../services/api";
 import {soundcloudLoginAuth} from "../../services/soundcloudAuth";
 import { Link } from "react-router-dom";
+import { useSnackbar } from "../../contexts/snackbarContext";
 
 const SignInCard = (): JSX.Element => {
   interface errors {
@@ -15,6 +16,7 @@ const SignInCard = (): JSX.Element => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<errors>({});
+  const { showSuccess, showError } = useSnackbar();
 
   const validateForm = (): boolean => {
     const newErrors: errors = {};
@@ -42,13 +44,17 @@ const SignInCard = (): JSX.Element => {
     }
     try {
       await signInUser(email, password);
+      showSuccess('Welcome back! You have been signed in successfully.');
     } catch (error: any) {
       if (error.error === "Email does not exist or password may not be set for a Spotify/SoundCloud Account.") {
         setErrors({ email: error.error });
+        showError(error.error);
       } else if (error.error === "Incorrect password.") {
         setErrors({ password: error.error });
+        showError(error.error);
       } else {
         console.error("Error during sign-in:", error);
+        showError(error?.message || 'Failed to sign in. Please try again.');
       }
     }
   };

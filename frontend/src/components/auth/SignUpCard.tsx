@@ -6,6 +6,7 @@ import {spotifyLoginAuth} from "../../services/spotifyAuth";
 import {soundcloudLoginAuth} from "../../services/soundcloudAuth";
 import { registerUser } from "../../services/api";
 import { useAuth } from "../../contexts/authContext";
+import { useSnackbar } from "../../contexts/snackbarContext";
 
 const SignUpCard = (): JSX.Element => {
   interface errors {
@@ -20,6 +21,7 @@ const SignUpCard = (): JSX.Element => {
   const [errors, setErrors] = useState<errors>({});
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showSuccess, showError } = useSnackbar();
 
   {
     /* 
@@ -64,14 +66,17 @@ const SignUpCard = (): JSX.Element => {
     try {
       const { userInfo, userHasPassword } = await registerUser(email, password);
       login(userInfo, userHasPassword);
+      showSuccess('Account created successfully! Welcome to Noizu.');
       navigate("/home");
     } catch (error: any) {
       if (error.error === "Email Already in Use.") {
         setErrors({
           email: "Email is already in use. If you already have an account, try logging in another way. in use.",
         });
+        showError("Email is already in use. Please try logging in or use a different email.");
       } else {
         console.error("Error during registration:", error);
+        showError(error?.message || 'Failed to create account. Please try again.');
       }
     }
   };

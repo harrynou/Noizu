@@ -16,6 +16,7 @@ export const useMusicPlayer = () => {
     currentTrackIndex: queue.currentTrackIndex,
     showQueueManager: queue.showQueueManager,
     addToQueue: queue.addToQueue,
+    addMultipleToQueue: queue.addMultipleToQueue,
     removeFromQueue: queue.removeFromQueue,
     clearQueue: queue.clearQueue,
     reorderQueue: queue.reorderQueue,

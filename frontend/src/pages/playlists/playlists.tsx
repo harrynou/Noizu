@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getPlaylists, createPlaylist, deletePlaylist, Playlist } from '../../services/api';
 import PlaylistCard from '../../components/playlists/PlaylistCard';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from '../../contexts/snackbarContext';
 
 const PlaylistsPage = () => {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -14,6 +15,7 @@ const PlaylistsPage = () => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+    const { showSuccess, showError } = useSnackbar();
 
     // Fetch playlists on component mount
     useEffect(() => {
@@ -45,12 +47,13 @@ const PlaylistsPage = () => {
             setNewPlaylistName('');
             setPlaylistCover(null);
             setShowCreateModal(false);
+            showSuccess(`Playlist "${newPlaylistName}" created successfully`);
             
             // Navigate to the new playlist
             navigate(`/playlists/${newPlaylist.playlistId}`);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error creating playlist:', err);
-            setError('Failed to create playlist. Please try again.');
+            showError(err?.message || 'Failed to create playlist. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -58,12 +61,14 @@ const PlaylistsPage = () => {
 
     const handleDeletePlaylist = async (playlistId: number) => {
         try {
+            const playlistToDelete = playlists.find(p => p.playlistId === playlistId);
             await deletePlaylist(playlistId);
             setPlaylists(prev => prev.filter(p => p.playlistId !== playlistId));
             setShowDeleteConfirm(null);
-        } catch (err) {
+            showSuccess(`Playlist "${playlistToDelete?.name || 'Unknown'}" deleted successfully`);
+        } catch (err: any) {
             console.error('Error deleting playlist:', err);
-            setError('Failed to delete playlist. Please try again.');
+            showError(err?.message || 'Failed to delete playlist. Please try again.');
         }
     };
 

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { formatLocalDate } from '../../utils/formatTime';
 
 interface PlaylistCardProps {
   playlist: {
@@ -20,12 +21,6 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
     navigate(`/playlists/${playlist.playlistId}`);
   };
   
-  // Format date to a readable string if available
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-  };
   
   return (
     <div 
@@ -58,7 +53,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
       <div className="p-4">
         <h3 className="font-bold truncate">{playlist.name}</h3>
         {playlist.createdAt && (
-          <p className="text-xs text-gray-400 mt-1">Created {formatDate(playlist.createdAt)}</p>
+          <p className="text-xs text-gray-400 mt-1">Created {formatLocalDate(playlist.createdAt)}</p>
         )}
       </div>
     </div>

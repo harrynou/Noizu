@@ -12,6 +12,7 @@ import SoundCloudIcon from "../../assets/soundcloud/Icon.svg";
 import RedHeartSVG from "../../assets/heart-red.svg";
 import WhiteHeartSVG from "../../assets/heart-white.svg";
 import formatDuration from "../../utils/formatDuration";
+import { createUTCTimestamp } from "../../utils/formatTime";
 
 interface ItemCardProps {
   track: Track;
@@ -67,7 +68,7 @@ const ItemCard = ({ track, id }: ItemCardProps) => {
     } else {
       const trackWithDate = {
         ...track,
-        favoritedAt: new Date().toISOString(),
+        favoritedAt: createUTCTimestamp(),
       };
       addFavorite(trackWithDate);
     }

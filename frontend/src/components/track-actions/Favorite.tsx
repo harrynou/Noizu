@@ -3,6 +3,7 @@ import WhiteHeartSVG from '../../assets/heart-white.svg';
 import { useAuth } from '../../contexts/authContext';
 import { useFavoriteContext } from '../../contexts/favoriteContext';
 import { useSearchResult } from '../../contexts/searchResultContext';
+import { createUTCTimestamp } from '../../utils/formatTime';
 
 interface FavoriteProps {
     trackId: string;
@@ -25,7 +26,7 @@ const FavoriteAction = ({trackId, provider}: FavoriteProps): JSX.Element => {
         } else {
             const track = getTrack(trackId, provider);
             if (!track) return;
-            track.favoritedAt = new Date().toISOString();
+            track.favoritedAt = createUTCTimestamp();
             addFavorite(track);
         }
     }

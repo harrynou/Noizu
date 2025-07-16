@@ -18,6 +18,7 @@ import { MusicPlayerProvider } from "./contexts/musicPlayerContext.tsx";
 import { SearchResultProvider } from "./contexts/searchResultContext.tsx";
 import { FavoriteProvider } from "./contexts/favoriteContext.tsx";
 import { PlaylistProvider } from "./contexts/playlistContext.tsx";
+import { SnackbarProvider } from "./contexts/snackbarContext.tsx";
 import Layout from "./components/layout/Layout.tsx";
 
 const AppRoutes = () => {
@@ -88,17 +89,19 @@ const AppRoutes = () => {
 
 const App = (): JSX.Element => {
   return (
-    <AuthContextProvider>
-      <MusicPlayerProvider>
-        <FavoriteProvider>
-          <PlaylistProvider>
-            <SearchResultProvider>
-              <AppRoutes />
-            </SearchResultProvider>
-          </PlaylistProvider>
-        </FavoriteProvider>
-      </MusicPlayerProvider>
-    </AuthContextProvider>
+    <SnackbarProvider>
+      <AuthContextProvider>
+        <MusicPlayerProvider>
+          <FavoriteProvider>
+            <PlaylistProvider>
+              <SearchResultProvider>
+                <AppRoutes />
+              </SearchResultProvider>
+            </PlaylistProvider>
+          </FavoriteProvider>
+        </MusicPlayerProvider>
+      </AuthContextProvider>
+    </SnackbarProvider>
   );
 };
 

@@ -292,8 +292,8 @@ export const removeTrackFromPlaylist = async (playlistId: number, trackId: strin
 export interface UserProfile {
   email: string;
   createdAt: string;
-  lastUpdatedPassword: Date;
-  lastUpdated: Date;
+  lastUpdatedPassword: string;
+  lastUpdated: string;
 }
 
 export interface UserConnections {
@@ -301,13 +301,13 @@ export interface UserConnections {
     connected: boolean;
     displayName: string;
     premiumAccount: boolean;
-    lastConnected: Date;
+    lastConnected: string;
   };
   soundcloud?: {
     connected: boolean;
     displayName: string;
     premium: number;
-    lastConnected: Date;
+    lastConnected: string;
   };
 }
 

@@ -1,5 +1,6 @@
 import {createContext, useContext, useState, useEffect, useMemo} from "react";
 import {checkAuth, logoutUser, getAccessToken} from "../services/api";
+import { useSnackbar } from "./snackbarContext";
 
 interface authContextType {
   isAuthenticated: boolean;
@@ -41,6 +42,7 @@ export const AuthContextProvider = ({children}: ContextProp) => {
   const [hasSpotifyPremium, setHasSpotifyPremium] = useState<boolean>(false);
   const [spotifyToken, setSpotifyToken] = useState<string | null>(null);
   const [tokenExpirationTime, setTokenExpirationTime] = useState<number | null>(null);
+  const { showSuccess, showError } = useSnackbar();
 
   const getAuth = async () => {
     try {
@@ -73,6 +75,7 @@ export const AuthContextProvider = ({children}: ContextProp) => {
     setHasPassword(false);
     setUser(null);
     logoutUser();
+    showSuccess('You have been logged out successfully');
   };
 
   const Password = () => {

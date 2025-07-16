@@ -5,7 +5,7 @@ import { useFavoriteContext } from "../../contexts/favoriteContext";
 import { useAuth } from "../../contexts/authContext";
 import { usePlaylistContext } from "../../contexts/playlistContext";
 import formatDuration from "../../utils/formatDuration";
-import { smartFormatDate } from "../../utils/formatTime";
+import { smartFormatDate, createUTCTimestamp } from "../../utils/formatTime";
 
 import SpotifyIcon from "../../assets/spotify/Icon.svg";
 import SoundcloudIcon from "../../assets/soundcloud/Icon.svg";
@@ -189,8 +189,7 @@ const ItemCard = memo(
     const [isHovered, setIsHovered] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
     const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
-    const [isAddedToQueue, setIsAddedToQueue] = useState(false);
-    const [optionsPosition, setOptionsPosition] = useState({ top: 0, right: 0 });
+    const [optionsPosition, setOptionsPosition] = useState({ top: 0, left: 0 });
     const [playlistMenuPosition, setPlaylistMenuPosition] = useState({ top: 0, left: 0 });
 
     const optionsMenuRef = useRef<HTMLDivElement>(null);
@@ -245,28 +244,35 @@ const ItemCard = memo(
       showPlaylistMenu
     );
 
+    // Store mouse position for options menu
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
     // Calculate options menu position when showing
     useEffect(() => {
-      if (showOptions && optionsButtonRef.current) {
-        const rect = optionsButtonRef.current.getBoundingClientRect();
-        const menuWidth = 192; // 48 * 4 (w-48)
+      if (showOptions) {
+        const menuWidth = 192; // w-48
         const menuHeight = 200; // Approximate height
 
-        let top = rect.bottom + 4;
-        let right = window.innerWidth - rect.right;
+        let top = mousePosition.y + 4;
+        let left = mousePosition.x + 4;
 
         // Adjust if menu would go off screen
         if (top + menuHeight > window.innerHeight) {
-          top = rect.top - menuHeight - 4;
+          top = mousePosition.y - menuHeight - 4;
         }
 
-        if (rect.right - menuWidth < 0) {
-          right = window.innerWidth - rect.left - menuWidth;
+        if (left + menuWidth > window.innerWidth) {
+          left = mousePosition.x - menuWidth - 4;
         }
 
-        setOptionsPosition({ top, right });
+        // Ensure menu doesn't go off left edge
+        if (left < 4) {
+          left = 4;
+        }
+
+        setOptionsPosition({ top, left });
       }
-    }, [showOptions]);
+    }, [showOptions, mousePosition]);
 
     // Calculate playlist menu position when showing
     useEffect(() => {
@@ -311,8 +317,6 @@ const ItemCard = memo(
         if (isInQueue) return;
 
         addToQueue(trackData);
-        setIsAddedToQueue(true);
-        setTimeout(() => setIsAddedToQueue(false), 2000);
       },
       [isInQueue, addToQueue, trackData]
     );
@@ -325,7 +329,7 @@ const ItemCard = memo(
         if (trackFavorited) {
           removeFavorite(item.id, provider);
         } else {
-          addFavorite({ ...trackData, favoritedAt: new Date().toISOString() });
+          addFavorite({ ...trackData, favoritedAt: createUTCTimestamp() });
         }
       },
       [trackFavorited, isAuthenticated, removeFavorite, addFavorite, item.id, provider, trackData]
@@ -342,6 +346,8 @@ const ItemCard = memo(
 
     const handleOptionsToggle = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
+      // Store mouse position for menu positioning
+      setMousePosition({ x: e.clientX, y: e.clientY });
       setShowOptions((prev) => !prev);
       setShowPlaylistMenu(false);
     }, []);
@@ -406,7 +412,10 @@ const ItemCard = memo(
           className={`flex ${baseClasses}`}
           onClick={handleItemClick}
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseLeave={() => {
+            setIsHovered(false);
+            hideTooltip();
+          }}
           role="button"
           aria-label={`${item.title} by ${item.artistInfo.map((a) => a.name).join(", ")}`}
           tabIndex={0}>
@@ -462,7 +471,7 @@ const ItemCard = memo(
             <div
               ref={optionsMenuRef}
               className="fixed z-50 bg-gray-800 rounded-md shadow-lg overflow-hidden w-48"
-              style={{ top: `${optionsPosition.top}px`, right: `${optionsPosition.right}px` }}
+              style={{ top: `${optionsPosition.top}px`, left: `${optionsPosition.left}px` }}
               role="menu">
               <div className="py-1">
                 {showAddToPlaylist && (
@@ -552,7 +561,10 @@ const ItemCard = memo(
         className={`grid grid-cols-[16px_4fr_1fr_auto] gap-4 pr-4 ${baseClasses}`}
         onClick={handleItemClick}
         onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          hideTooltip();
+        }}
         role="button"
         aria-label={`${item.title} by ${item.artistInfo.map((a) => a.name).join(", ")}`}
         tabIndex={0}>
@@ -578,16 +590,23 @@ const ItemCard = memo(
             className="w-10 h-10 flex-shrink-0 rounded shadow"
           />
           <div className="flex flex-col min-w-0">
-            <div className={`text-sm font-medium truncate ${providerDetails.textColor}`}>{item.title}</div>
+            <div className={`text-sm font-medium truncate ${providerDetails.textColor} flex items-center gap-2`}>
+              {item.title}
+              <img src={providerDetails.icon} alt={provider} className="w-4 h-4 opacity-60 flex-shrink-0" loading="lazy" />
+            </div>
             <div className="text-xs text-gray-400 truncate">
               {item.artistInfo.map((artist) => artist.name).join(", ")}
             </div>
           </div>
         </div>
 
-        {/* Provider icon */}
-        <div className="flex justify-center items-center opacity-60 group-hover:opacity-100">
-          <img src={providerDetails.icon} alt={provider} className="w-4 h-4" loading="lazy" />
+        {/* Duration display - always visible */}
+        <div className="flex justify-center items-center min-w-0">
+          {!isHovered ? (
+            <span className="text-xs text-gray-400">{formatDuration(item.duration)}</span>
+          ) : (
+            <span className="text-xs text-gray-400">{formatDuration(item.duration)}</span>
+          )}
         </div>
 
         {/* Actions */}
@@ -595,9 +614,8 @@ const ItemCard = memo(
           {!isHovered ? (
             <div className="flex items-center gap-2">
               {trackFavorited && item.favoritedAt && (
-                <span className="text-xs text-gray-400 mr-2">{smartFormatDate(item.favoritedAt)}</span>
+                <span className="text-xs text-gray-400">{smartFormatDate(item.favoritedAt)}</span>
               )}
-              <span className="text-xs text-gray-400">{formatDuration(item.duration)}</span>
             </div>
           ) : (
             <div className="flex items-center">
@@ -618,10 +636,8 @@ const ItemCard = memo(
                 disabled={isInQueue}
                 ariaLabel={isInQueue ? "Already in queue" : "Add to queue"}
                 className={isInQueue ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600"}>
-                <img src={AddToQueueSVG} alt="" className={`w-4 h-4 ${isAddedToQueue ? "animate-pulse" : ""}`} />
+                <img src={AddToQueueSVG} alt="" className="w-4 h-4" />
               </ActionButton>
-
-              <span className="text-xs text-gray-400 mx-2">{formatDuration(item.duration)}</span>
 
               <ActionButton
                 onClick={handleOptionsToggle}
@@ -664,7 +680,7 @@ const ItemCard = memo(
           <div
             ref={optionsMenuRef}
             className="fixed z-50 bg-gray-800 rounded-md shadow-lg overflow-hidden w-48"
-            style={{ top: `${optionsPosition.top}px`, right: `${optionsPosition.right}px` }}
+            style={{ top: `${optionsPosition.top}px`, left: `${optionsPosition.left}px` }}
             role="menu">
             <div className="py-1">
               {showAddToPlaylist && (

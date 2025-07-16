@@ -45,7 +45,7 @@ export const updatePassword = async (userId: number, hashed_password: string): P
 export const retrieveProfile = async (userId: number): Promise<UserProfile> => {
   try {
     const response = await pool.query(
-      "SELECT email, created_at, password_updated_at, updated_at FROM users WHERE user_id = $1",
+      "SELECT email, created_at AT TIME ZONE 'UTC' as created_at, password_updated_at AT TIME ZONE 'UTC' as password_updated_at, updated_at AT TIME ZONE 'UTC' as updated_at FROM users WHERE user_id = $1",
       [userId]
     );
     if (response.rows.length === 0) {
@@ -67,7 +67,7 @@ export const retrieveProfile = async (userId: number): Promise<UserProfile> => {
 export const retrieveConnections = async (userId: number): Promise<Record<string, Connection>> => {
   try {
     const response = await pool.query(
-      "SELECT provider, provider_username, premium, created_at FROM linked_accounts WHERE user_id = $1;",
+      "SELECT provider, provider_username, premium, created_at AT TIME ZONE 'UTC' as created_at FROM linked_accounts WHERE user_id = $1;",
       [userId]
     );
     const connections: Record<string, Connection> = {};

@@ -35,7 +35,7 @@ export const deletePlaylist = async (userId: number, playlistId: number): Promis
 // Retrieves all playlists by a user, returns array of playlists
 export const retrievePlaylists = async (userId: number) => {
   try {
-    const result = await pool.query("SELECT * FROM playlists WHERE user_id = $1", [userId]);
+    const result = await pool.query("SELECT playlist_id, name, image_url, track_count, created_at AT TIME ZONE 'UTC' as created_at, updated_at AT TIME ZONE 'UTC' as updated_at, last_played_at AT TIME ZONE 'UTC' as last_played_at FROM playlists WHERE user_id = $1 ORDER BY created_at DESC", [userId]);
     const playlists = result.rows.map((playlist) => {
       return {
         playlistId: playlist.playlist_id,
@@ -89,7 +89,7 @@ export const deletePlaylistTrack = async (userId: number, playlistId: number, tr
 // Retrieves all tracks within a playlist, returns array of track from most recently added
 export const retrievePlaylistTracks = async (playlistId: number) => {
   try {
-    const results = await pool.query("SELECT * FROM playlist_tracks WHERE playlist_id = $1 ORDER BY added_at DESC", [
+    const results = await pool.query("SELECT playlist_track_id, playlist_id, track_id, user_id, provider, added_at AT TIME ZONE 'UTC' as added_at FROM playlist_tracks WHERE playlist_id = $1 ORDER BY added_at DESC", [
       playlistId,
     ]);
     return results.rows;

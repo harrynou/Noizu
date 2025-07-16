@@ -2,6 +2,7 @@ import axios from "axios";
 import qs from "qs";
 import { setAccessToken, setClientCredenitals } from "../models/tokenModels";
 import { verifyToken } from "../utils/jwt";
+import CacheService from "./cacheService";
 
 export const refreshSpotifyToken = async (userId: number, refresh_token: string): Promise<string> => {
   try {
@@ -82,12 +83,30 @@ export const getSpotifyTracks = async (trackIds: string[], accessToken: string):
       return { tracks: [] };
     }
 
+    // Check cache for individual tracks first
+    const cachedTracks: any[] = [];
+    const uncachedTrackIds: string[] = [];
+
+    for (const trackId of trackIds) {
+      const cachedTrack = await CacheService.getCachedTrackData(trackId, "spotify");
+      if (cachedTrack) {
+        cachedTracks.push(cachedTrack);
+      } else {
+        uncachedTrackIds.push(trackId);
+      }
+    }
+
+    // If all tracks are cached, return them
+    if (uncachedTrackIds.length === 0) {
+      return { tracks: cachedTracks };
+    }
+
     const batchSize = 50; // Spotify API limit
     const batches = [];
 
-    // Split trackIds into batches of 50 or fewer
-    for (let i = 0; i < trackIds.length; i += batchSize) {
-      const batchIds = trackIds.slice(i, i + batchSize);
+    // Split uncached trackIds into batches of 50 or fewer
+    for (let i = 0; i < uncachedTrackIds.length; i += batchSize) {
+      const batchIds = uncachedTrackIds.slice(i, i + batchSize);
       batches.push(batchIds);
     }
 
@@ -103,12 +122,25 @@ export const getSpotifyTracks = async (trackIds: string[], accessToken: string):
     );
 
     // Combine results from all batches
-    const allTracks = batchResults.reduce<any[]>((acc, response) => {
+    const fetchedTracks = batchResults.reduce<any[]>((acc, response) => {
       return [...acc, ...response.data.tracks];
     }, []);
 
+    // Cache the newly fetched tracks
+    await Promise.all(
+      fetchedTracks.map(async (track) => {
+        if (track && track.id) {
+          await CacheService.cacheTrackData(track.id, "spotify", track);
+        }
+      })
+    );
+
+    // Combine cached and newly fetched tracks
+    const allTracks = [...cachedTracks, ...fetchedTracks];
+
     return { tracks: allTracks };
   } catch (error) {
+    console.error('Error fetching Spotify tracks:', error);
     throw error;
   }
 };

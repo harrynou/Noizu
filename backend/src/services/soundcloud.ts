@@ -1,6 +1,7 @@
 import axios from "axios";
 import qs from "qs";
 import { setAccessToken, setClientCredenitals } from "../models/tokenModels";
+import CacheService from "./cacheService";
 
 export const AuthSoundcloudToken = async (
   code: string,
@@ -118,13 +119,31 @@ export const getSoundcloudTracks = async (trackIds: string[]): Promise<any> => {
       return [];
     }
 
+    // Check cache for individual tracks first
+    const cachedTracks: any[] = [];
+    const uncachedTrackIds: string[] = [];
+
+    for (const trackId of trackIds) {
+      const cachedTrack = await CacheService.getCachedTrackData(trackId, "soundcloud");
+      if (cachedTrack) {
+        cachedTracks.push(cachedTrack);
+      } else {
+        uncachedTrackIds.push(trackId);
+      }
+    }
+
+    // If all tracks are cached, return them
+    if (uncachedTrackIds.length === 0) {
+      return cachedTracks;
+    }
+
     // Handle batching for more than 50 tracks
     const batchSize = 50; // SoundCloud API limit
     const batches = [];
 
-    // Split trackIds into batches of 50 or fewer
-    for (let i = 0; i < trackIds.length; i += batchSize) {
-      const batchIds = trackIds.slice(i, i + batchSize);
+    // Split uncached trackIds into batches of 50 or fewer
+    for (let i = 0; i < uncachedTrackIds.length; i += batchSize) {
+      const batchIds = uncachedTrackIds.slice(i, i + batchSize);
       batches.push(batchIds);
     }
 
@@ -144,12 +163,25 @@ export const getSoundcloudTracks = async (trackIds: string[]): Promise<any> => {
     );
 
     // Combine results from all batches
-    const allTracks = batchResults.reduce<any[]>((acc, response) => {
+    const fetchedTracks = batchResults.reduce<any[]>((acc, response) => {
       return [...acc, ...response.data];
     }, []);
 
+    // Cache the newly fetched tracks
+    await Promise.all(
+      fetchedTracks.map(async (track) => {
+        if (track && track.id) {
+          await CacheService.cacheTrackData(track.id.toString(), "soundcloud", track);
+        }
+      })
+    );
+
+    // Combine cached and newly fetched tracks
+    const allTracks = [...cachedTracks, ...fetchedTracks];
+
     return allTracks;
   } catch (error) {
+    console.error('Error fetching SoundCloud tracks:', error);
     throw error;
   }
 };
